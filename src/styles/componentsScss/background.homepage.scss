@@ -7,4 +7,23 @@
     left: 0;
     z-index: -1;
     box-shadow: inset 10px 20px 50px 0px rgba(0, 0, 0, 0.5);
+
+    .myName2 {
+        position: relative; // Ensures positioning context for the lighthouse
+        font-family: 'Six Caps', sans-serif;
+        width: fit-content;
+        font-size: 550px;
+        line-height: 1.05;
+        margin: 0;
+        left: 70px;
+        transform: scaleY(1.2);
+        transform-origin: center;
+        letter-spacing: 10px;
+        font-weight: 1000;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        opacity: 0.15;
+    }
 }
