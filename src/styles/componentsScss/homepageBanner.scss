@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Six+Caps&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik Distressed&display=swap');
+
+@keyframes neonFlicker {
+
+    54%,
+    56%,
+    100% {
+        text-shadow: 0 0 10px #ff9a56, 0 0 20px #ffe2ce, 0 0 30px #000000;
+
+        color: #edc4a9;
+    }
+
+    20%,
+    24%,
+    35% {
+        text-shadow: none;
+        color: rgba(237, 196, 169, 0.3);
+    }
+
+    10%,
+    56%,
+    100% {
+        text-shadow: 0 0 10px #ffd2b3, 0 0 20px #ffe2ce, 0 0 30px #000000;
+        color: rgba(237, 196, 169, 0.3);
+    }
+
+
+    25%,
+    54%,
+    56%,
+    100% {
+        text-shadow: 0 0 10px #ff9a56;
+        color: #edc4a9;
+    }
+
+}
+
+@keyframes oceanWave {
+    0% {
+        background: linear-gradient(180deg,
+                #ffffff 0%,
+                #87d9ff 30%,
+                rgb(0, 204, 255) 60%,
+                #0077b3 100%);
+        background-size: 100% 200%;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-position: center 0%;
+    }
+
+    33% {
+        background: linear-gradient(180deg,
+                #ffffff 0%,
+                #87d9ff 30%,
+                rgb(0, 204, 255) 60%,
+                #0077b3 100%);
+        background-size: 100% 200%;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-position: center 100%;
+    }
+
+    66% {
+        background: linear-gradient(200% 100% at center -5%,
+                #ffffff 5%,
+                #87d9ff 50%,
+                rgb(0, 204, 255) 100%);
+        background-size: 100% 100%;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-position: center center;
+    }
+
+    100% {
+        background: linear-gradient(180deg,
+                #ffffff 0%,
+                #87d9ff 30%,
+                rgb(0, 204, 255) 60%,
+                #0077b3 100%);
+        background-size: 100% 200%;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-position: center 0%;
+    }
+}
+
+.homepage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .role {
+        text-align: center;
+        font-family: 'Six Caps', sans-serif;
+        font-size: clamp(4rem, 8vw, 8rem);
+        color: #edc4a9;
+        text-shadow: 0 0 10px #ff9a56, 0 0 20px #ffe2ce, 0 0 30px #000000;
+        line-height: 1;
+        margin: 0;
+        user-select: none;
+        -webkit-user-select: none;
+        /* Safari */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* IE10+/Edge */
+        animation: neonFlicker 3s ease-in-out 1 forwards;
+    }
+
+    .content-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .homepageBanner {
+        position: relative;
+        z-index: 5;
+    }
+
+    .myName {
+        position: relative; // Ensures positioning context for the lighthouse
+        font-family: 'Six Caps', sans-serif;
+        width: fit-content;
+        font-size: 550px;
+        line-height: 1.05;
+        margin: 0;
+        transform: scaleY(1.2);
+        transform-origin: center;
+        letter-spacing: 10px;
+        font-weight: 1000;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        animation: oceanWave 3s ease-in-out 1 forwards;
+    }
+
+    .myDescription {
+        display: flex;
+        text-align: center;
+        font-family: 'Six Caps', sans-serif;
+        font-size: clamp(4rem, 8vw, 8rem);
+        justify-content: space-between;
+        user-select: none;
+        -webkit-user-select: none;
+        /* Safari */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* IE10+/Edge */
+        color: #edc4a9;
+        text-shadow: 0 0 10px #ff9a56;
+        align-items: center;
+        gap: 15px;
+
+        .arrow-container {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #edc4a9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px #ff9a56;
+        }
+
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 16px solid #edc4a9;
+            filter: drop-shadow(0 0 5px #ff9a56);
+        }
+
+    }
+
+    .lighthouse-container {
+        // background-color: #0077b3;
+    }
+}
