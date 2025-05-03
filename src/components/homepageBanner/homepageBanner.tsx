@@ -1,4 +1,3 @@
-import React from 'react'
 import Lighthouse from '../lighthouse/lighthouse'
 
 const homepageBanner = () => {
