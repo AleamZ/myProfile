@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { EDUCATION, EXPERIENCE } from '../../data/experience'
 import { useLang } from '../../i18n/LanguageProvider'
+import ExpSpiders from '../expSpiders/expSpiders'
 
 const startYear = (period: string) => period.match(/\d{4}/)?.[0] ?? ''
 
@@ -109,6 +110,7 @@ const Experience = () => {
                     </div>
                 </div>
             </div>
+            <ExpSpiders />
         </section>
     )
 }

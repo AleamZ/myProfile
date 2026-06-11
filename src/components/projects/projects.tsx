@@ -3,6 +3,7 @@ import type { CSSProperties, PointerEvent as ReactPointerEvent, KeyboardEvent as
 import { PROJECTS, type Project } from '../../data/projects'
 import ProjectModal from './projectModal'
 import LogoMark from '../logo/logoMark'
+import DinoRunner from '../dinoRunner/dinoRunner'
 import { useLang } from '../../i18n/LanguageProvider'
 
 const pad = (n: number) => String(n + 1).padStart(2, '0')
@@ -243,6 +244,8 @@ const Projects = () => {
                     />
                 ))}
             </div>
+
+            <DinoRunner />
 
             {openProject && <ProjectModal project={openProject} onClose={() => setOpenId(null)} />}
         </section>

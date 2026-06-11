@@ -1,5 +1,6 @@
 import { SKILLS } from '../../data/skills'
 import { useLang } from '../../i18n/LanguageProvider'
+import SkillsMario from '../skillsMario/skillsMario'
 
 const Skills = () => {
     const { t, lang } = useLang()
@@ -23,6 +24,8 @@ const Skills = () => {
                     </div>
                 ))}
             </dl>
+
+            <SkillsMario />
         </section>
     )
 }

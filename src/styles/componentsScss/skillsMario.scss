@@ -1,0 +1,292 @@
+// ── Skills "Mario" run (bottom of §4) ──────────────────────────
+// A pixel runner crosses the bottom of the Skills section, eats a mushroom,
+// then either drops down a pipe or reaches the flag — looping, monochrome.
+.skills-mario {
+    position: relative;
+    container-type: inline-size;
+    width: 100%;
+    height: 74px;
+    margin-top: clamp(24px, 5vh, 56px);
+    overflow: hidden;
+    pointer-events: none;
+    color: var(--text);
+    opacity: 0.72;
+}
+
+.skills-mario__ground {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.5;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 5px;
+        height: 3px;
+        opacity: 0.4;
+        background: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 26px);
+    }
+}
+
+// ── Mario ──────────────────────────────────────────────────────
+.mario {
+    position: absolute;
+    left: 0;
+    bottom: 14px;
+    z-index: 1;
+    width: 16px;
+    height: 21px;
+    transform: translateX(var(--mx));
+    transition: transform var(--mdur) linear;
+    will-change: transform;
+}
+
+.mario__hop {
+    width: 16px;
+    height: 21px;
+
+    &.is-hop { animation: mario-hop 820ms var(--ease-rule); }
+    &.is-sink-pipe { animation: mario-sink-pipe 1200ms ease-in-out forwards; }
+    &.is-sink-flag { animation: mario-sink-flag 1200ms var(--ease-rule); }
+}
+
+.mario-svg {
+    display: block;
+    width: 16px;
+    height: 21px;
+}
+
+.mleg { transform-box: fill-box; }
+.mario.phase-run1 .mleg--a,
+.mario.phase-run2 .mleg--a { animation: mario-walk-a 0.18s steps(1) infinite; }
+.mario.phase-run1 .mleg--b,
+.mario.phase-run2 .mleg--b { animation: mario-walk-b 0.18s steps(1) infinite; }
+
+@keyframes mario-walk-a {
+    0%, 49.9% { transform: translateY(0); }
+    50%, 100% { transform: translateY(2px); }
+}
+@keyframes mario-walk-b {
+    0%, 49.9% { transform: translateY(2px); }
+    50%, 100% { transform: translateY(0); }
+}
+// Stomp: jump up, come down onto the mushroom's head, bounce off.
+@keyframes mario-hop {
+    0% { transform: translateY(0); }
+    34% { transform: translateY(-26px); }
+    58% { transform: translateY(-11px); }
+    70% { transform: translateY(-19px); }
+    100% { transform: translateY(0); }
+}
+// Pipe: hop up onto the rim, stand, then sink straight down into it.
+@keyframes mario-sink-pipe {
+    0% { transform: translateY(0); }
+    26% { transform: translateY(-32px); }
+    42% { transform: translateY(-32px); }
+    100% { transform: translateY(34px); }
+}
+@keyframes mario-sink-flag {
+    0% { transform: translateY(0); }
+    25% { transform: translateY(-13px); }
+    50% { transform: translateY(0); }
+    72% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+}
+
+// ── Mushroom ───────────────────────────────────────────────────
+.mush {
+    position: absolute;
+    left: 44cqw;
+    bottom: 14px;
+    z-index: 1;
+    width: 16px;
+    height: 16px;
+    transform-origin: center bottom;
+
+    .mush-svg { display: block; width: 16px; height: 16px; }
+}
+
+// Death varies by kill method.
+.mush.is-eaten.kill-stomp { animation: mush-squash 480ms var(--ease-rule) forwards; }
+.mush.is-eaten.kill-gun,
+.mush.is-eaten.kill-car { animation: mush-blast 640ms var(--ease-rule) forwards; }
+.mush.is-eaten.kill-ninja { animation: mush-slash 440ms var(--ease-rule) forwards; }
+
+@keyframes mush-squash {
+    0% { transform: scaleY(1); opacity: 1; }
+    55% { transform: scaleY(0.26) translateY(6px); opacity: 1; }
+    100% { transform: scaleY(0.22) translateY(6px); opacity: 0; }
+}
+@keyframes mush-blast {
+    0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+    100% { transform: translate(26px, -28px) rotate(170deg); opacity: 0; }
+}
+@keyframes mush-slash {
+    0% { transform: scaleX(1) rotate(0); opacity: 1; }
+    40% { transform: scaleX(0.16) rotate(10deg); opacity: 1; }
+    100% { transform: scaleX(0.1) rotate(22deg); opacity: 0; }
+}
+
+// ── Kill effects ───────────────────────────────────────────────
+.mario__gun {
+    position: absolute;
+    left: 11px;
+    top: 8px;
+    width: 8px;
+
+    .gun-svg { display: block; width: 8px; height: 5px; }
+}
+
+.bullet {
+    position: absolute;
+    left: 16px;
+    bottom: 9px;
+    width: 6px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 0 3px currentColor;
+    animation: bullet-fly 540ms linear forwards;
+}
+
+@keyframes bullet-fly {
+    from { transform: translateX(0); opacity: 1; }
+    85% { opacity: 1; }
+    to { transform: translateX(var(--fly)); opacity: 0; }
+}
+
+.mario__band {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 13px;
+    height: 2px;
+    background: currentColor;
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: -3px;
+        top: 0;
+        width: 4px;
+        height: 5px;
+        background: currentColor;
+    }
+}
+
+.slash {
+    position: absolute;
+    bottom: 14px;
+    width: 24px;
+    height: 26px;
+    z-index: 2;
+    animation: slash-flash 340ms var(--ease-rule);
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: -3px;
+        top: 50%;
+        width: 30px;
+        height: 2px;
+        background: currentColor;
+        transform: rotate(-48deg);
+        transform-origin: center;
+    }
+}
+
+@keyframes slash-flash {
+    0% { opacity: 0; transform: scale(0.6); }
+    35% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.25); }
+}
+
+.car {
+    position: absolute;
+    bottom: 14px;
+    width: 24px;
+    height: 14px;
+    z-index: 3; // covers Mario — he's "inside" driving
+    animation: car-drive 1300ms ease-out forwards;
+
+    .car-svg { display: block; width: 24px; height: 14px; }
+}
+
+// Park (Mario boards) → drive + ram → stop (Mario dismounts).
+@keyframes car-drive {
+    0% { transform: translateX(0); }
+    18% { transform: translateX(0); }
+    72% { transform: translateX(var(--lunge)); }
+    100% { transform: translateX(var(--lunge)); }
+}
+
+// Mario is hidden while inside the car
+.mario.is-riding .mario__hop { opacity: 0; }
+
+// ── Ninja: katana + forward lean run ───────────────────────────
+.mario__katana {
+    position: absolute;
+    left: -11px;
+    top: 9px;
+    width: 18px;
+    transform: rotate(20deg);
+    transform-origin: right center;
+
+    .katana-svg { display: block; width: 18px; height: 5px; }
+}
+
+.mario.is-ninja .mario-svg {
+    transform: rotate(-7deg);
+    transform-origin: 50% 100%;
+}
+
+.mario.is-ninja.phase-run1 .mleg--a,
+.mario.is-ninja.phase-run1 .mleg--b {
+    animation-duration: 0.12s;
+}
+
+// ── Pipe (in front so Mario sinks behind it) ───────────────────
+.pipe {
+    position: absolute;
+    left: 82cqw;
+    margin-left: -6px; // centre the pipe mouth under Mario (whose left edge sits at 82cqw)
+    bottom: 0; // body runs all the way down so Mario's slide is fully hidden
+    z-index: 2; // in front, so Mario disappears into it
+    width: 28px;
+    height: 46px;
+
+    .pipe-svg { display: block; width: 28px; height: 46px; }
+}
+
+// ── Flag (Mario in front) ──────────────────────────────────────
+.flag {
+    position: absolute;
+    left: 82cqw;
+    bottom: 14px;
+    z-index: 0;
+    width: 8px;
+    height: 52px;
+
+    .flagpole-svg { display: block; width: 8px; height: 52px; }
+}
+
+.flag__banner {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 16px;
+    transition: transform 1s var(--ease-rule);
+
+    .banner-svg { display: block; width: 16px; height: 11px; }
+
+    &.is-down { transform: translateY(32px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skills-mario { display: none; }
+}

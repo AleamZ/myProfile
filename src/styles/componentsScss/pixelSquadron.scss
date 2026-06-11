@@ -1,0 +1,205 @@
+// ── Pixel squadron · clickable dogfights (both themes) ─────────
+// Faint monochrome fighters cross the hero; click one to damage it (3 hearts),
+// 3 hits → it spins down and explodes, the pilot parachutes out, lands and
+// runs off. Motion-on only; anchored to the hero so it scrolls away.
+.fx-squadron {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+    z-index: 40; // above content so the planes can be clicked
+    pointer-events: none;
+    overflow: hidden;
+    color: var(--text);
+}
+
+[data-bgfx='on'] .fx-squadron {
+    display: block;
+}
+
+// ── Plane ──────────────────────────────────────────────────────
+.craft {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0.72;
+    transform: translateX(-15vw);
+    pointer-events: none;
+    will-change: transform;
+    animation: squad-cross linear 1 both;
+}
+
+@keyframes squad-cross {
+    from { transform: translateX(-15vw); }
+    to { transform: translateX(115vw); }
+}
+
+.craft__fall {
+    position: relative;
+
+    &.is-falling {
+        animation: plane-fall 950ms ease-in forwards;
+    }
+}
+
+@keyframes plane-fall {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(180px) rotate(72deg); }
+}
+
+.craft__facing {
+    position: relative;
+    width: 40px;
+    height: 25px;
+    pointer-events: auto;
+    cursor: pointer;
+
+    &.is-left { transform: scaleX(-1); }
+}
+
+.ship {
+    display: block;
+    width: 40px;
+    height: 25px;
+    color: currentColor;
+    filter: drop-shadow(0 0 3px currentColor);
+    opacity: 0.92;
+}
+
+.laser {
+    position: absolute;
+    left: 33px;
+    top: 11px;
+    width: 9px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 0 4px currentColor;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    animation: laser-fire 800ms linear 1 both;
+}
+
+@keyframes laser-fire {
+    0% { transform: translateX(0); opacity: 0; }
+    12% { opacity: 0.9; }
+    100% { transform: translateX(150px); opacity: 0; }
+}
+
+// Health hearts above the plane (not flipped — outside .craft__facing)
+.craft__hearts {
+    position: absolute;
+    left: 50%;
+    top: -14px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    pointer-events: none;
+}
+
+.heart {
+    width: 9px;
+    height: 8px;
+    color: currentColor;
+
+    &.is-empty { opacity: 0.22; }
+}
+
+// Explosion
+.craft__boom {
+    position: absolute;
+    left: 6px;
+    top: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    opacity: 0;
+    background: radial-gradient(circle, currentColor 0%, currentColor 32%, transparent 64%);
+    transform-origin: center;
+    animation: squad-boom 420ms steps(8) both;
+}
+
+@keyframes squad-boom {
+    0% { transform: scale(0.3); opacity: 0; }
+    18% { opacity: 1; }
+    100% { transform: scale(1.8); opacity: 0; }
+}
+
+// ── Pilot (parachute → land → run off) ─────────────────────────
+.pilot {
+    position: absolute;
+    color: var(--text);
+    opacity: 0.85;
+    pointer-events: none;
+    will-change: transform;
+
+    &.is-chute {
+        animation: pilot-descend 1900ms linear forwards;
+    }
+
+    &.is-run {
+        transform: translate(0, var(--descent));
+        animation: pilot-run 1300ms linear forwards;
+
+        .pilot__chute { opacity: 0; }
+        .pleg--a { animation: pilot-leg-a 0.2s steps(1) infinite; }
+        .pleg--b { animation: pilot-leg-b 0.2s steps(1) infinite; }
+    }
+
+    &.is-left .pilot__guy { transform: scaleX(-1); }
+}
+
+@keyframes pilot-descend {
+    from { transform: translateY(0); }
+    to { transform: translateY(var(--descent)); }
+}
+
+@keyframes pilot-run {
+    from { transform: translate(0, var(--descent)); }
+    to { transform: translate(var(--runx), var(--descent)); }
+}
+
+.pilot__chute {
+    position: absolute;
+    left: -7px;
+    top: -15px;
+    width: 24px;
+    transform-origin: 50% 0;
+    transition: opacity 0.2s var(--ease-rule);
+    animation: chute-sway 1.6s ease-in-out infinite alternate;
+
+    svg { display: block; width: 24px; height: 16px; }
+}
+
+@keyframes chute-sway {
+    from { transform: rotate(-5deg); }
+    to { transform: rotate(5deg); }
+}
+
+.pilot__guy {
+    position: absolute;
+    left: 2px;
+    top: 0;
+
+    svg { display: block; width: 8px; height: 12px; }
+}
+
+.pleg { transform-box: fill-box; }
+
+@keyframes pilot-leg-a {
+    0%, 49.9% { transform: translateY(0); }
+    50%, 100% { transform: translateY(1px); }
+}
+@keyframes pilot-leg-b {
+    0%, 49.9% { transform: translateY(1px); }
+    50%, 100% { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-squadron {
+        display: none !important;
+    }
+}

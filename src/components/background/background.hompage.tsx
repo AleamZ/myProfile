@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
+import PixelSquadron from '../pixelSquadron/pixelSquadron'
 
 /**
  * Decorative + motion layer for PLATINE PROOF.
@@ -199,6 +200,8 @@ const Background = () => {
                 <div className="fx-hairline__scan" />
                 <div className="fx-hairline__scan--b" />
             </div>
+
+            <PixelSquadron />
 
             <div className="fx-spotlight" aria-hidden="true" />
             <div className="fx-grain" aria-hidden="true" />
