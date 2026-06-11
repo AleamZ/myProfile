@@ -1,0 +1,87 @@
+// ── PLATINE PROOF · skills ─────────────────────────────────────
+.skills {
+    position: relative;
+    z-index: 3;
+    scroll-margin-top: var(--header-h);
+    padding-block: clamp(60px, 12vh, 160px);
+}
+
+.skills__head {
+    margin-bottom: clamp(40px, 8vh, 96px);
+}
+
+.skills__list {
+    margin: 0;
+}
+
+.skills__group {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0 24px;
+    padding-block: clamp(24px, 4vh, 44px);
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 1px;
+        background: var(--line);
+        transform-origin: left;
+    }
+}
+
+.skills__cat {
+    grid-column: 1 / 4;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.skills__items {
+    grid-column: 4 / -1;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skills__tag {
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 6px 12px;
+    transition: color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule);
+
+    &:hover {
+        color: var(--accent);
+        border-color: rgba(237, 237, 237, 0.3);
+    }
+}
+
+.js .skills__group::before {
+    transform: scaleX(0);
+    transition: transform 0.64s var(--ease-rule);
+}
+.js .skills__group.is-inview::before {
+    transform: scaleX(1);
+}
+
+@media (max-width: 720px) {
+    .skills__group {
+        gap: 12px 16px;
+    }
+
+    .skills__cat,
+    .skills__items {
+        grid-column: 1 / -1;
+    }
+
+    .skills__items {
+        gap: 12px 8px;
+    }
+}

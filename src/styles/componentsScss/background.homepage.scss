@@ -1,29 +1,209 @@
-.bg-dark-blue {
-    background-color: #305c64;
-    width: 100%;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    box-shadow: inset 10px 20px 50px 0px rgba(0, 0, 0, 0.5);
+// ── PLATINE PROOF · decorative + motion layers ─────────────────
+// Fixed luminance stack. All layers are aria-hidden + pointer-events:none
+// and sit *below* content (content is z-index 3+ in the layout).
 
-    .myName2 {
-        position: relative; // Ensures positioning context for the lighthouse
-        font-family: 'Six Caps', sans-serif;
-        width: fit-content;
-        font-size: 550px;
-        line-height: 1.05;
-        margin: 0;
-        left: 70px;
-        transform: scaleY(1.2);
-        transform-origin: center;
-        letter-spacing: 10px;
-        font-weight: 1000;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        opacity: 0.15;
+// Soft drifting aurora — the "lighting" behind the glass (light theme only).
+.fx-aurora {
+    position: fixed;
+    inset: -25%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    background:
+        radial-gradient(38% 38% at 24% 30%, rgba(168, 150, 255, 0.55), transparent 70%),
+        radial-gradient(42% 42% at 78% 24%, rgba(150, 205, 255, 0.5), transparent 70%),
+        radial-gradient(46% 46% at 62% 82%, rgba(255, 196, 176, 0.45), transparent 70%);
+    filter: blur(40px);
+    transition: opacity 0.6s var(--ease-rule);
+}
+
+[data-theme='light'] .fx-aurora {
+    opacity: 1;
+    animation: aurora-drift 26s var(--ease-type) infinite alternate;
+}
+
+// Toggle off → freeze the ambient drift (static, still soft)
+[data-bgfx='off'] .fx-aurora {
+    animation: none;
+}
+
+@keyframes aurora-drift {
+    from { transform: translate3d(-3%, -2%, 0) scale(1.05); }
+    to { transform: translate3d(3%, 4%, 0) scale(1.14); }
+}
+
+.fx-vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: var(--vignette);
+    animation: fade-in 600ms var(--ease-rule) backwards;
+}
+
+// Cursor-driven spotlight — luminance only, never gates content.
+.fx-spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--spotlight);
+    animation: fade-in 600ms var(--ease-rule) 200ms backwards;
+}
+
+// 35mm film grain — grayscale SVG turbulence, shimmering subtly.
+.fx-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    animation: grain-shift 1.2s steps(6) infinite;
+}
+
+@keyframes grain-shift {
+    0% { background-position: 0 0; }
+    20% { background-position: -6px 4px; }
+    40% { background-position: 4px -6px; }
+    60% { background-position: -4px -4px; }
+    80% { background-position: 6px 6px; }
+    100% { background-position: 0 0; }
+}
+
+// ── Ambient background motion (toggleable via footer · data-bgfx) ──
+// Two distinct languages: dark = breathing Swiss hairlines (crisp, mono);
+// light = frosted blooms swelling in place (soft, pastel). Hidden by default,
+// revealed only for the active theme when motion is on.
+.fx-hairline,
+.fx-bloom {
+    display: none;
+}
+
+// Dark · breathing hairline grid + travelling calibration lines
+.fx-hairline {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    contain: strict;
+}
+
+.fx-hairline__grid {
+    position: absolute;
+    inset: 0;
+    will-change: opacity;
+    opacity: 0.02;
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0 1px, transparent 1px 96px),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.9) 0 1px, transparent 1px 96px);
+    animation: fx-grid-breathe 42s var(--ease-rule) infinite;
+}
+
+.fx-hairline__scan,
+.fx-hairline__scan--b {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    opacity: 0;
+    will-change: transform;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.9) 12%, rgba(255, 255, 255, 0.9) 88%, transparent 100%);
+    animation: fx-scan 38s ease-in-out infinite;
+}
+
+.fx-hairline__scan--b {
+    animation-delay: -19s;
+}
+
+@keyframes fx-grid-breathe {
+    0%, 100% { opacity: 0.02; }
+    50% { opacity: 0.05; }
+}
+
+@keyframes fx-scan {
+    0% { transform: translateY(-2vh); opacity: 0; }
+    8% { opacity: 0.04; }
+    50% { opacity: 0.04; }
+    92% { opacity: 0.04; }
+    100% { transform: translateY(102vh); opacity: 0; }
+}
+
+// Light · frosted blooms breathing in place behind the glass
+.fx-bloom {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    contain: strict;
+}
+
+.fx-bloom__orb {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    transform-origin: center;
+    transform: translate(-50%, -50%);
+    filter: blur(60px);
+    mix-blend-mode: screen;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: fx-bloom var(--dur) var(--ease-type) var(--delay) infinite;
+
+    &.is-lav { background: radial-gradient(circle, rgba(196, 181, 253, 0.55) 0%, rgba(196, 181, 253, 0) 70%); }
+    &.is-sky { background: radial-gradient(circle, rgba(186, 222, 255, 0.55) 0%, rgba(186, 222, 255, 0) 70%); }
+    &.is-peach { background: radial-gradient(circle, rgba(255, 214, 191, 0.5) 0%, rgba(255, 214, 191, 0) 70%); }
+    &.is-white { background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%); }
+}
+
+@keyframes fx-bloom {
+    0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.16; }
+    50% { transform: translate(-50%, -50%) scale(1.18); opacity: 0.38; }
+    100% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.16; }
+}
+
+// Reveal per active theme only when motion is on
+[data-theme='dark'][data-bgfx='on'] .fx-hairline { display: block; }
+[data-theme='light'][data-bgfx='on'] .fx-bloom { display: block; }
+
+@media (max-width: 768px) {
+    .fx-hairline__grid {
+        background:
+            repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0 1px, transparent 1px 64px),
+            repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.9) 0 1px, transparent 1px 64px);
+    }
+    .fx-hairline__scan--b { display: none; }
+    .fx-bloom__orb { filter: blur(40px); }
+    .fx-bloom__orb.is-white { display: none; }
+}
+
+// On touch / no-fine-pointer, the spotlight is a static centre glow.
+@media (pointer: coarse),
+(hover: none) {
+    .cursor {
+        display: none !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-grain { animation: none; }
+    .fx-aurora { animation: none; }
+
+    .fx-hairline__scan,
+    .fx-hairline__scan--b { display: none; }
+    .fx-hairline__grid { animation: none; opacity: 0.03; }
+
+    .fx-bloom__orb {
+        animation: none;
+        opacity: 0.22;
+        transform: translate(-50%, -50%) scale(1);
     }
 }

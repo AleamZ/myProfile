@@ -1,4 +1,150 @@
-.mHeader {
-    background-color: aqua;
-    font-size: small;
+// ── PLATINE PROOF · header ─────────────────────────────────────
+.site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--margin);
+    background: transparent;
+    transition: background 0.4s var(--ease-rule), backdrop-filter 0.4s var(--ease-rule);
+
+    // Single hairline rule on the bottom edge, drawn left→right on load
+    &::after {
+        content: '';
+        position: absolute;
+        inset: auto 0 0 0;
+        height: 1px;
+        background: var(--line);
+        transform-origin: left;
+        animation: rule-in 700ms var(--ease-rule) 120ms backwards;
+    }
+
+    &.is-scrolled {
+        background: rgba(14, 14, 17, 0.7);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+}
+
+.site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text);
+    will-change: transform;
+    animation: rise-in 500ms var(--ease-rule) 160ms backwards;
+
+    &:hover .logo path,
+    &:focus-visible .logo path {
+        fill: var(--accent);
+    }
+}
+
+.site-header__right {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 40px);
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2vw, 28px);
+}
+
+.site-nav__link {
+    position: relative;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 2px; // larger hit target
+    will-change: transform;
+    transition: color 0.22s var(--ease-rule);
+    animation: rise-in 500ms var(--ease-rule) backwards;
+
+    &:nth-child(1) { animation-delay: 200ms; }
+    &:nth-child(2) { animation-delay: 280ms; }
+    &:nth-child(3) { animation-delay: 360ms; }
+    &:nth-child(4) { animation-delay: 440ms; }
+
+    // Mechanical underline wipe — in from the left, out to the right
+    &::after {
+        content: '';
+        position: absolute;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        height: 1px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.26s var(--ease-rule);
+    }
+
+    &:hover,
+    &:focus-visible {
+        color: var(--accent);
+
+        &::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+    }
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    animation: rise-in 500ms var(--ease-rule) 520ms backwards;
+}
+
+.status__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse-dot 2400ms ease-in-out infinite;
+}
+
+.status__word {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.status__meta {
+    font-weight: 400;
+}
+
+@keyframes pulse-dot {
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        opacity: 0.6;
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+    }
+}
+
+// Drop the status cluster first so the 4 nav links keep room on mid widths.
+@media (max-width: 940px) {
+    .status {
+        display: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .site-nav {
+        display: none; // keep the masthead quiet on small screens
+    }
 }

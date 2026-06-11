@@ -1,22 +1,31 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import MHeader from '../components/header/header'
 import HomepageBanner from '../components/homepageBanner/homepageBanner'
+import Projects from '../components/projects/projects'
+import Experience from '../components/experience/experience'
+import Skills from '../components/skills/skills'
+import Contact from '../components/contact/contact'
 import Background from '../components/background/background.hompage'
-import { Layout } from 'antd'
-const homepage = () => {
+import Footer from '../components/footer/footer'
+import { useScrollReveal } from '../hooks/useScrollReveal'
+
+const Homepage = () => {
+    useScrollReveal()
+
     return (
-        <div className='homepage'>
+        <div className="homepage">
+            <a className="skip-link" href="#main">Skip to content</a>
             <Background />
-            <Layout.Header className="mHeader">
-                <MHeader />
-            </Layout.Header>
-            <Layout.Content>
-                <div className="content-container">
-                    <HomepageBanner />
-                </div>
-            </Layout.Content>
+            <MHeader />
+            <main id="main" className="content">
+                <HomepageBanner />
+                <Projects />
+                <Experience />
+                <Skills />
+                <Contact />
+            </main>
+            <Footer />
         </div>
     )
 }
 
-export default homepage
+export default Homepage

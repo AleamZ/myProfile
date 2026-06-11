@@ -1,0 +1,118 @@
+// ── PLATINE PROOF · hero right-aside ───────────────────────────
+// Right-anchored counterweight to the giant name: a live local clock,
+// location/status, and a vertical hairline with a slowly travelling dot.
+.hero__aside {
+    grid-column: 11 / -1;
+    grid-row: 2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: clamp(20px, 2vw, 32px);
+}
+
+.hero__aside-line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--line);
+    transform-origin: top;
+    animation: rule-in-y 800ms var(--ease-rule) 600ms backwards;
+
+    // Travelling dot
+    &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+        transform: translate(-50%, -50%);
+        animation: travel-y 6s var(--ease-rule) 1400ms infinite;
+    }
+}
+
+.hero__aside-stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(20px, 4vh, 36px);
+    width: 100%;
+}
+
+.hero__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: rise-in 600ms var(--ease-rule) backwards;
+
+    &:nth-child(1) { animation-delay: 900ms; }
+    &:nth-child(2) { animation-delay: 1000ms; }
+    &:nth-child(3) { animation-delay: 1100ms; }
+}
+
+.hero__meta-label {
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.hero__clock {
+    font-size: clamp(1.1rem, 1.6vw, 1.7rem);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.hero__meta-val {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--text);
+}
+
+.hero__meta-sub {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+}
+
+.hero__meta--status {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.hero__status-dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse-dot 2400ms ease-in-out infinite; // keyframe defined in header.scss
+}
+
+@keyframes rule-in-y {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+}
+
+@keyframes travel-y {
+    0% { top: 0%; opacity: 0; }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+@media (max-width: 860px) {
+    .hero__aside {
+        display: none; // keep the mobile hero to pure typography
+    }
+}

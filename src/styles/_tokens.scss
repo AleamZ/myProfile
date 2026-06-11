@@ -1,0 +1,92 @@
+// ── PLATINE PROOF · design tokens ──────────────────────────────
+// Dark (default) = strict grayscale luminance ladder.
+// Light = "liquid glass": frosted surfaces over soft aurora lighting.
+
+:root {
+    // Luminance ladder (dark)
+    --bg: #08080a;
+    --bg-elev: #0e0e11;
+    --text: #ededed;
+    --accent: #ffffff;
+    --muted: #8a8a8a;
+
+    --line: rgba(237, 237, 237, 0.13);
+    --line-faint: rgba(237, 237, 237, 0.06);
+
+    // Rhythm & layout
+    --baseline: 8px;
+    --margin: clamp(20px, 4vw, 56px);
+    --maxw: 1440px;
+    --header-h: 64px;
+
+    // Corner radii — 0 in dark (sharp Swiss editorial); rounded in light glass
+    --radius: 0;
+    --radius-sm: 0;
+    --radius-pill: 0;
+
+    // The whole site moves on exactly two curves
+    --ease-rule: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-type: cubic-bezier(0.16, 1, 0.3, 1);
+
+    // Cursor spotlight position (driven by rAF lerp loop)
+    --mx: 50%;
+    --my: 38%;
+
+    // Display name gradient
+    --platinum: linear-gradient(180deg, #ffffff 0%, #dcdcdc 30%, #c8c8c8 50%, #a9a9a9 72%, #8e8e8e 100%);
+
+    // Type families (loaded in index.html)
+    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-ui: 'Inter', system-ui, Arial, sans-serif;
+
+    // ── Theme-driven effect + surface tokens (dark values) ─────
+    --spotlight: radial-gradient(620px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.07), transparent 60%);
+    --vignette: radial-gradient(130% 130% at 50% 38%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+    --grain-opacity: 0.035;
+    --grain-blend: overlay;
+
+    --cursor: rgba(237, 237, 237, 0.6);
+    --cursor-fill: rgba(237, 237, 237, 0.9);
+
+    // Liquid-glass surfaces — in dark these read as near-solid planes
+    --glass-bg: rgba(14, 14, 17, 0.7);
+    --glass-border: var(--line);
+    --glass-shadow: none;
+    --glass-hl: transparent;
+    --glass-blur: 14px;
+}
+
+// ── Light theme ────────────────────────────────────────────────
+[data-theme='light'] {
+    --bg: #e8eaf2;
+    --bg-elev: #f4f5fa; // solid light surface (loaders, etc.)
+    --text: #16161d;
+    --accent: #0a0a12; // reserved: hover / active / lit
+    --muted: #5c5c67;
+
+    --line: rgba(22, 22, 34, 0.14);
+    --line-faint: rgba(22, 22, 34, 0.06);
+
+    // Dark graphite gradient so the name reads as polished metal on light
+    --platinum: linear-gradient(180deg, #3b3b47 0%, #18181f 46%, #45454f 100%);
+
+    // Lighting: a glossy white bloom that follows the cursor over the glass
+    --spotlight: radial-gradient(620px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.6), transparent 60%);
+    --vignette: radial-gradient(130% 130% at 50% 36%, transparent 58%, rgba(26, 26, 56, 0.1) 100%);
+    --grain-opacity: 0.025;
+    --grain-blend: multiply;
+
+    --cursor: rgba(22, 22, 34, 0.55);
+    --cursor-fill: rgba(22, 22, 34, 0.85);
+
+    --glass-bg: rgba(255, 255, 255, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-shadow: 0 22px 60px rgba(30, 32, 64, 0.16);
+    --glass-hl: rgba(255, 255, 255, 0.75);
+    --glass-blur: 22px;
+
+    // Soft, generous corners for the liquid-glass language
+    --radius: 22px;
+    --radius-sm: 14px;
+    --radius-pill: 999px;
+}

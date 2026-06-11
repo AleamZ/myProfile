@@ -1,42 +1,40 @@
-import Lighthouse from '../lighthouse/lighthouse'
+import HeroAside from '../heroAside/heroAside'
+import { useLang } from '../../i18n/LanguageProvider'
 
-const homepageBanner = () => {
+const NAME_LINES = ['NGUYEN', 'TIEN', 'DAT']
+
+const HomepageBanner = () => {
+    const { t } = useLang()
+
     return (
-        <div className="homepageBanner">
-            <div className='role'>
-                <text>frontend developer - react framework </text>
+        <section className="hero">
+            <div className="hero__head">
+                <p className="eyebrow">
+                    <span className="eyebrow__rule" aria-hidden="true" />
+                    <span className="eyebrow__text">{t.roleEyebrow} — <em>react</em> · next.js</span>
+                </p>
+                <span className="index index--id">01&nbsp;/&nbsp;{t.sections.identity}</span>
             </div>
-            <div className='myName'>
-                <text>NGUYENTIENDAT</text>
-                <div className='lighthouse-container'>
-                    <Lighthouse />
-                </div>
-            </div>
-            <div className='myDescription'>
-                <text>
-                    reactjs
-                </text>
-                <div className="arrow-container">
-                    <div className="arrow-down"></div>
-                </div>
-                <text>
-                    nodejs
-                </text>
-                <div className="arrow-container">
-                    <div className="arrow-down"></div>
-                </div>
-                <text>
-                    typescript
-                </text>
-                <div className="arrow-container">
-                    <div className="arrow-down"></div>
-                </div>
-                <text>
-                    blockchain
-                </text>
-            </div>
-        </div>
+
+            <h1 className="name" aria-label="Nguyen Tien Dat">
+                {NAME_LINES.map((line) => (
+                    <span className="name__line" key={line}>
+                        <span className="name__inner" aria-hidden="true">
+                            {line.split('').map((char, i) => (
+                                <span className="name__glyph" data-glyph key={`${line}-${i}`}>
+                                    {char}
+                                </span>
+                            ))}
+                        </span>
+                    </span>
+                ))}
+            </h1>
+
+            <HeroAside />
+
+            <div className="name__baseline" aria-hidden="true" />
+        </section>
     )
 }
 
-export default homepageBanner
+export default HomepageBanner

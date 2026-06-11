@@ -1,0 +1,246 @@
+// ── PLATINE PROOF · experience explorer ────────────────────────
+.experience {
+    position: relative;
+    z-index: 3;
+    scroll-margin-top: var(--header-h);
+    padding-block: clamp(60px, 12vh, 160px);
+}
+
+.exp__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px 24px;
+    flex-wrap: wrap;
+    margin-bottom: clamp(40px, 8vh, 96px);
+}
+
+.exp__edu {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.exp__explorer {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0 24px;
+}
+
+// ── Left rail · company selector ───────────────────────────────
+.exp__rail {
+    grid-column: 1 / 5;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    border-bottom: 1px solid var(--line);
+}
+
+.exp__tab {
+    position: relative;
+    display: flex;
+    width: 100%;
+    text-align: left;
+    padding: clamp(16px, 2.4vh, 22px) 8px clamp(16px, 2.4vh, 22px) 22px;
+    border-top: 1px solid var(--line);
+
+    &-mark {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 2px;
+        height: 52%;
+        background: var(--accent);
+        transform: translateY(-50%) scaleY(0);
+        transform-origin: center;
+        transition: transform 0.34s var(--ease-rule);
+    }
+
+    &-text {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    &-company {
+        font-weight: 500;
+        font-size: clamp(1rem, 1.4vw, 1.2rem);
+        letter-spacing: -0.01em;
+        color: var(--muted);
+        transition: color 0.22s var(--ease-rule), transform 0.34s var(--ease-rule);
+    }
+
+    &-period {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    &:hover &-company,
+    &:focus-visible &-company,
+    &.is-active &-company {
+        color: var(--text);
+    }
+
+    &.is-active &-company {
+        transform: translateX(4px);
+    }
+
+    &.is-active &-mark {
+        transform: translateY(-50%) scaleY(1);
+    }
+
+    &:focus-visible {
+        outline: 1px solid var(--text);
+        outline-offset: -2px;
+    }
+}
+
+// ── Right panel · detail ───────────────────────────────────────
+.exp__panel {
+    position: relative;
+    grid-column: 6 / -1;
+    min-height: clamp(360px, 48vh, 520px);
+}
+
+.exp__panel-inner {
+    position: relative;
+}
+
+.exp__watermark {
+    position: absolute;
+    top: -0.18em;
+    right: 0;
+    z-index: 0;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(6rem, 13vw, 12rem);
+    line-height: 1;
+    color: rgba(237, 237, 237, 0.05);
+    pointer-events: none;
+    user-select: none;
+    animation: fade-in 0.8s var(--ease-rule) both;
+}
+
+.exp__panel-head {
+    position: relative;
+    z-index: 1;
+}
+
+.exp__company-lg {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    animation: exp-rise 0.55s var(--ease-type) both;
+}
+
+.exp__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: clamp(12px, 2vh, 18px);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    animation: exp-rise 0.55s var(--ease-type) 0.08s both;
+}
+
+.exp__rule {
+    display: block;
+    height: 1px;
+    margin: clamp(24px, 4vh, 40px) 0;
+    background: var(--line);
+    transform-origin: left;
+    animation: exp-draw 0.7s var(--ease-rule) 0.16s both;
+}
+
+.exp__projects {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(24px, 4vh, 40px);
+}
+
+.exp__project {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(16px, 2vw, 28px);
+    align-items: baseline;
+    animation: exp-rise 0.55s var(--ease-type) both;
+    animation-delay: calc(0.22s + var(--pi, 0) * 0.09s);
+}
+
+.exp__pnum {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+}
+
+.exp__pbody {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exp__pname {
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+
+.exp__psum {
+    max-width: 64ch;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.exp__ptags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.exp__tag {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 3px 7px;
+}
+
+@keyframes exp-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes exp-draw {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+@media (max-width: 860px) {
+    .exp__explorer {
+        display: block;
+    }
+
+    .exp__panel {
+        min-height: 0;
+        margin-top: clamp(28px, 6vh, 48px);
+    }
+
+    .exp__watermark {
+        font-size: clamp(5rem, 22vw, 8rem);
+    }
+}

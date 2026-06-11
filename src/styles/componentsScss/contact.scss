@@ -1,0 +1,127 @@
+// ── PLATINE PROOF · contact ────────────────────────────────────
+.contact {
+    position: relative;
+    z-index: 3;
+    scroll-margin-top: var(--header-h);
+    padding-block: clamp(60px, 12vh, 160px) clamp(80px, 16vh, 200px);
+}
+
+.contact__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px 24px;
+    flex-wrap: wrap;
+    margin-bottom: clamp(40px, 8vh, 96px);
+}
+
+.contact__loc {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.contact__main {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact__lead {
+    max-width: 34ch;
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+// Big email CTA
+.contact__email {
+    position: relative;
+    align-self: flex-start;
+    margin-top: clamp(24px, 4vh, 44px);
+    font-size: clamp(1.5rem, 5.5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    overflow-wrap: anywhere;
+    transition: color 0.3s var(--ease-rule);
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0.04em;
+        height: 1px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.45s var(--ease-rule);
+    }
+
+    &:hover,
+    &:focus-visible {
+        color: var(--accent);
+
+        &::after {
+            transform: scaleX(1);
+        }
+    }
+}
+
+// Social links
+.contact__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(20px, 4vw, 48px);
+    margin-top: clamp(40px, 7vh, 80px);
+    padding-top: clamp(24px, 4vh, 40px);
+    border-top: 1px solid var(--line);
+}
+
+.contact__social a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.22s var(--ease-rule);
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.26s var(--ease-rule);
+    }
+
+    &:hover,
+    &:focus-visible {
+        color: var(--accent);
+
+        &::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+    }
+}
+
+.contact__social-arrow {
+    display: inline-block;
+    transition: transform 0.22s var(--ease-rule);
+}
+
+.contact__social a:hover .contact__social-arrow,
+.contact__social a:focus-visible .contact__social-arrow {
+    transform: translate(2px, -2px);
+}

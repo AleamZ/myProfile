@@ -1,0 +1,129 @@
+// ── PLATINE PROOF · Light theme (liquid glass) ─────────────────
+// Frosted glass surfaces floating over the aurora lighting. Loaded LAST so
+// these win over the component defaults. Non-3D surfaces use backdrop-filter;
+// the coverflow cards (which live in a rotated preserve-3d stage) use a higher
+// translucency instead, to avoid backdrop-filter glitches inside 3D contexts.
+
+[data-theme='light'] {
+    // Header glass once it detaches on scroll
+    .site-header.is-scrolled {
+        background: var(--glass-bg);
+        backdrop-filter: blur(18px) saturate(170%);
+        -webkit-backdrop-filter: blur(18px) saturate(170%);
+        box-shadow: inset 0 1px 0 var(--glass-hl), 0 10px 30px rgba(30, 32, 64, 0.08);
+    }
+
+    // Coverflow cards → translucent glass tiles
+    .cf__card {
+        background: rgba(255, 255, 255, 0.62);
+        border-color: var(--glass-border);
+        box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hl);
+    }
+
+    .cf__card.is-active {
+        border-color: var(--glass-border);
+        box-shadow: 0 28px 64px rgba(30, 32, 64, 0.2), inset 0 1px 0 var(--glass-hl);
+    }
+
+    .cf__thumb {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .cf__open {
+        background: rgba(255, 255, 255, 0.55);
+    }
+
+    // Nav arrows + section loader glass
+    .cf__nav {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
+        border-color: var(--glass-border);
+    }
+
+    .cf__loader {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+    }
+
+    // Modal — translucent scrim + glass panel
+    .modal {
+        background: rgba(226, 229, 242, 0.5);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
+
+    .modal__panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(26px) saturate(180%);
+        -webkit-backdrop-filter: blur(26px) saturate(180%);
+        border-color: var(--glass-border);
+        box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hl);
+    }
+
+    .frame__loading {
+        background: var(--glass-bg);
+    }
+
+    // Footer glass band
+    .site-footer {
+        background: var(--glass-bg);
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border-top-color: var(--glass-border);
+    }
+
+    // Controls → glass pills (rounding only reads with a surface behind it)
+    .theme-toggle {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px) saturate(150%);
+        -webkit-backdrop-filter: blur(10px) saturate(150%);
+    }
+
+    .modal__close {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px) saturate(150%);
+        -webkit-backdrop-filter: blur(10px) saturate(150%);
+    }
+
+    .site-footer__btn {
+        padding: 9px 16px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(10px) saturate(150%);
+        -webkit-backdrop-filter: blur(10px) saturate(150%);
+    }
+
+    // Language switcher → one glass pill, no internal separators
+    .lang {
+        padding: 3px 4px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-pill);
+        backdrop-filter: blur(10px) saturate(150%);
+        -webkit-backdrop-filter: blur(10px) saturate(150%);
+    }
+    .lang__btn {
+        border-radius: var(--radius-pill);
+    }
+    .lang__btn:not(:last-child)::after {
+        display: none;
+    }
+    .lang__btn.is-active {
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--accent);
+    }
+
+    // Code viewer + repo tree tints were tuned for dark — flip to dark-on-light.
+    .tok--string { color: #586273; }
+    .tok--number { color: #3a3f4a; }
+    .tok--fn { color: #16161d; }
+    .code__gutter { color: rgba(22, 22, 34, 0.32); }
+
+    .repo__file.is-active { background: rgba(22, 22, 34, 0.08); }
+    .repo__dir:hover,
+    .repo__file:hover { background: rgba(22, 22, 34, 0.05); }
+
+    .cf__thumb-ph { color: rgba(22, 22, 34, 0.1); }
+}

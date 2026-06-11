@@ -1,0 +1,18 @@
+// ── PLATINE PROOF · page shell ─────────────────────────────────
+.homepage {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+// Centered, gridded content column. Sits above the fixed fx layers.
+.content {
+    position: relative;
+    z-index: 3;
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 var(--margin);
+}

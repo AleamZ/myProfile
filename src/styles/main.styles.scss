@@ -1,6 +1,9 @@
-// //basicUI
-// @use "./basicUIScss/basicUI";
+// PLATINE PROOF — dark monochrome editorial portfolio
+@use "./tokens";
+@use "./base";
 //component
 @use "./componentsScss/component";
 // layout
 @use "../styles/layoutsScss/layout";
+// light theme overrides — must load last
+@use "./theme-light";

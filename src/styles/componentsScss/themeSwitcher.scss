@@ -1,0 +1,25 @@
+// ── PLATINE PROOF · theme toggle ───────────────────────────────
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    will-change: transform;
+    transition: color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule);
+    animation: rise-in 500ms var(--ease-rule) 560ms backwards;
+
+    &:hover,
+    &:focus-visible {
+        color: var(--accent);
+        border-color: var(--glass-border);
+    }
+}
+
+.theme-toggle__icon {
+    display: inline-flex;
+    animation: fade-in 0.3s var(--ease-rule);
+}

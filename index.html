@@ -3,9 +3,31 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./public/ALeam LOGO.png" />
+  <link rel="icon" type="image/png" href="/ALeam LOGO.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NguyenTienDat Profile</title>
+  <meta name="theme-color" content="#08080a" />
+  <meta name="description" content="Nguyen Tien Dat — Frontend Developer. React, Node, TypeScript, Blockchain." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,400&family=Inter:wght@400;500;600&display=swap" />
+  <title>Nguyen Tien Dat — Frontend Developer</title>
+  <script>
+    // Set theme + base background before paint to avoid a flash of the wrong theme.
+    (function () {
+      try {
+        var t = localStorage.getItem('pp-theme');
+        if (t !== 'light' && t !== 'dark') t = 'dark';
+        document.documentElement.dataset.theme = t;
+        document.documentElement.style.background = t === 'light' ? '#e8eaf2' : '#08080a';
+        var fx = localStorage.getItem('pp-bgfx');
+        document.documentElement.dataset.bgfx = fx === 'off' ? 'off' : 'on';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+        document.documentElement.dataset.bgfx = 'on';
+      }
+    })();
+  </script>
 </head>
 
 <body style="margin: 0; padding: 0;">

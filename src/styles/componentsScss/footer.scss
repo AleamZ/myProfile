@@ -1,0 +1,96 @@
+// ── PLATINE PROOF · footer ─────────────────────────────────────
+.site-footer {
+    position: relative;
+    z-index: 3;
+    background: var(--bg-elev);
+    border-top: 1px solid var(--line);
+}
+
+.site-footer__inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    min-height: 120px;
+    padding: clamp(24px, 5vh, 40px) var(--margin);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.site-footer__meta {
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.site-footer__center {
+    flex: 1;
+    text-align: center;
+}
+
+.site-footer__mail {
+    text-transform: none;
+    letter-spacing: 0.04em;
+    transition: color 0.22s var(--ease-rule);
+
+    &:hover,
+    &:focus-visible {
+        color: var(--accent);
+    }
+}
+
+.site-footer__right {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 32px);
+}
+
+.site-footer__btn {
+    position: relative;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 4px; // hit target
+    white-space: nowrap;
+    border-radius: var(--radius-pill);
+    will-change: transform;
+    transition: color 0.22s var(--ease-rule);
+
+    &:hover,
+    &:focus-visible {
+        color: var(--accent);
+    }
+}
+
+@media (pointer: coarse) {
+    .site-footer__btn {
+        padding: 10px 12px; // ~44px touch target on touch devices
+    }
+}
+
+.site-footer__arrow {
+    display: inline-block;
+    transition: transform 0.2s var(--ease-rule);
+}
+
+@media (hover: hover) {
+    .site-footer__btn:hover .site-footer__arrow {
+        transform: translateY(-3px);
+    }
+}
+
+@media (max-width: 720px) {
+    .site-footer__inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .site-footer__center {
+        flex: none;
+    }
+}

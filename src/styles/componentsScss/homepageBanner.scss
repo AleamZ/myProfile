@@ -1,187 +1,201 @@
-@import url('https://fonts.googleapis.com/css2?family=Six+Caps&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rubik Distressed&display=swap');
+// ── PLATINE PROOF · hero + stack ───────────────────────────────
 
-@keyframes neonFlicker {
-
-    54%,
-    56%,
-    100% {
-        text-shadow: 0 0 10px #ff9a56, 0 0 20px #ffe2ce, 0 0 30px #000000;
-
-        color: #edc4a9;
-    }
-
-    20%,
-    24%,
-    35% {
-        text-shadow: none;
-        color: rgba(237, 196, 169, 0.3);
-    }
-
-    10%,
-    56%,
-    100% {
-        text-shadow: 0 0 10px #ffd2b3, 0 0 20px #ffe2ce, 0 0 30px #000000;
-        color: rgba(237, 196, 169, 0.3);
-    }
-
-
-    25%,
-    54%,
-    56%,
-    100% {
-        text-shadow: 0 0 10px #ff9a56;
-        color: #edc4a9;
-    }
-
+.hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0 24px;
+    align-content: center;
+    padding-block: calc(var(--header-h) + clamp(24px, 6vh, 64px)) clamp(24px, 5vh, 56px);
 }
 
-@keyframes oceanWave {
-    0% {
-        background: linear-gradient(180deg,
-                #ffffff 0%,
-                #87d9ff 30%,
-                rgb(0, 204, 255) 60%,
-                #0077b3 100%);
-        background-size: 100% 200%;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-position: center 0%;
-    }
-
-    33% {
-        background: linear-gradient(180deg,
-                #ffffff 0%,
-                #87d9ff 30%,
-                rgb(0, 204, 255) 60%,
-                #0077b3 100%);
-        background-size: 100% 200%;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-position: center 100%;
-    }
-
-    66% {
-        background: linear-gradient(200% 100% at center -5%,
-                #ffffff 5%,
-                #87d9ff 50%,
-                rgb(0, 204, 255) 100%);
-        background-size: 100% 100%;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-position: center center;
-    }
-
-    100% {
-        background: linear-gradient(180deg,
-                #ffffff 0%,
-                #87d9ff 30%,
-                rgb(0, 204, 255) 60%,
-                #0077b3 100%);
-        background-size: 100% 200%;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-position: center 0%;
-    }
-}
-
-.homepage {
+// Eyebrow + section index — first asymmetric tension
+.hero__head {
+    grid-column: 1 / -1;
+    grid-row: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: clamp(24px, 6vh, 64px);
+}
 
-    .role {
-        text-align: center;
-        font-family: 'Six Caps', sans-serif;
-        font-size: clamp(4rem, 8vw, 8rem);
-        color: #edc4a9;
-        text-shadow: 0 0 10px #ff9a56, 0 0 20px #ffe2ce, 0 0 30px #000000;
-        line-height: 1;
-        margin: 0;
-        user-select: none;
-        -webkit-user-select: none;
-        /* Safari */
-        -moz-user-select: none;
-        /* Firefox */
-        -ms-user-select: none;
-        /* IE10+/Edge */
-        animation: neonFlicker 3s ease-in-out 1 forwards;
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-weight: 500;
+    font-size: clamp(0.66rem, 0.95vw, 0.8rem);
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--muted);
+
+    em {
+        font-style: normal;
+        color: var(--text);
+    }
+}
+
+.eyebrow__rule {
+    display: block;
+    flex: none;
+    width: 48px;
+    height: 1px;
+    background: var(--line);
+    transform-origin: left;
+    animation: rule-in 500ms var(--ease-rule) 200ms backwards;
+}
+
+.eyebrow__text {
+    display: block;
+    animation: eyebrow-in 700ms var(--ease-type) 280ms backwards;
+}
+
+@keyframes eyebrow-in {
+    from {
+        opacity: 0;
+        letter-spacing: 0.55em;
+    }
+    to {
+        opacity: 1;
+        letter-spacing: 0.34em;
+    }
+}
+
+.index {
+    flex: none;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+
+    &--id {
+        animation: rise-in 520ms var(--ease-rule) 260ms backwards;
+    }
+}
+
+// ── The display name — the lone couture serif event ────────────
+.name {
+    grid-column: 1 / 11;
+    grid-row: 2;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-optical-sizing: auto;
+    font-variation-settings: 'opsz' 144;
+    font-size: clamp(3.6rem, 13vw, 12.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+}
+
+.name__line {
+    display: block;
+    position: relative;
+    overflow: hidden;
+
+    // One-shot diagonal sheen sweep — brushed metal catching light
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.38) 50%, transparent 62%);
+        mix-blend-mode: overlay;
+        transform: translateX(-130%);
+        animation: sheen 700ms ease-in-out backwards;
     }
 
-    .content-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
+    &:nth-child(1)::after { animation-delay: 1000ms; }
+    &:nth-child(2)::after { animation-delay: 1120ms; }
+    &:nth-child(3)::after { animation-delay: 1240ms; }
+}
+
+.name__inner {
+    display: inline-block;
+    color: var(--text); // visible fallback if background-clip:text is unsupported
+    will-change: transform;
+    // animation-delay (below) is the single source of truth for both timings
+    animation:
+        name-rise 760ms var(--ease-type) backwards,
+        platinum-drift 12s ease-in-out infinite alternate;
+}
+
+// Platinum text gradient (grayscale) — only where text clipping works,
+// so the name is never rendered invisible.
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .name__inner {
+        background: var(--platinum);
+        background-size: 100% 200%;
+        background-position: center 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+    }
+}
+
+// [name-rise delay, platinum-drift delay]
+.name__line:nth-child(1) .name__inner { animation-delay: 320ms, 1600ms; }
+.name__line:nth-child(2) .name__inner { animation-delay: 410ms, 1600ms; }
+.name__line:nth-child(3) .name__inner { animation-delay: 500ms, 1600ms; }
+
+.name__glyph {
+    // Grazed by the cursor spotlight → polished white top edge (never glow)
+    transition:
+        color 0.4s var(--ease-rule),
+        -webkit-text-fill-color 0.4s var(--ease-rule),
+        text-shadow 0.4s var(--ease-rule),
+        transform 0.5s var(--ease-type);
+
+    &.is-lit {
+        color: var(--accent); // fallback for engines without -webkit-text-fill-color
+        -webkit-text-fill-color: var(--accent);
+        text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.38);
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes name-rise {
+    from { transform: translateY(102%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes sheen {
+    from { transform: translateX(-130%); }
+    to { transform: translateX(130%); }
+}
+
+@keyframes platinum-drift {
+    from { background-position: center 0; }
+    to { background-position: center 100%; }
+}
+
+// Full-bleed rule that "catches" the type once it has settled
+.name__baseline {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    height: 1px;
+    margin-top: clamp(16px, 3vh, 32px);
+    background: var(--line);
+    transform-origin: left;
+    animation: rule-in 820ms var(--ease-rule) 700ms backwards;
+}
+
+@media (max-width: 720px) {
+    .hero {
+        gap: 0 16px;
+    }
+
+    .name {
+        grid-column: 1 / -1;
+    }
+
+    .hero__head {
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .homepageBanner {
-        position: relative;
-        z-index: 5;
-    }
-
-    .myName {
-        position: relative; // Ensures positioning context for the lighthouse
-        font-family: 'Six Caps', sans-serif;
-        width: fit-content;
-        font-size: 550px;
-        line-height: 1.05;
-        margin: 0;
-        transform: scaleY(1.2);
-        transform-origin: center;
-        letter-spacing: 10px;
-        font-weight: 1000;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        animation: oceanWave 3s ease-in-out 1 forwards;
-    }
-
-    .myDescription {
-        display: flex;
-        text-align: center;
-        font-family: 'Six Caps', sans-serif;
-        font-size: clamp(4rem, 8vw, 8rem);
-        justify-content: space-between;
-        user-select: none;
-        -webkit-user-select: none;
-        /* Safari */
-        -moz-user-select: none;
-        /* Firefox */
-        -ms-user-select: none;
-        /* IE10+/Edge */
-        color: #edc4a9;
-        text-shadow: 0 0 10px #ff9a56;
-        align-items: center;
-        gap: 15px;
-
-        .arrow-container {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #edc4a9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 10px #ff9a56;
-        }
-
-        .arrow-down {
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 16px solid #edc4a9;
-            filter: drop-shadow(0 0 5px #ff9a56);
-        }
-
-    }
-
-    .lighthouse-container {
-        // background-color: #0077b3;
+        align-items: flex-start;
+        gap: 12px;
     }
 }
