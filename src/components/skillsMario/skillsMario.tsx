@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
+import { useLang } from '../../i18n/LanguageProvider'
 
 // ── Pixel sprites (monochrome via currentColor; eyes/spots = var(--bg)) ──
 const MarioSprite = () => (
@@ -112,17 +113,30 @@ const DASH_MS = 280
 type Phase = 'idle' | 'run1' | 'eat' | 'run2' | 'sink'
 type Kill = 'stomp' | 'gun' | 'ninja' | 'car'
 const KILLS: Kill[] = ['stomp', 'gun', 'ninja', 'car']
+type PickKill = 'auto' | Kill
+type PickEnd = 'auto' | 'pipe' | 'flag'
+const KILL_OPTS: PickKill[] = ['auto', 'stomp', 'gun', 'ninja', 'car']
+const END_OPTS: PickEnd[] = ['auto', 'pipe', 'flag']
 
 const SkillsMario = () => {
+    const { t } = useLang()
     const [phase, setPhase] = useState<Phase>('idle')
     const [mx, setMx] = useState(START)
     const [mdur, setMdur] = useState(0)
     const [eaten, setEaten] = useState(false)
     const [ending, setEnding] = useState<'pipe' | 'flag'>('pipe')
     const [kill, setKill] = useState<Kill>('stomp')
+    const [pickKill, setPickKill] = useState<PickKill>('auto')
+    const [pickEnd, setPickEnd] = useState<PickEnd>('auto')
 
     const stageRef = useRef<HTMLDivElement>(null)
     const genRef = useRef(0)
+    const pickKillRef = useRef<PickKill>('auto')
+    const pickEndRef = useRef<PickEnd>('auto')
+    const restartRef = useRef<() => void>(() => {})
+
+    const chooseKill = (k: PickKill) => { setPickKill(k); pickKillRef.current = k; restartRef.current() }
+    const chooseEnd = (e: PickEnd) => { setPickEnd(e); pickEndRef.current = e; restartRef.current() }
 
     useEffect(() => {
         const root = document.documentElement
@@ -144,9 +158,11 @@ const SkillsMario = () => {
             setPhase('idle')
             setMx(START)
             setMdur(0)
-            const end: 'pipe' | 'flag' = Math.random() < 0.5 ? 'pipe' : 'flag'
+            const pe = pickEndRef.current
+            const end: 'pipe' | 'flag' = pe === 'auto' ? (Math.random() < 0.5 ? 'pipe' : 'flag') : pe
             setEnding(end)
-            const k = KILLS[Math.floor(Math.random() * KILLS.length)]
+            const pk = pickKillRef.current
+            const k: Kill = pk === 'auto' ? KILLS[Math.floor(Math.random() * KILLS.length)] : pk
             setKill(k)
 
             const endX = end === 'pipe' ? END : END - 8
@@ -182,6 +198,14 @@ const SkillsMario = () => {
             }
         }
 
+        // Picking a scenario restarts the loop immediately so it plays right away
+        restartRef.current = () => {
+            if (!enabled) return
+            clear()
+            genRef.current += 1
+            loop(genRef.current)
+        }
+
         sync()
 
         let io: IntersectionObserver | null = null
@@ -212,8 +236,38 @@ const SkillsMario = () => {
     const riding = phase === 'eat' && kill === 'car'
 
     return (
-        <div className="skills-mario" ref={stageRef} aria-hidden="true">
-            <div className="skills-mario__ground" />
+        <div className="mario-deck">
+            <div className="mario-pick">
+                <div className="mario-pick__group" role="group" aria-label={t.mario.method}>
+                    {KILL_OPTS.map((k) => (
+                        <button
+                            key={k}
+                            type="button"
+                            className={`mario-pick__chip${pickKill === k ? ' is-active' : ''}`}
+                            aria-pressed={pickKill === k}
+                            onClick={() => chooseKill(k)}
+                        >
+                            {t.mario[k]}
+                        </button>
+                    ))}
+                </div>
+                <div className="mario-pick__group" role="group" aria-label={t.mario.ending}>
+                    {END_OPTS.map((e) => (
+                        <button
+                            key={e}
+                            type="button"
+                            className={`mario-pick__chip${pickEnd === e ? ' is-active' : ''}`}
+                            aria-pressed={pickEnd === e}
+                            onClick={() => chooseEnd(e)}
+                        >
+                            {t.mario[e]}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="skills-mario" ref={stageRef} aria-hidden="true">
+                <div className="skills-mario__ground" />
 
             <div className={`mush${eaten ? ` is-eaten kill-${kill}` : ''}`}><Mushroom /></div>
 
@@ -245,6 +299,7 @@ const SkillsMario = () => {
                     {ninjaGear && <span className="mario__katana"><Katana /></span>}
                 </div>
                 {eating && kill === 'gun' && <span className="bullet" style={{ ['--fly' as string]: '18cqw' } as CSSProperties} />}
+                </div>
             </div>
         </div>
     )

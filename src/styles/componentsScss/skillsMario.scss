@@ -1,12 +1,57 @@
 // ── Skills "Mario" run (bottom of §4) ──────────────────────────
 // A pixel runner crosses the bottom of the Skills section, eats a mushroom,
 // then either drops down a pipe or reaches the flag — looping, monochrome.
+.mario-deck {
+    width: 100%;
+    margin-top: clamp(24px, 5vh, 56px);
+}
+
+// Scenario picker — choose which "kịch bản" plays
+.mario-pick {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px 16px;
+    margin-bottom: 8px;
+    pointer-events: auto;
+}
+
+.mario-pick__group {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+}
+
+.mario-pick__chip {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 11px;
+    transition: color 0.2s var(--ease-rule), background-color 0.2s var(--ease-rule);
+
+    &:hover,
+    &:focus-visible { color: var(--text); }
+
+    &.is-active {
+        color: var(--bg);
+        background: var(--text);
+    }
+}
+
+[data-bgfx='off'] .mario-pick {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
 .skills-mario {
     position: relative;
     container-type: inline-size;
     width: 100%;
     height: 74px;
-    margin-top: clamp(24px, 5vh, 56px);
     overflow: hidden;
     pointer-events: none;
     color: var(--text);
@@ -288,5 +333,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .skills-mario { display: none; }
+    .mario-deck { display: none; }
 }

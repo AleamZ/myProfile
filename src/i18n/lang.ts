@@ -42,6 +42,17 @@ export interface Strings {
     contact: { lead: string }
     footer: { motion: string; backToTop: string }
     dino: { auto: string; play: string; gameOver: string; hint: string }
+    mario: {
+        method: string
+        ending: string
+        auto: string
+        stomp: string
+        gun: string
+        ninja: string
+        car: string
+        pipe: string
+        flag: string
+    }
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -78,6 +89,7 @@ export const STRINGS: Record<Lang, Strings> = {
         contact: { lead: 'Have a project in mind, or just want to say hi? My inbox is always open.' },
         footer: { motion: 'Motion', backToTop: 'Back to top' },
         dino: { auto: 'Auto', play: 'Play', gameOver: 'Game Over', hint: 'Space / tap to jump' },
+        mario: { method: 'Move', ending: 'End', auto: 'Auto', stomp: 'Stomp', gun: 'Gun', ninja: 'Ninja', car: 'Car', pipe: 'Pipe', flag: 'Flag' },
     },
     vi: {
         sections: { identity: 'Hồ sơ', work: 'Dự án', experience: 'Kinh nghiệm', skills: 'Kỹ năng', contact: 'Liên hệ' },
@@ -112,6 +124,7 @@ export const STRINGS: Record<Lang, Strings> = {
         contact: { lead: 'Bạn có dự án hoặc chỉ muốn chào hỏi? Hộp thư của tôi luôn rộng mở.' },
         footer: { motion: 'Hiệu ứng', backToTop: 'Lên đầu trang' },
         dino: { auto: 'Tự động', play: 'Tự chơi', gameOver: 'Thua rồi', hint: 'Space / chạm để nhảy' },
+        mario: { method: 'Chiêu', ending: 'Kết', auto: 'Tự động', stomp: 'Giẫm', gun: 'Súng', ninja: 'Ninja', car: 'Xe', pipe: 'Cống', flag: 'Cờ' },
     },
     ko: {
         sections: { identity: '소개', work: '프로젝트', experience: '경력', skills: '기술', contact: '연락처' },
@@ -146,5 +159,6 @@ export const STRINGS: Record<Lang, Strings> = {
         contact: { lead: '프로젝트가 있으시거나 그냥 인사하고 싶으신가요? 제 메일함은 항상 열려 있습니다.' },
         footer: { motion: '모션', backToTop: '맨 위로' },
         dino: { auto: '자동', play: '플레이', gameOver: '게임 오버', hint: 'Space / 탭 점프' },
+        mario: { method: '기술', ending: '엔딩', auto: '자동', stomp: '밟기', gun: '총', ninja: '닌자', car: '자동차', pipe: '파이프', flag: '깃발' },
     },
 }
