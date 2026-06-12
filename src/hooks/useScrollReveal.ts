@@ -20,19 +20,24 @@ export function useScrollReveal(selector = '.reveal') {
             return
         }
 
-        const io = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-inview')
-                        io.unobserve(entry.target)
-                    }
-                })
-            },
-            { threshold: 0.35, rootMargin: '0px 0px -12% 0px' },
-        )
+        const reveal: IntersectionObserverCallback = (entries, obs) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-inview')
+                    obs.unobserve(entry.target)
+                }
+            })
+        }
 
-        els.forEach((el) => io.observe(el))
-        return () => io.disconnect()
+        const io = new IntersectionObserver(reveal, { threshold: 0.35, rootMargin: '0px 0px -12% 0px' })
+        // Bottom-of-page bands can never reach the main threshold inside the
+        // -12% rootMargin — give them a lenient observer of their own.
+        const late = new IntersectionObserver(reveal, { threshold: 0.05 })
+
+        els.forEach((el) => (el.classList.contains('reveal--late') ? late : io).observe(el))
+        return () => {
+            io.disconnect()
+            late.disconnect()
+        }
     }, [selector])
 }

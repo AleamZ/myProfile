@@ -46,6 +46,7 @@ const Background = () => {
         const target = { x: window.innerWidth / 2, y: window.innerHeight * 0.38 }
         const cursor = { x: target.x, y: target.y }
         const spot = { x: target.x, y: target.y }
+        const par = { x: 0, y: 0 }
 
         let magnets: Magnet[] = []
         let glyphs: Glyph[] = []
@@ -103,9 +104,16 @@ const Background = () => {
             }
         }
 
+        // Press state for the cursor's weighted click
+        const onDown = () => document.body.classList.add('cursor-down')
+        const onUp = () => document.body.classList.remove('cursor-down')
+
         window.addEventListener('pointermove', onMove, { passive: true })
         window.addEventListener('resize', onResize)
         window.addEventListener('scroll', onScroll, { passive: true })
+        window.addEventListener('pointerdown', onDown)
+        window.addEventListener('pointerup', onUp)
+        window.addEventListener('pointercancel', onUp)
         document.addEventListener('pointerover', onOver)
         document.addEventListener('pointerout', onOut)
 
@@ -127,6 +135,12 @@ const Background = () => {
             }
             root.style.setProperty('--mx', `${spot.x}px`)
             root.style.setProperty('--my', `${spot.y}px`)
+
+            // Ambient parallax whisper (±8px) for the theme background layers
+            par.x += ((target.x / window.innerWidth - 0.5) * 16 - par.x) * 0.04
+            par.y += ((target.y / window.innerHeight - 0.5) * 16 - par.y) * 0.04
+            root.style.setProperty('--par-x', `${par.x.toFixed(2)}px`)
+            root.style.setProperty('--par-y', `${par.y.toFixed(2)}px`)
 
             if (magnetsReady) {
                 for (const m of magnets) {
@@ -170,10 +184,13 @@ const Background = () => {
             window.removeEventListener('pointermove', onMove)
             window.removeEventListener('resize', onResize)
             window.removeEventListener('scroll', onScroll)
+            window.removeEventListener('pointerdown', onDown)
+            window.removeEventListener('pointerup', onUp)
+            window.removeEventListener('pointercancel', onUp)
             document.removeEventListener('pointerover', onOver)
             document.removeEventListener('pointerout', onOut)
             document.removeEventListener('visibilitychange', onVisibility)
-            document.body.classList.remove('has-pointer-fx', 'cursor-link')
+            document.body.classList.remove('has-pointer-fx', 'cursor-link', 'cursor-down')
             magnets.forEach((m) => (m.el.style.transform = ''))
             glyphs.forEach((g) => g.el.classList.remove('is-lit'))
         }

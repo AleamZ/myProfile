@@ -101,24 +101,84 @@
         -webkit-backdrop-filter: blur(10px) saturate(150%);
     }
 
-    // Language switcher → one glass pill, no internal separators
+    // Language switcher → one glass capsule with a gliding pill of light
     .lang {
+        position: relative;
         padding: 3px 4px;
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-pill);
         backdrop-filter: blur(10px) saturate(150%);
         -webkit-backdrop-filter: blur(10px) saturate(150%);
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            bottom: 3px;
+            left: 4px;
+            width: calc((100% - 8px) / 3); // three equal-width codes
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-pill);
+            transition: transform 0.3s var(--ease-rule);
+        }
     }
+    .lang[data-active='en']::before { transform: translateX(100%); }
+    .lang[data-active='ko']::before { transform: translateX(200%); }
+
     .lang__btn {
+        position: relative;
+        z-index: 1; // codes sit above the pill
+        min-width: 38px;
+        text-align: center;
         border-radius: var(--radius-pill);
+
+        &::before {
+            display: none; // the underline is a dark-theme gesture
+        }
     }
     .lang__btn:not(:last-child)::after {
         display: none;
     }
     .lang__btn.is-active {
-        background: rgba(255, 255, 255, 0.7);
+        background: transparent; // the pill lives on the container now
         color: var(--accent);
+    }
+
+    // Specular sweep across glass pills on hover. Deliberately excludes
+    // .theme-toggle (overflow would clip the crown ring) and .lang (overflow
+    // would clip its magnetic buttons).
+    .modal__close {
+        position: relative; // the other two sweep targets are already positioned
+    }
+
+    .site-footer__btn,
+    .modal__close,
+    .cf__nav {
+        overflow: hidden; // clip the band to the pill radius
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(115deg,
+                transparent 35%, var(--glass-hl) 50%, transparent 65%);
+            transform: translateX(-130%);
+            pointer-events: none;
+            // no rest transition: resets off-canvas instantly after hover
+        }
+
+        &:hover:not(:disabled)::after,
+        &:focus-visible::after {
+            transform: translateX(130%);
+            transition: transform 0.6s var(--ease-rule);
+        }
+    }
+
+    // .js sits on <html> next to data-theme — compound, don't descend
+    &.js .site-footer.reveal::before {
+        background: var(--glass-border); // the drawn rule is the glass highlight here
     }
 
     // Code viewer + repo tree tints were tuned for dark — flip to dark-on-light.

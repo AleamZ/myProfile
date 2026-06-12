@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { SKILLS } from '../../data/skills'
 import { useLang } from '../../i18n/LanguageProvider'
 import SkillsMario from '../skillsMario/skillsMario'
@@ -13,12 +14,12 @@ const Skills = () => {
             </div>
 
             <dl className="skills__list">
-                {SKILLS.map((group) => (
-                    <div className="skills__group reveal" key={group.id}>
+                {SKILLS.map((group, gi) => (
+                    <div className="skills__group reveal" key={group.id} style={{ '--g': gi } as CSSProperties}>
                         <dt className="skills__cat">{group.title[lang]}</dt>
                         <dd className="skills__items">
-                            {group.items.map((item) => (
-                                <span className="skills__tag" key={item}>{item}</span>
+                            {group.items.map((item, i) => (
+                                <span className="skills__tag" key={item} style={{ '--i': i } as CSSProperties}>{item}</span>
                             ))}
                         </dd>
                     </div>

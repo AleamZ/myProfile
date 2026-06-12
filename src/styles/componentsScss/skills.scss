@@ -49,26 +49,87 @@
 }
 
 .skills__tag {
+    position: relative;
+    overflow: hidden; // clips the sheen (and respects the pill radius in light)
     font-size: 12px;
     letter-spacing: 0.03em;
     color: var(--text);
     border: 1px solid var(--line);
     border-radius: var(--radius-pill);
     padding: 6px 12px;
-    transition: color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule);
+    transition: color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule),
+        background-color 0.22s var(--ease-rule), transform 0.22s var(--ease-rule);
 
-    &:hover {
+    // Raking light — matte metal in dark, glass in light
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(105deg, transparent 32%, var(--sheen) 50%, transparent 68%);
+        transform: translateX(-120%);
+        pointer-events: none;
+        // no rest transition → instant invisible reset on hover-out
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .skills__tag:hover {
         color: var(--accent);
-        border-color: rgba(237, 237, 237, 0.3);
+        border-color: var(--line-strong);
+        background-color: var(--tag-hover-bg);
+        transform: translateY(-1px);
+
+        &::after {
+            transform: translateX(120%);
+            transition: transform 0.6s var(--ease-rule);
+        }
     }
 }
 
 .js .skills__group::before {
     transform: scaleX(0);
-    transition: transform 0.64s var(--ease-rule);
+    transition: transform 0.7s var(--ease-rule);
 }
 .js .skills__group.is-inview::before {
     transform: scaleX(1);
+}
+
+// ── Cascade: rule draws, label sets, tags ripple ──
+// Entrances ride the rise-in ANIMATION, never transitions — a
+// transition-delay would also delay the hover lift.
+.js .skills__group.reveal {
+    opacity: 1; // the row never hides — its parts arrive in order
+    transform: none;
+
+    &::before {
+        transition-delay: calc(var(--g, 0) * 80ms); // rows draw in sequence
+    }
+
+    .skills__cat,
+    .skills__tag {
+        opacity: 0;
+    }
+
+    &.is-inview {
+        .skills__cat {
+            opacity: 1;
+            animation: rise-in 0.5s var(--ease-type) backwards;
+            animation-delay: calc(var(--g, 0) * 80ms + 80ms);
+        }
+
+        .skills__tag {
+            opacity: 1;
+            animation: rise-in 0.5s var(--ease-type) backwards;
+            animation-delay: calc(var(--g, 0) * 80ms + 160ms + min(var(--i, 0) * 40ms, 360ms));
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .skills__group.reveal :is(.skills__cat, .skills__tag) {
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }
 
 @media (max-width: 720px) {

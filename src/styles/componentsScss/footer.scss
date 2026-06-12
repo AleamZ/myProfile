@@ -6,6 +6,70 @@
     border-top: 1px solid var(--line);
 }
 
+// The book closes with the rule it opened with: hairline draws, clusters rise.
+// Per-cluster transitions are longhand because the mail link must keep its
+// 0.22s colour hover undelayed.
+.js .site-footer.reveal {
+    opacity: 1; // the band itself never hides
+    transform: none;
+    border-top-color: transparent;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--line);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.7s var(--ease-rule);
+    }
+
+    .site-footer__mail,
+    .site-footer__center,
+    .site-footer__right {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    .site-footer__mail {
+        transition: opacity 0.5s var(--ease-type) 160ms, transform 0.5s var(--ease-type) 160ms,
+            color 0.22s var(--ease-rule); // keep the hover fade undelayed
+    }
+
+    .site-footer__center {
+        transition: opacity 0.5s var(--ease-type) 240ms, transform 0.5s var(--ease-type) 240ms;
+    }
+
+    .site-footer__right {
+        transition: opacity 0.5s var(--ease-type) 320ms, transform 0.5s var(--ease-type) 320ms;
+    }
+
+    &.is-inview {
+        &::before {
+            transform: scaleX(1);
+        }
+
+        .site-footer__mail,
+        .site-footer__center,
+        .site-footer__right {
+            opacity: 1;
+            transform: none;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .site-footer.reveal { border-top-color: var(--line) !important; }
+    .js .site-footer.reveal::before { transform: scaleX(1) !important; }
+    .js .site-footer.reveal :is(.site-footer__mail, .site-footer__center, .site-footer__right) {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
 .site-footer__inner {
     max-width: var(--maxw);
     margin: 0 auto;
@@ -72,14 +136,53 @@
     }
 }
 
+.site-footer__btn-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.15s var(--ease-rule);
+}
+
+// Press on the inner span — the magnetic loop owns the button's transform
+.site-footer__btn:active .site-footer__btn-label {
+    transform: scale(0.97) translateY(1px);
+}
+
+// Motion state: a real dot, not a text-glyph swap
+.site-footer__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1px solid var(--muted);
+    background: transparent;
+    transform: scale(0.85);
+    transition: background-color 0.22s var(--ease-rule),
+        border-color 0.22s var(--ease-rule), transform 0.22s var(--ease-rule);
+}
+
+.site-footer__btn[aria-pressed='true'] .site-footer__dot {
+    background: var(--accent); // reserved accent role: live dot
+    border-color: var(--accent);
+    transform: scale(1);
+}
+
+// Back-to-top: glyph exits up, twin enters from below
 .site-footer__arrow {
-    display: inline-block;
-    transition: transform 0.2s var(--ease-rule);
+    display: inline-flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 1em;
+    line-height: 1;
+
+    span {
+        display: block;
+        transition: transform 0.3s var(--ease-rule);
+    }
 }
 
 @media (hover: hover) {
-    .site-footer__btn:hover .site-footer__arrow {
-        transform: translateY(-3px);
+    .site-footer__btn:hover .site-footer__arrow span {
+        transform: translateY(-100%);
     }
 }
 

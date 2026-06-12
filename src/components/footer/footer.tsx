@@ -28,7 +28,7 @@ const Footer = () => {
     }
 
     return (
-        <footer className="site-footer">
+        <footer className="site-footer reveal reveal--late">
             <div className="site-footer__inner">
                 <a
                     className="site-footer__meta site-footer__mail"
@@ -46,10 +46,19 @@ const Footer = () => {
                         aria-pressed={motionOn}
                         onClick={toggleMotion}
                     >
-                        {t.footer.motion}{motionOn ? ' ●' : ' ○'}
+                        <span className="site-footer__btn-label">
+                            {t.footer.motion}
+                            <span className="site-footer__dot" aria-hidden="true" />
+                        </span>
                     </button>
                     <button type="button" className="site-footer__btn" data-magnetic onClick={toTop}>
-                        {t.footer.backToTop} <span aria-hidden="true" className="site-footer__arrow">↑</span>
+                        <span className="site-footer__btn-label">
+                            {t.footer.backToTop}
+                            <span aria-hidden="true" className="site-footer__arrow">
+                                <span>↑</span>
+                                <span>↑</span>
+                            </span>
+                        </span>
                     </button>
                 </div>
             </div>

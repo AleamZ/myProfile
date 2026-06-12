@@ -135,11 +135,12 @@ const Projects = () => {
                 <h2 id="work-heading" className="sr-only">Work</h2>
                 <span className="index">02&nbsp;/&nbsp;{t.sections.work}</span>
                 <span className="projects__count" aria-hidden="true">
-                    {pad(active)}&nbsp;—&nbsp;{pad(count - 1)}
+                    <span className="projects__count-tick" key={active}>{pad(active)}</span>
+                    &nbsp;—&nbsp;{pad(count - 1)}
                 </span>
             </div>
 
-            <div className="cf">
+            <div className="cf reveal">
                 {previewReady && (
                     <div className={`cf__loader${ready ? ' is-done' : ''}`} aria-hidden="true">
                         <LogoMark className="logo logo--loader" decorative />
@@ -231,7 +232,7 @@ const Projects = () => {
                 </button>
             </div>
 
-            <div className="cf__dots" role="tablist" aria-label="Select project">
+            <div className="cf__dots reveal" role="tablist" aria-label="Select project">
                 {PROJECTS.map((p, i) => (
                     <button
                         type="button"

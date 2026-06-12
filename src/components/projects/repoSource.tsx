@@ -194,7 +194,7 @@ const RepoSource = ({ repoUrl, branch = 'main', entryFile }: RepoSourceProps) =>
                             aria-expanded={open.has(node.path)}
                             onClick={() => toggle(node.path)}
                         >
-                            <span className="repo__caret" aria-hidden="true">{open.has(node.path) ? '▾' : '▸'}</span>
+                            <span className="repo__caret" aria-hidden="true">▸</span>
                             {node.name}
                         </button>
                         {open.has(node.path) && renderNodes(node.children, depth + 1)}

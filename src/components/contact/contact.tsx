@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { useLang } from '../../i18n/LanguageProvider'
 
 const EMAIL = 'datnguyentien.work@gmail.com'
@@ -25,12 +26,12 @@ const Contact = () => {
                 </p>
 
                 <a className="contact__email reveal" href={`mailto:${EMAIL}`}>
-                    {EMAIL}
+                    <span className="contact__email-inner">{EMAIL}</span>
                 </a>
 
                 <ul className="contact__socials reveal">
-                    {SOCIALS.map((s) => (
-                        <li className="contact__social" key={s.label}>
+                    {SOCIALS.map((s, i) => (
+                        <li className="contact__social" key={s.label} style={{ '--i': i } as CSSProperties}>
                             <a
                                 href={s.href}
                                 {...(s.external ? { target: '_blank', rel: 'noreferrer' } : {})}

@@ -2,6 +2,11 @@
 // Fixed luminance stack. All layers are aria-hidden + pointer-events:none
 // and sit *below* content (content is z-index 3+ in the layout).
 
+// Curtain-up: implicit `to` = each layer's own resting opacity, so nothing snaps.
+@keyframes layer-in {
+    from { opacity: 0; }
+}
+
 // Soft drifting aurora — the "lighting" behind the glass (light theme only).
 .fx-aurora {
     position: fixed;
@@ -19,7 +24,9 @@
 
 [data-theme='light'] .fx-aurora {
     opacity: 1;
-    animation: aurora-drift 26s var(--ease-type) infinite alternate;
+    animation:
+        aurora-drift 26s var(--ease-type) infinite alternate,
+        layer-in 900ms var(--ease-rule) 350ms backwards;
 }
 
 // Toggle off → freeze the ambient drift (static, still soft)
@@ -38,7 +45,7 @@
     z-index: 0;
     pointer-events: none;
     background: var(--vignette);
-    animation: fade-in 600ms var(--ease-rule) backwards;
+    animation: layer-in 600ms var(--ease-rule) backwards;
 }
 
 // Cursor-driven spotlight — luminance only, never gates content.
@@ -48,44 +55,62 @@
     z-index: 1;
     pointer-events: none;
     background: var(--spotlight);
-    animation: fade-in 600ms var(--ease-rule) 200ms backwards;
+    opacity: 0.85; // resting: the lamp at 85%
+    transition: opacity 0.45s var(--ease-rule);
+    animation: layer-in 600ms var(--ease-rule) 200ms backwards;
+}
+
+// The lamp leans in when the cursor finds something worth touching —
+// a breath in dark, the glass visibly brightening in light.
+body.cursor-link .fx-spotlight {
+    opacity: 1;
 }
 
 // 35mm film grain — grayscale SVG turbulence, shimmering subtly.
 .fx-grain {
     position: fixed;
-    inset: 0;
+    inset: -8px; // oversize by the max shift so edges never expose
     z-index: 2;
     pointer-events: none;
     opacity: var(--grain-opacity);
     mix-blend-mode: var(--grain-blend);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 180px 180px;
-    animation: grain-shift 1.2s steps(6) infinite;
+    will-change: transform;
+    animation:
+        grain-shift 1.2s steps(6) infinite,
+        layer-in 900ms var(--ease-rule) 550ms backwards;
 }
 
 @keyframes grain-shift {
-    0% { background-position: 0 0; }
-    20% { background-position: -6px 4px; }
-    40% { background-position: 4px -6px; }
-    60% { background-position: -4px -4px; }
-    80% { background-position: 6px 6px; }
-    100% { background-position: 0 0; }
+    0% { transform: translate3d(0, 0, 0); }
+    20% { transform: translate3d(-6px, 4px, 0); }
+    40% { transform: translate3d(4px, -6px, 0); }
+    60% { transform: translate3d(-4px, -4px, 0); }
+    80% { transform: translate3d(6px, 6px, 0); }
+    100% { transform: translate3d(0, 0, 0); }
 }
 
 // ── Ambient background motion (toggleable via footer · data-bgfx) ──
 // Two distinct languages: dark = breathing Swiss hairlines (crisp, mono);
-// light = frosted blooms swelling in place (soft, pastel). Hidden by default,
-// revealed only for the active theme when motion is on.
+// light = frosted blooms swelling in place (soft, pastel).
+// Hidden by default; the active theme dissolves its layer in
+// (0.45s = the theme cross-fade window) instead of display-popping.
 .fx-hairline,
 .fx-bloom {
-    display: none;
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.45s var(--ease-rule),
+        visibility 0s linear 0.45s; // hide only after the fade completes
+    animation: layer-in 900ms var(--ease-rule) 350ms backwards; // curtain-up at load
 }
 
 // Dark · breathing hairline grid + travelling calibration lines
 .fx-hairline {
     position: fixed;
-    inset: 0;
+    inset: -16px; // ±8px parallax travel never exposes an edge
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
@@ -117,7 +142,7 @@
 }
 
 .fx-hairline__scan--b {
-    animation-delay: -19s;
+    animation: fx-scan-b 53s ease-in-out -26s infinite; // non-harmonic vs 38s — never syncs
 }
 
 @keyframes fx-grid-breathe {
@@ -127,16 +152,20 @@
 
 @keyframes fx-scan {
     0% { transform: translateY(-2vh); opacity: 0; }
-    8% { opacity: 0.04; }
-    50% { opacity: 0.04; }
-    92% { opacity: 0.04; }
+    50% { opacity: 0.05; }
+    100% { transform: translateY(102vh); opacity: 0; }
+}
+
+@keyframes fx-scan-b {
+    0% { transform: translateY(-2vh); opacity: 0; }
+    50% { opacity: 0.028; } // the second pass is fainter — depth, not duplication
     100% { transform: translateY(102vh); opacity: 0; }
 }
 
 // Light · frosted blooms breathing in place behind the glass
 .fx-bloom {
     position: fixed;
-    inset: 0;
+    inset: -16px; // ±8px parallax travel never exposes an edge
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
@@ -170,9 +199,68 @@
     100% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.16; }
 }
 
-// Reveal per active theme only when motion is on
-[data-theme='dark'][data-bgfx='on'] .fx-hairline { display: block; }
-[data-theme='light'][data-bgfx='on'] .fx-bloom { display: block; }
+// Light · a slow blade of daylight crossing the frosted pane (white-only —
+// the aurora stays the sole colour source). Perpetual → ease-in-out exemption.
+.fx-bloom::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    bottom: -20%;
+    left: 0;
+    width: 42vw;
+    pointer-events: none;
+    background: linear-gradient(105deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.07) 45%,
+        rgba(255, 255, 255, 0.07) 55%,
+        transparent 100%);
+    opacity: 0;
+    transform: translateX(-60vw) skewX(-14deg);
+    will-change: transform, opacity;
+    animation: fx-daylight 52s ease-in-out infinite;
+}
+
+@keyframes fx-daylight {
+    0%, 60% { transform: translateX(-60vw) skewX(-14deg); opacity: 0; }
+    66% { opacity: 1; }
+    94% { opacity: 1; }
+    100% { transform: translateX(160vw) skewX(-14deg); opacity: 0; }
+}
+
+// Reveal per active theme only when motion is on — dissolve, never pop
+[data-theme='dark'][data-bgfx='on'] .fx-hairline,
+[data-theme='light'][data-bgfx='on'] .fx-bloom {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.45s var(--ease-rule), visibility 0s;
+}
+
+// Parallax whisper — same rAF loop, no new loop. Dark counter-drifts (depth
+// behind the page); light drifts WITH the pointer (the lighting follows you).
+[data-theme='dark'][data-bgfx='on'] .fx-hairline {
+    transform: translate3d(calc(var(--par-x, 0px) * -1), calc(var(--par-y, 0px) * -1), 0);
+    will-change: transform;
+}
+
+[data-theme='light'][data-bgfx='on'] .fx-bloom {
+    transform: translate3d(var(--par-x, 0px), var(--par-y, 0px), 0);
+    will-change: transform;
+}
+
+// Dark + motion off → the Swiss texture stays, frozen (same values as reduced-motion)
+[data-theme='dark'][data-bgfx='off'] .fx-hairline {
+    opacity: 1;
+    visibility: visible;
+
+    .fx-hairline__grid { animation: none; opacity: 0.03; }
+    .fx-hairline__scan,
+    .fx-hairline__scan--b { display: none; }
+}
+
+// Light + motion off → the lighting dims to a still glow (visible acknowledgment)
+[data-theme='light'][data-bgfx='off'] .fx-aurora {
+    opacity: 0.55; // animates for free via the existing 0.6s opacity transition
+}
 
 @media (max-width: 768px) {
     .fx-hairline__grid {
@@ -206,4 +294,6 @@
         opacity: 0.22;
         transform: translate(-50%, -50%) scale(1);
     }
+
+    .fx-bloom::after { animation: none; } // rests hidden, same as the dark scans
 }

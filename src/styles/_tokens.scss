@@ -54,6 +54,21 @@
     --glass-shadow: none;
     --glass-hl: transparent;
     --glass-blur: 14px;
+
+    // Engaged hairline — hover borders, active card edges
+    --line-strong: rgba(237, 237, 237, 0.3);
+    // Watermark figures (experience year)
+    --watermark-ink: rgba(237, 237, 237, 0.05);
+    // Polished top edge on cursor-lit name glyphs
+    --lit-edge: rgba(255, 255, 255, 0.38);
+    // Sheen band core + blend — name load sheen and theme-switch re-fire
+    --sheen-core: rgba(255, 255, 255, 0.38);
+    --sheen-blend: overlay;
+    // Raking light across skill chips (matte metal in dark, glass in light)
+    --sheen: rgba(255, 255, 255, 0.08);
+    --tag-hover-bg: rgba(255, 255, 255, 0.04);
+    // Glint riding the cursor along the masthead hairline
+    --rule-glint: rgba(255, 255, 255, 0.35);
 }
 
 // ── Light theme ────────────────────────────────────────────────
@@ -89,4 +104,13 @@
     --radius: 22px;
     --radius-sm: 14px;
     --radius-pill: 999px;
+
+    --line-strong: rgba(22, 22, 34, 0.34);
+    --watermark-ink: rgba(22, 22, 34, 0.06);
+    --lit-edge: rgba(255, 255, 255, 0.6); // crisp glass edge above the near-black lit glyph
+    --sheen-core: rgba(255, 255, 255, 0.6); // screen blend reads over the graphite gradient
+    --sheen-blend: screen;
+    --sheen: rgba(255, 255, 255, 0.45); // light over glass
+    --tag-hover-bg: rgba(255, 255, 255, 0.4);
+    --rule-glint: rgba(255, 255, 255, 0.9); // refraction on the glass edge
 }

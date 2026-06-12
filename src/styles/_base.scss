@@ -119,11 +119,70 @@ p {
 .js .reveal {
     opacity: 0;
     transform: translateY(16px);
-    transition: opacity 0.6s var(--ease-type), transform 0.6s var(--ease-type);
+    transition: opacity 0.5s var(--ease-type), transform 0.5s var(--ease-type);
+    transition-delay: var(--reveal-delay, 0s);
 }
 .js .reveal.is-inview {
     opacity: 1;
     transform: none;
+}
+
+// ── Section-head signature: index → meta (+80ms) → rule draws ──
+.projects__head,
+.exp__head,
+.skills__head,
+.contact__head {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: clamp(-28px, -3vh, -16px); // sits inside the head's margin-bottom
+        height: 1px;
+        background: var(--line);
+        transform-origin: left;
+    }
+}
+
+.js .reveal:is(.projects__head, .exp__head, .skills__head, .contact__head) {
+    opacity: 1; // the container never hides — its parts arrive in order
+    transform: none;
+
+    .index,
+    .projects__count,
+    .exp__edu,
+    .contact__loc {
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 0.5s var(--ease-type), transform 0.5s var(--ease-type);
+    }
+
+    .projects__count,
+    .exp__edu,
+    .contact__loc {
+        transition-delay: 80ms;
+    }
+
+    &::after {
+        transform: scaleX(0);
+        transition: transform 0.7s var(--ease-rule) 160ms;
+    }
+
+    &.is-inview {
+        .index,
+        .projects__count,
+        .exp__edu,
+        .contact__loc {
+            opacity: 1;
+            transform: none;
+        }
+
+        &::after {
+            transform: scaleX(1);
+        }
+    }
 }
 
 // ── Shared keyframes ───────────────────────────────────────────
@@ -158,14 +217,25 @@ p {
     z-index: 90;
     width: 8px;
     height: 8px;
-    border: 1px solid var(--cursor);
-    border-radius: 50%;
     background: transparent;
     pointer-events: none;
     display: none;
     will-change: transform;
-    transition: width 0.25s var(--ease-rule), height 0.25s var(--ease-rule),
-        background-color 0.25s var(--ease-rule), border-color 0.25s var(--ease-rule);
+
+    // Visual ring — 30px box centred on the 8px host; every state is scale-only
+    &::after {
+        content: '';
+        position: absolute;
+        inset: -11px;
+        border: 3.75px solid var(--cursor); // 3.75 × 0.2667 ≈ a 1px ring at rest
+        border-radius: 50%;
+        background: transparent;
+        transform: scale(0.2667); // reads as the original 8px ring
+        transition: transform 0.25s var(--ease-rule),
+            background-color 0.25s var(--ease-rule),
+            border-color 0.25s var(--ease-rule);
+        will-change: transform;
+    }
 }
 
 body.has-pointer-fx {
@@ -190,11 +260,19 @@ body.has-pointer-fx {
     }
 }
 
-body.cursor-link .cursor {
-    width: 30px;
-    height: 30px;
+body.cursor-link .cursor::after {
+    transform: scale(1);
     background: var(--cursor-fill);
     border-color: transparent;
+}
+
+// Press: the needle dips — pairs with the magnetic pull
+body.cursor-down .cursor::after {
+    transform: scale(0.2);
+}
+
+body.cursor-link.cursor-down .cursor::after {
+    transform: scale(0.85);
 }
 
 // While a modal is open: lock scroll + restore a real cursor over the dialog.
@@ -229,6 +307,16 @@ body.modal-open {
     .js .reveal {
         opacity: 1 !important;
         transform: none !important;
+        transition-delay: 0s !important;
+    }
+
+    .js .reveal :is(.index, .projects__count, .exp__edu, .contact__loc) {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .js .reveal:is(.projects__head, .exp__head, .skills__head, .contact__head)::after {
+        transform: scaleX(1) !important;
     }
 
     .cursor {

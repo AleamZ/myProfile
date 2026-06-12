@@ -63,6 +63,7 @@ const Experience = () => {
                             aria-controls="exp-panel"
                             tabIndex={i === active ? 0 : -1}
                             className={`exp__tab${i === active ? ' is-active' : ''}`}
+                            style={{ '--ti': i } as CSSProperties}
                             onClick={() => setActive(i)}
                             onKeyDown={onKey(i)}
                         >

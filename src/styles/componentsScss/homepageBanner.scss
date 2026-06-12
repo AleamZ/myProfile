@@ -73,7 +73,7 @@
     white-space: nowrap;
 
     &--id {
-        animation: rise-in 520ms var(--ease-rule) 260ms backwards;
+        animation: rise-in 520ms var(--ease-type) 260ms backwards;
     }
 }
 
@@ -102,16 +102,36 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-        background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.38) 50%, transparent 62%);
-        mix-blend-mode: overlay;
+        background: linear-gradient(105deg, transparent 38%, var(--sheen-core) 50%, transparent 62%);
+        mix-blend-mode: var(--sheen-blend);
         transform: translateX(-130%);
-        animation: sheen 700ms ease-in-out backwards;
+        animation: sheen 700ms var(--ease-rule) backwards;
     }
 
     &:nth-child(1)::after { animation-delay: 1000ms; }
     &:nth-child(2)::after { animation-delay: 1120ms; }
     &:nth-child(3)::after { animation-delay: 1240ms; }
+
+    // Re-fire on theme switch — armed only while the cross-fade class is held;
+    // the keyframe ends off-canvas right and the rest state parks off-canvas
+    // left, so class removal never snaps visibly.
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(105deg, transparent 38%, var(--sheen-core) 50%, transparent 62%);
+        mix-blend-mode: var(--sheen-blend);
+        transform: translateX(-130%); // resting: parked off-canvas
+    }
 }
+
+html.theme-transition .name__line::before {
+    animation: sheen 0.4s var(--ease-rule) backwards;
+}
+html.theme-transition .name__line:nth-child(2)::before { animation-delay: 60ms; }
+html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms; }
 
 .name__inner {
     display: inline-block;
@@ -153,7 +173,7 @@
     &.is-lit {
         color: var(--accent); // fallback for engines without -webkit-text-fill-color
         -webkit-text-fill-color: var(--accent);
-        text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.38);
+        text-shadow: 0 -1px 0 var(--lit-edge);
         transform: translateY(-3px);
     }
 }
@@ -198,4 +218,32 @@
         align-items: flex-start;
         gap: 12px;
     }
+}
+
+// ── Hero exit: name and baseline part as planes (scroll-driven whisper;
+// non-supporting engines keep the rigid exit) ───────────────────────────
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        .js .name {
+            animation: hero-exit-name linear both;
+            animation-timeline: view(block);
+            animation-range: exit 0% exit 100%;
+        }
+
+        .js .name__baseline {
+            animation:
+                rule-in 820ms var(--ease-rule) 700ms backwards,
+                hero-exit-fade linear both;
+            animation-timeline: auto, view(block);
+            animation-range: normal, exit 0% exit 100%;
+        }
+    }
+}
+
+@keyframes hero-exit-name {
+    to { transform: translateY(-4vh); }
+}
+
+@keyframes hero-exit-fade {
+    to { opacity: 0.4; }
 }

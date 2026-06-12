@@ -29,6 +29,25 @@
     }
 }
 
+// Masthead hairline catches light under the cursor (pointer-fx only —
+// --mx is px from the rAF loop; -50% recentres the glint window on it).
+body.has-pointer-fx .site-header::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent 30%, var(--rule-glint) 50%, transparent 70%);
+    transform: translateX(calc(var(--mx) - 50%));
+    opacity: 0.45;
+    will-change: transform;
+    transition: opacity 0.4s var(--ease-rule);
+}
+
+body.has-pointer-fx .site-header.is-scrolled::before {
+    opacity: 0.8; // the detached glass edge catches more light
+}
+
 .site-header__brand {
     display: inline-flex;
     align-items: center;
@@ -96,6 +115,31 @@
     }
 }
 
+// Split-flap type rise inside each nav link — the mask lives inside the
+// anchor so hit target, entrance rise-in and the underline stay untouched.
+.nav-flip {
+    display: inline-flex;
+    overflow: hidden;
+}
+
+.nav-flip__inner {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.3s var(--ease-type); // type rises ride the type curve
+
+    &::after {
+        content: attr(data-text);
+        position: absolute;
+        left: 0;
+        top: 100%;
+    }
+}
+
+.site-nav__link:hover .nav-flip__inner,
+.site-nav__link:focus-visible .nav-flip__inner {
+    transform: translateY(-100%);
+}
+
 .status {
     display: flex;
     align-items: center;
@@ -108,11 +152,23 @@
 }
 
 .status__dot {
+    position: relative;
     width: 6px;
     height: 6px;
     border-radius: 50%;
     background: var(--accent);
     animation: pulse-dot 2400ms ease-in-out infinite;
+
+    // Radiating ring — compositor-only, correct in both themes
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1px solid var(--accent); // white halo dark / ink halo light
+        opacity: 0;
+        animation: pulse-ring 2400ms ease-in-out infinite;
+    }
 }
 
 .status__word {
@@ -125,15 +181,13 @@
 }
 
 @keyframes pulse-dot {
-    0%,
-    100% {
-        opacity: 1;
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
-    }
-    50% {
-        opacity: 0.6;
-        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes pulse-ring {
+    0% { opacity: 0.5; transform: scale(1); }
+    70%, 100% { opacity: 0; transform: scale(2.4); }
 }
 
 // Drop the status cluster first so the 4 nav links keep room on mid widths.

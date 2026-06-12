@@ -1,5 +1,6 @@
 // ── PLATINE PROOF · theme toggle ───────────────────────────────
 .theme-toggle {
+    position: relative; // anchors the crown ring
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -21,5 +22,38 @@
 
 .theme-toggle__icon {
     display: inline-flex;
-    animation: fade-in 0.3s var(--ease-rule);
+    animation: toggle-icon-in 0.45s var(--ease-type) backwards; // replays via key={theme}
+    transition: transform 0.15s var(--ease-rule);
+}
+
+// Press on the inner span — the magnetic rAF loop owns the button's transform
+.theme-toggle:active .theme-toggle__icon {
+    transform: scale(0.88);
+}
+
+@keyframes toggle-icon-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px) rotate(-60deg);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+// Watch-crown click: ring radiates only during the cross-fade window
+html.theme-transition .theme-toggle::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border: 1px solid currentColor; // hue-free in both themes
+    border-radius: 50%;
+    pointer-events: none;
+    animation: toggle-ring 0.45s var(--ease-rule) forwards;
+}
+
+@keyframes toggle-ring {
+    from { opacity: 0.55; transform: scale(1); }
+    to { opacity: 0; transform: scale(1.7); }
 }

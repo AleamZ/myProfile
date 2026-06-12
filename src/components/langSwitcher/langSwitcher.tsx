@@ -5,7 +5,7 @@ const LangSwitcher = () => {
     const { lang, setLang } = useLang()
 
     return (
-        <div className="lang" role="group" aria-label="Language">
+        <div className="lang" role="group" aria-label="Language" data-active={lang}>
             {LANGS.map((l) => (
                 <button
                     key={l.code}

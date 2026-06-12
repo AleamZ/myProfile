@@ -21,6 +21,20 @@
     color: var(--muted);
 }
 
+// The index rises like a date wheel on each card change (keyed span).
+// From-only keyframe: the implicit end state IS the resting style.
+.projects__count-tick {
+    display: inline-block;
+    animation: count-tick 0.3s var(--ease-type);
+}
+
+@keyframes count-tick {
+    from {
+        opacity: 0;
+        transform: translateY(0.45em);
+    }
+}
+
 // ── Coverflow ──────────────────────────────────────────────────
 .cf {
     --cf-card-w: clamp(248px, 30vw, 360px);
@@ -103,7 +117,7 @@
     user-select: none;
 
     &.is-active {
-        border-color: rgba(237, 237, 237, 0.28);
+        border-color: var(--line-strong);
     }
 }
 
@@ -244,11 +258,16 @@
     border-radius: var(--radius-pill);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    transition: color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule);
+    transition: color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule),
+        opacity 0.3s var(--ease-rule), transform 0.2s var(--ease-rule);
 
     &:hover:not(:disabled) {
         color: var(--accent);
-        border-color: rgba(237, 237, 237, 0.3);
+        border-color: var(--line-strong);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(-50%) scale(0.94);
     }
 
     &:disabled {
@@ -273,11 +292,54 @@
     border: 1px solid var(--muted);
     border-radius: var(--radius-pill);
     background: transparent;
-    transition: background-color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule);
+    transition: background-color 0.22s var(--ease-rule), border-color 0.22s var(--ease-rule),
+        transform 0.3s var(--ease-rule);
+
+    // State ladder — source order matters: press always wins, active ignores hover
+    &:hover {
+        border-color: var(--text);
+        transform: scale(1.4);
+    }
 
     &.is-active {
         background: var(--accent);
         border-color: var(--accent);
+        transform: scale(1.2);
+    }
+
+    &:active {
+        transform: scale(1.1);
+    }
+}
+
+// ── Arrival: stage answers the head, dots land as a row of beats ──
+.js .cf.reveal {
+    --reveal-delay: 160ms; // rides the foundation token in _base.scss
+}
+
+@for $i from 1 through 8 {
+    .cf__dot:nth-child(#{$i}) { --di: #{$i - 1}; }
+}
+
+.js .cf__dots.reveal {
+    opacity: 1; // the row itself never hides
+    transform: none;
+
+    .cf__dot {
+        opacity: 0;
+    }
+
+    &.is-inview .cf__dot {
+        opacity: 1;
+        animation: rise-in 0.5s var(--ease-type) backwards;
+        animation-delay: calc(240ms + var(--di, 0) * 40ms);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .cf__dots.reveal .cf__dot {
+        opacity: 1 !important;
+        transform: none !important;
     }
 }
 
@@ -357,7 +419,7 @@
 
     &:hover {
         color: var(--accent);
-        border-color: rgba(237, 237, 237, 0.3);
+        border-color: var(--line-strong);
     }
 }
 
@@ -603,9 +665,16 @@
 
 .repo__caret {
     flex: none;
+    display: inline-block;
     width: 10px;
     font-size: 9px;
     color: var(--muted);
+    transform-origin: 45% 50%;
+    transition: transform 0.18s var(--ease-rule);
+}
+
+.repo__dir[aria-expanded='true'] .repo__caret {
+    transform: rotate(90deg);
 }
 
 .repo__code {

@@ -26,7 +26,7 @@ const ThemeSwitcher = () => {
             aria-pressed={!isDark}
             onClick={toggle}
         >
-            <span className="theme-toggle__icon">{isDark ? <SunIcon /> : <MoonIcon />}</span>
+            <span className="theme-toggle__icon" key={theme}>{isDark ? <SunIcon /> : <MoonIcon />}</span>
         </button>
     )
 }

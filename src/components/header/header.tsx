@@ -23,10 +23,18 @@ const MHeader = () => {
 
             <div className="site-header__right">
                 <nav className="site-nav" aria-label="Primary">
-                    <a className="site-nav__link" data-magnetic href="#work">{t.sections.work}</a>
-                    <a className="site-nav__link" data-magnetic href="#experience">{t.sections.experience}</a>
-                    <a className="site-nav__link" data-magnetic href="#skills">{t.sections.skills}</a>
-                    <a className="site-nav__link" data-magnetic href="#contact">{t.sections.contact}</a>
+                    {([
+                        ['#work', t.sections.work],
+                        ['#experience', t.sections.experience],
+                        ['#skills', t.sections.skills],
+                        ['#contact', t.sections.contact],
+                    ] as const).map(([href, label]) => (
+                        <a className="site-nav__link" data-magnetic href={href} key={href} aria-label={label}>
+                            <span className="nav-flip" aria-hidden="true">
+                                <span className="nav-flip__inner" data-text={label}>{label}</span>
+                            </span>
+                        </a>
+                    ))}
                 </nav>
 
                 <p className="status" role="status" aria-live="polite">

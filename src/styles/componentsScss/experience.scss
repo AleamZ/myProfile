@@ -96,6 +96,78 @@
         outline: 1px solid var(--text);
         outline-offset: -2px;
     }
+
+    &-period {
+        transition: color 0.22s var(--ease-rule);
+    }
+
+    // Hover = half-step preview of the active state
+    &:hover:not(.is-active) &-mark,
+    &:focus-visible:not(.is-active) &-mark {
+        transform: translateY(-50%) scaleY(0.32);
+    }
+
+    &:hover:not(.is-active) &-company,
+    &:focus-visible:not(.is-active) &-company {
+        transform: translateX(2px);
+    }
+
+    &:hover &-period,
+    &:focus-visible &-period,
+    &.is-active &-period {
+        color: var(--text);
+    }
+
+    // Press: the mark compresses to half before it commits
+    &:active:not(.is-active) &-mark {
+        transform: translateY(-50%) scaleY(0.5);
+    }
+}
+
+// ── Rail entrance: hairlines draw down the spine, tabs rise in step ──
+.js .exp__explorer.reveal .exp__tab {
+    border-top-color: transparent; // the hairline is drawn, not shown
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--line);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.7s var(--ease-rule) calc(var(--ti, 0) * 80ms);
+    }
+
+    .exp__tab-text {
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+            opacity 0.5s var(--ease-type) calc(60ms + var(--ti, 0) * 80ms),
+            transform 0.5s var(--ease-type) calc(60ms + var(--ti, 0) * 80ms);
+    }
+}
+
+.js .exp__explorer.is-inview .exp__tab {
+    &::before {
+        transform: scaleX(1);
+    }
+
+    .exp__tab-text {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .exp__explorer.reveal .exp__tab { border-top-color: var(--line) !important; }
+    .js .exp__explorer.reveal .exp__tab::before { transform: scaleX(1) !important; }
+    .js .exp__explorer.reveal .exp__tab .exp__tab-text {
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }
 
 // ── Right panel · detail ───────────────────────────────────────
@@ -118,10 +190,9 @@
     font-weight: 300;
     font-size: clamp(6rem, 13vw, 12rem);
     line-height: 1;
-    color: rgba(237, 237, 237, 0.05);
+    color: var(--watermark-ink);
     pointer-events: none;
     user-select: none;
-    animation: fade-in 0.8s var(--ease-rule) both;
 }
 
 .exp__panel-head {
@@ -135,7 +206,6 @@
     font-size: clamp(2.2rem, 5vw, 4rem);
     line-height: 1;
     letter-spacing: -0.01em;
-    animation: exp-rise 0.55s var(--ease-type) both;
 }
 
 .exp__meta {
@@ -148,7 +218,6 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--muted);
-    animation: exp-rise 0.55s var(--ease-type) 0.08s both;
 }
 
 .exp__rule {
@@ -157,7 +226,6 @@
     margin: clamp(24px, 4vh, 40px) 0;
     background: var(--line);
     transform-origin: left;
-    animation: exp-draw 0.7s var(--ease-rule) 0.16s both;
 }
 
 .exp__projects {
@@ -173,8 +241,25 @@
     grid-template-columns: auto 1fr;
     gap: clamp(16px, 2vw, 28px);
     align-items: baseline;
-    animation: exp-rise 0.55s var(--ease-type) both;
-    animation-delay: calc(0.22s + var(--pi, 0) * 0.09s);
+}
+
+// ── Panel intro — fires on .is-inview and replays on every tab click
+// (the keyed .exp__panel-inner remounts under the persistent ancestor) ──
+.js .exp__explorer.reveal {
+    transform: none;
+    transition: opacity 0.3s var(--ease-type); // the inner staging carries the sequence
+}
+
+.js .exp__explorer.is-inview {
+    .exp__watermark { animation: fade-in 0.7s var(--ease-rule) both; }
+    .exp__company-lg { animation: exp-rise 0.5s var(--ease-type) both; }
+    .exp__meta { animation: exp-rise 0.5s var(--ease-type) 80ms both; }
+    .exp__rule { animation: exp-draw 0.7s var(--ease-rule) 160ms both; }
+
+    .exp__project {
+        animation: exp-rise 0.5s var(--ease-type) both;
+        animation-delay: calc(240ms + var(--pi, 0) * 80ms);
+    }
 }
 
 .exp__pnum {
