@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import PixelSquadron from '../pixelSquadron/pixelSquadron'
 
@@ -26,8 +26,41 @@ const BLOOMS = [
     { c: 'is-white', top: '30%', left: '62%', size: '44vmax', dur: '45s', delay: '-23s' },
 ] as const
 
+// Dark-theme night sky — star dust is generated once per mount as box-shadow
+// fields (one element per depth layer, not one per star).
+const makeStars = (n: number, alpha: [number, number]) => {
+    let s = ''
+    for (let i = 0; i < n; i++) {
+        const x = Math.round(Math.random() * 2200)
+        const y = Math.round(Math.random() * 1400)
+        const o = (alpha[0] + Math.random() * (alpha[1] - alpha[0])).toFixed(2)
+        s += `${x}px ${y}px 0 rgba(237, 237, 237, ${o}), `
+    }
+    return s.slice(0, -2)
+}
+
+// A handful of stars that breathe — literal so they never jump between renders.
+const TWINKLES = [
+    { top: '12%', left: '22%', dur: '4.2s', delay: '0s' },
+    { top: '28%', left: '64%', dur: '5.6s', delay: '-1.8s' },
+    { top: '8%', left: '79%', dur: '3.8s', delay: '-0.9s' },
+    { top: '46%', left: '11%', dur: '6.1s', delay: '-3s' },
+    { top: '63%', left: '83%', dur: '4.9s', delay: '-2.2s' },
+    { top: '76%', left: '37%', dur: '5.3s', delay: '-4s' },
+] as const
+
 const Background = () => {
     const cursorRef = useRef<HTMLDivElement>(null)
+
+    // far = many faint slow dots · mid · near = few brighter faster dots
+    const starLayers = useMemo(
+        () => [
+            { cls: 'is-far', shadows: makeStars(70, [0.12, 0.3]), dur: '240s' },
+            { cls: 'is-mid', shadows: makeStars(42, [0.18, 0.42]), dur: '170s' },
+            { cls: 'is-near', shadows: makeStars(18, [0.3, 0.6]), dur: '120s' },
+        ],
+        [],
+    )
 
     useEffect(() => {
         const root = document.documentElement
@@ -211,6 +244,25 @@ const Background = () => {
             </div>
 
             <div className="fx-vignette" aria-hidden="true" />
+
+            <div className="fx-night" aria-hidden="true">
+                <div className="fx-night__stars">
+                    {starLayers.map((l) => (
+                        <i
+                            key={l.cls}
+                            className={`fx-night__field ${l.cls}`}
+                            style={{ boxShadow: l.shadows, '--dur': l.dur } as CSSProperties}
+                        />
+                    ))}
+                    {TWINKLES.map((tw, i) => (
+                        <i
+                            key={i}
+                            className="fx-night__twinkle"
+                            style={{ top: tw.top, left: tw.left, '--dur': tw.dur, '--delay': tw.delay } as CSSProperties}
+                        />
+                    ))}
+                </div>
+            </div>
 
             <div className="fx-hairline" aria-hidden="true">
                 <div className="fx-hairline__grid" />

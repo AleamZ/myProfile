@@ -16,7 +16,7 @@
     color: var(--text);
 }
 
-[data-bgfx='on'] .fx-squadron {
+[data-theme='dark'][data-bgfx='on'] .fx-squadron {
     display: block;
 }
 
@@ -108,24 +108,90 @@
     &.is-empty { opacity: 0.22; }
 }
 
-// Explosion
+// Explosion — staged: blinding core → shockwave ring → shrapnel → smoke.
 .craft__boom {
     position: absolute;
-    left: 6px;
-    top: 0;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    opacity: 0;
-    background: radial-gradient(circle, currentColor 0%, currentColor 32%, transparent 64%);
-    transform-origin: center;
-    animation: squad-boom 420ms steps(8) both;
+    left: 20px; // centre of the 40px ship
+    top: 12px;
+    width: 0;
+    height: 0;
 }
 
-@keyframes squad-boom {
-    0% { transform: scale(0.3); opacity: 0; }
-    18% { opacity: 1; }
-    100% { transform: scale(1.8); opacity: 0; }
+.boom__core {
+    position: absolute;
+    left: -22px;
+    top: -22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent) 0%, currentColor 30%, transparent 62%);
+    opacity: 0;
+    animation: boom-core 480ms steps(7) both;
+}
+
+@keyframes boom-core {
+    0% { transform: scale(0.2); opacity: 0; }
+    10% { transform: scale(0.65); opacity: 1; }
+    45% { transform: scale(1.25); opacity: 0.85; }
+    100% { transform: scale(1.9); opacity: 0; }
+}
+
+.boom__ring {
+    position: absolute;
+    left: -26px;
+    top: -26px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    opacity: 0;
+    animation: boom-ring 620ms var(--ease-rule) both;
+}
+
+@keyframes boom-ring {
+    0% { transform: scale(0.25); opacity: 0.9; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+// Pixel shrapnel — square bits thrown outward, chunky steps()
+.boom__bit {
+    position: absolute;
+    left: -2px;
+    top: -2px;
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    opacity: 0;
+    animation: boom-bit 700ms steps(6) both;
+}
+
+@keyframes boom-bit {
+    0% { transform: translate(0, 0); opacity: 1; }
+    70% { opacity: 0.9; }
+    // the +14px sag reads as gravity pulling the shrapnel down
+    100% { transform: translate(var(--bx), calc(var(--by) + 14px)); opacity: 0; }
+}
+
+// Smoke puffs — soft, lingering, drifting up after the flash
+.boom__smoke {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle, currentColor 0%, transparent 65%);
+    filter: blur(2px);
+    opacity: 0;
+    animation: boom-smoke 950ms ease-out both;
+
+    &.is-a { left: -24px; top: -16px; animation-delay: 220ms; }
+    &.is-b { left: 0px; top: -26px; animation-delay: 320ms; width: 28px; height: 28px; }
+    &.is-c { left: -10px; top: -4px; animation-delay: 420ms; }
+}
+
+@keyframes boom-smoke {
+    0% { transform: translateY(6px) scale(0.5); opacity: 0; }
+    25% { opacity: 0.34; }
+    100% { transform: translateY(-22px) scale(1.6); opacity: 0; }
 }
 
 // ── Pilot (parachute → land → run off) ─────────────────────────
@@ -142,7 +208,7 @@
 
     &.is-run {
         transform: translate(0, var(--descent));
-        animation: pilot-run 1300ms linear forwards;
+        animation: pilot-run var(--run-dur, 5s) linear forwards;
 
         .pilot__chute { opacity: 0; }
         .pleg--a { animation: pilot-leg-a 0.2s steps(1) infinite; }

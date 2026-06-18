@@ -228,7 +228,10 @@ const DinoRunner = () => {
 
         const evaluate = () => {
             const should =
-                inView && !reducedMq.matches && (pendingModeRef.current === 'play' || document.documentElement.dataset.bgfx !== 'off')
+                inView &&
+                !reducedMq.matches &&
+                document.documentElement.dataset.theme === 'dark' &&
+                (pendingModeRef.current === 'play' || document.documentElement.dataset.bgfx !== 'off')
             setPaused(!should)
             if (should && !raf) { last = 0; raf = requestAnimationFrame(frame) }
             if (!should && raf) { cancelAnimationFrame(raf); raf = 0 }
@@ -259,7 +262,7 @@ const DinoRunner = () => {
         )
         io.observe(scene)
         const mo = new MutationObserver(evaluate)
-        mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bgfx'] })
+        mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-bgfx'] })
         reducedMq.addEventListener?.('change', evaluate)
 
         evaluate()

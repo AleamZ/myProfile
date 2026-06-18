@@ -2,6 +2,9 @@
 // Monochrome (currentColor → silver on dark / graphite on light). AUTO mode
 // auto-plays (and occasionally crashes → cursor flies in to restart); PLAY
 // mode is human-controlled (Space / tap). Score + HI top-left, switch top-right.
+// Mini-game — dark theme only
+[data-theme='light'] .dino { display: none; }
+
 .dino {
     position: relative;
     width: 100%;

@@ -1,6 +1,9 @@
 // ── Skills "Mario" run (bottom of §4) ──────────────────────────
 // A pixel runner crosses the bottom of the Skills section, eats a mushroom,
 // then either drops down a pipe or reaches the flag — looping, monochrome.
+// Mini-game — dark theme only
+[data-theme='light'] .mario-deck { display: none; }
+
 .mario-deck {
     width: 100%;
     margin-top: clamp(24px, 5vh, 56px);

@@ -97,7 +97,8 @@ body.cursor-link .fx-spotlight {
 // Hidden by default; the active theme dissolves its layer in
 // (0.45s = the theme cross-fade window) instead of display-popping.
 .fx-hairline,
-.fx-bloom {
+.fx-bloom,
+.fx-night {
     display: block;
     opacity: 0;
     visibility: hidden;
@@ -160,6 +161,60 @@ body.cursor-link .fx-spotlight {
     0% { transform: translateY(-2vh); opacity: 0; }
     50% { opacity: 0.028; } // the second pass is fainter — depth, not duplication
     100% { transform: translateY(102vh); opacity: 0; }
+}
+
+// ── Dark · night sky: star dust + eclipse ──────────────────────
+.fx-night {
+    position: fixed;
+    inset: -16px;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    contain: strict;
+}
+
+.fx-night__stars {
+    position: absolute;
+    inset: 0;
+}
+
+// One element per depth layer; the stars live in its box-shadow.
+.fx-night__field {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    background: transparent;
+    will-change: transform;
+    animation: fx-star-drift var(--dur, 200s) ease-in-out infinite alternate;
+
+    &.is-near {
+        width: 2px;
+        height: 2px;
+    }
+}
+
+// Same path, different speeds per layer = parallax depth.
+@keyframes fx-star-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-52px, 30px, 0); }
+}
+
+.fx-night__twinkle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: rgba(237, 237, 237, 0.7);
+    opacity: 0.1;
+    animation: fx-twinkle var(--dur, 5s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes fx-twinkle {
+    0%, 100% { opacity: 0.08; transform: scale(0.8); }
+    50% { opacity: 0.65; transform: scale(1.25); }
 }
 
 // Light · frosted blooms breathing in place behind the glass
@@ -229,6 +284,7 @@ body.cursor-link .fx-spotlight {
 
 // Reveal per active theme only when motion is on — dissolve, never pop
 [data-theme='dark'][data-bgfx='on'] .fx-hairline,
+[data-theme='dark'][data-bgfx='on'] .fx-night,
 [data-theme='light'][data-bgfx='on'] .fx-bloom {
     opacity: 1;
     visibility: visible;
@@ -239,6 +295,12 @@ body.cursor-link .fx-spotlight {
 // behind the page); light drifts WITH the pointer (the lighting follows you).
 [data-theme='dark'][data-bgfx='on'] .fx-hairline {
     transform: translate3d(calc(var(--par-x, 0px) * -1), calc(var(--par-y, 0px) * -1), 0);
+    will-change: transform;
+}
+
+// The night sky counter-drifts a touch less — it reads as further away.
+[data-theme='dark'][data-bgfx='on'] .fx-night {
+    transform: translate3d(calc(var(--par-x, 0px) * -0.6), calc(var(--par-y, 0px) * -0.6), 0);
     will-change: transform;
 }
 
@@ -255,6 +317,15 @@ body.cursor-link .fx-spotlight {
     .fx-hairline__grid { animation: none; opacity: 0.03; }
     .fx-hairline__scan,
     .fx-hairline__scan--b { display: none; }
+}
+
+// Dark + motion off → star dust stays, its drift/twinkle animations freeze
+[data-theme='dark'][data-bgfx='off'] .fx-night {
+    opacity: 1;
+    visibility: visible;
+
+    .fx-night__field { animation: none; }
+    .fx-night__twinkle { animation: none; opacity: 0.3; }
 }
 
 // Light + motion off → the lighting dims to a still glow (visible acknowledgment)
@@ -288,6 +359,9 @@ body.cursor-link .fx-spotlight {
     .fx-hairline__scan,
     .fx-hairline__scan--b { display: none; }
     .fx-hairline__grid { animation: none; opacity: 0.03; }
+
+    .fx-night__field { animation: none; }
+    .fx-night__twinkle { animation: none; opacity: 0.3; }
 
     .fx-bloom__orb {
         animation: none;

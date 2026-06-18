@@ -49,16 +49,28 @@ const Guy = () => (
 const LASER_DELAYS = [1500, 3000, 4500, 6000, 7500]
 const HP_MAX = 3
 const FALL_MS = 950
-const BOOM_MS = 420
+const BOOM_MS = 1100
 const DESCENT_MS = 1900
-const RUN_MS = 1300
+const PILOT_SPEED = 0.11 // px/ms — a small guy jogging, not sprinting
+
+// Shrapnel scatter for the crash explosion (literal, so every boom reads the same).
+const DEBRIS = [
+    { x: -34, y: -26, d: 0 },
+    { x: 38, y: -20, d: 30 },
+    { x: -44, y: 6, d: 10 },
+    { x: 46, y: 12, d: 40 },
+    { x: -20, y: 34, d: 20 },
+    { x: 26, y: 40, d: 0 },
+    { x: 8, y: -42, d: 50 },
+    { x: -8, y: 46, d: 35 },
+] as const
 
 let PID = 0
 let PLID = 0
 const rand = (a: number, b: number) => a + Math.random() * (b - a)
 
 interface PlaneData { id: number; dir: 1 | -1; top: number; dur: number; fires: boolean }
-interface PilotData { id: number; x: number; y: number; descent: number; runX: number; runDir: 1 | -1 }
+interface PilotData { id: number; x: number; y: number; descent: number; runX: number; runDir: 1 | -1; runDur: number }
 
 // ── Plane (clickable, 3 HP) ────────────────────────────────────
 interface PlaneProps {
@@ -126,7 +138,22 @@ const Plane = ({ data, layerRef, onDone, onEject }: PlaneProps) => {
                     </div>
                 )}
 
-                {status === 'boom' && <span className="craft__boom" />}
+                {status === 'boom' && (
+                    <span className="craft__boom">
+                        <i className="boom__core" />
+                        <i className="boom__ring" />
+                        {DEBRIS.map((b, i) => (
+                            <i
+                                key={i}
+                                className="boom__bit"
+                                style={{ ['--bx' as string]: `${b.x}px`, ['--by' as string]: `${b.y}px`, animationDelay: `${b.d}ms` } as CSSProperties}
+                            />
+                        ))}
+                        <i className="boom__smoke is-a" />
+                        <i className="boom__smoke is-b" />
+                        <i className="boom__smoke is-c" />
+                    </span>
+                )}
             </div>
         </div>
     )
@@ -138,18 +165,19 @@ const Pilot = ({ data, onDone }: { data: PilotData; onDone: (id: number) => void
 
     useEffect(() => {
         const t1 = window.setTimeout(() => setPhase('run'), DESCENT_MS)
-        const t2 = window.setTimeout(() => onDone(data.id), DESCENT_MS + RUN_MS)
+        const t2 = window.setTimeout(() => onDone(data.id), DESCENT_MS + data.runDur)
         return () => {
             window.clearTimeout(t1)
             window.clearTimeout(t2)
         }
-    }, [data.id, onDone])
+    }, [data.id, data.runDur, onDone])
 
     const style: CSSProperties = {
         left: `${data.x}px`,
         top: `${data.y}px`,
         ['--descent' as string]: `${data.descent}px`,
         ['--runx' as string]: `${data.runX}px`,
+        ['--run-dur' as string]: `${data.runDur}ms`,
     }
 
     return (
@@ -177,7 +205,8 @@ const PixelSquadron = () => {
         const descent = Math.max(24, groundY - y)
         const runDir: 1 | -1 = Math.random() < 0.5 ? 1 : -1
         const runX = runDir > 0 ? lr.width - x + 70 : -(x + 70)
-        setPilots((p) => [...p, { id: ++PLID, x, y, descent, runX, runDir }])
+        const runDur = Math.min(12000, Math.max(2600, Math.abs(runX) / PILOT_SPEED))
+        setPilots((p) => [...p, { id: ++PLID, x, y, descent, runX, runDir, runDur }])
     }, [])
 
     useEffect(() => {
@@ -188,7 +217,7 @@ const PixelSquadron = () => {
         let stopped = false
         const timers: number[] = []
 
-        const isOn = () => inView && root.dataset.bgfx !== 'off' && !reducedMq.matches
+        const isOn = () => inView && root.dataset.theme === 'dark' && root.dataset.bgfx !== 'off' && !reducedMq.matches
         const clear = () => {
             timers.forEach((t) => window.clearTimeout(t))
             timers.length = 0
@@ -233,7 +262,7 @@ const PixelSquadron = () => {
             io.observe(layerRef.current)
         }
         const mo = new MutationObserver(sync)
-        mo.observe(root, { attributes: true, attributeFilter: ['data-bgfx'] })
+        mo.observe(root, { attributes: true, attributeFilter: ['data-theme', 'data-bgfx'] })
         reducedMq.addEventListener?.('change', sync)
 
         return () => {

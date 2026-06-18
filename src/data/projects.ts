@@ -23,6 +23,38 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
     {
+        id: 'music-together',
+        name: 'Music Together',
+        year: '2026',
+        blurb: {
+            en: 'Real-time listening party — shared YouTube queue, DJ roles, live chat and reactions.',
+            vi: 'Phòng nghe nhạc thời gian thực — hàng đợi YouTube chung, vai trò DJ, chat và cảm xúc trực tiếp.',
+            ko: '실시간 음악 감상 파티 — 공유 YouTube 대기열, DJ 역할, 실시간 채팅과 리액션.',
+        },
+        tech: ['Next.js', 'React', 'Supabase', 'Tailwind CSS', 'TypeScript'],
+        demoUrl: 'https://music-together-eight.vercel.app',
+        repoUrl: 'https://github.com/AleamZ/Music-Together',
+        branch: 'main',
+        entryFile: 'app/room/[code]/RoomClient.tsx',
+        allowSource: true,
+    },
+    {
+        id: 'genflow',
+        name: 'GenFlow',
+        year: '2026',
+        blurb: {
+            en: 'Code dependency visualizer — parses JS/TS via a real AST into an interactive force-directed graph.',
+            vi: 'Trình trực quan hóa phụ thuộc mã nguồn — phân tích JS/TS bằng AST thật thành đồ thị lực kéo tương tác.',
+            ko: '코드 의존성 시각화 도구 — 실제 AST로 JS/TS를 분석해 인터랙티브 force-directed 그래프로 렌더링.',
+        },
+        tech: ['ts-morph', 'React', 'Fastify', 'TypeScript', 'Electron', 'Vite', 'zustand'],
+        demoUrl: 'https://genflow-ghzd.onrender.com',
+        repoUrl: 'https://github.com/AleamZ/GenFlow',
+        branch: 'main',
+        entryFile: 'analyzer/src/core/buildGraph.ts',
+        allowSource: true,
+    },
+    {
         id: 'sales-management',
         name: 'Sales Management',
         year: '2025',

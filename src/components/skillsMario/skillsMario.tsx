@@ -145,7 +145,7 @@ const SkillsMario = () => {
         let inView = false
         const timers: number[] = []
 
-        const isOn = () => inView && root.dataset.bgfx !== 'off' && !reducedMq.matches
+        const isOn = () => inView && root.dataset.theme === 'dark' && root.dataset.bgfx !== 'off' && !reducedMq.matches
         const clear = () => {
             timers.forEach((t) => window.clearTimeout(t))
             timers.length = 0
@@ -214,7 +214,7 @@ const SkillsMario = () => {
             io.observe(stageRef.current)
         }
         const mo = new MutationObserver(sync)
-        mo.observe(root, { attributes: true, attributeFilter: ['data-bgfx'] })
+        mo.observe(root, { attributes: true, attributeFilter: ['data-theme', 'data-bgfx'] })
         reducedMq.addEventListener?.('change', sync)
 
         return () => {

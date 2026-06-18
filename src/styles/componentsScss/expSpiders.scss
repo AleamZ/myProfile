@@ -2,6 +2,9 @@
 // A faint corner web in each top corner, plus spiders that rappel down on
 // silk (front view) then crawl off the edge (side view). Behind interaction
 // (pointer-events:none) so the company tabs stay clickable.
+// Mini-game — dark theme only
+[data-theme='light'] .exp-web { display: none; }
+
 .exp-web {
     position: absolute;
     inset: 0;
