@@ -35,18 +35,34 @@ export function useSceneDirector() {
       const sections = Array.from(document.querySelectorAll<HTMLElement>(sceneSelector))
       const sync = () => syncNearestSection(sections, store.setProgress)
       sync()
+      let animationFrame: number | undefined
+      const scheduleSync = () => {
+        if (animationFrame !== undefined) return
+        animationFrame = window.requestAnimationFrame(() => {
+          animationFrame = undefined
+          sync()
+        })
+      }
 
       if (typeof IntersectionObserver !== 'undefined') {
         const observer = new IntersectionObserver(sync, { threshold: [0, 0.5, 1] })
         sections.forEach((section) => observer.observe(section))
-        return () => observer.disconnect()
+        window.addEventListener('scroll', scheduleSync, { passive: true })
+        window.addEventListener('resize', scheduleSync)
+        return () => {
+          observer.disconnect()
+          window.removeEventListener('scroll', scheduleSync)
+          window.removeEventListener('resize', scheduleSync)
+          if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame)
+        }
       }
 
-      window.addEventListener('scroll', sync, { passive: true })
-      window.addEventListener('resize', sync)
+      window.addEventListener('scroll', scheduleSync, { passive: true })
+      window.addEventListener('resize', scheduleSync)
       return () => {
-        window.removeEventListener('scroll', sync)
-        window.removeEventListener('resize', sync)
+        window.removeEventListener('scroll', scheduleSync)
+        window.removeEventListener('resize', scheduleSync)
+        if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame)
       }
     }
 
