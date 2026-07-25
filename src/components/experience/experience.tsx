@@ -56,7 +56,7 @@ const Experience = () => {
                 <span className="exp__edu">{EDUCATION[lang]}</span>
             </div>
 
-            <div className="exp__explorer reveal">
+            <div className="exp__explorer reveal" data-active-experience={active}>
                 <div className="exp__rail" role="tablist" aria-label="Companies" aria-orientation="vertical">
                     {EXPERIENCE.map((j, i) => (
                         <button

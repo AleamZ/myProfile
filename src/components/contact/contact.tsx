@@ -1,5 +1,7 @@
-import type { CSSProperties } from 'react'
+import { useEffect } from 'react'
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
 import { useLang } from '../../i18n/LanguageProvider'
+import { useSceneStore } from '../../scene/sceneHooks'
 
 const EMAIL = 'datnguyentien.work@gmail.com'
 
@@ -11,6 +13,15 @@ const SOCIALS = [
 
 const Contact = () => {
     const { t } = useLang()
+    const store = useSceneStore()
+
+    useEffect(() => () => {
+        store.setContactEngaged(false)
+    }, [store])
+
+    const disengageEmail = (event: ReactPointerEvent<HTMLAnchorElement>) => {
+        if (!event.currentTarget.matches(':focus')) store.setContactEngaged(false)
+    }
 
     return (
         <section className="contact" id="contact" data-scene="contact" aria-labelledby="contact-heading">
@@ -25,7 +36,15 @@ const Contact = () => {
                     {t.contact.lead}
                 </p>
 
-                <a className="contact__email reveal" href={`mailto:${EMAIL}`}>
+                <div className="contact__beacon reveal">
+                <a
+                    className="contact__email reveal"
+                    href={`mailto:${EMAIL}`}
+                    onPointerEnter={() => store.setContactEngaged(true)}
+                    onPointerLeave={disengageEmail}
+                    onFocus={() => store.setContactEngaged(true)}
+                    onBlur={() => store.setContactEngaged(false)}
+                >
                     <span className="contact__email-inner">{EMAIL}</span>
                 </a>
 
@@ -42,6 +61,7 @@ const Contact = () => {
                         </li>
                     ))}
                 </ul>
+                </div>
             </div>
         </section>
     )

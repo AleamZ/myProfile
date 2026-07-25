@@ -7,6 +7,18 @@
 .mario-deck {
     width: 100%;
     margin-top: clamp(24px, 5vh, 56px);
+    padding: 12px;
+    border: 1px solid var(--line-faint);
+    color: var(--muted);
+    opacity: 0.34;
+    transition: opacity 0.28s var(--ease-rule), color 0.28s var(--ease-rule), border-color 0.28s var(--ease-rule);
+}
+
+.mario-deck:hover,
+.mario-deck:focus-within {
+    color: var(--text);
+    border-color: var(--line-strong);
+    opacity: 0.94;
 }
 
 // Scenario picker — choose which "kịch bản" plays
@@ -34,6 +46,8 @@
     text-transform: uppercase;
     color: var(--muted);
     padding: 6px 11px;
+    min-width: 44px;
+    min-height: 44px;
     transition: color 0.2s var(--ease-rule), background-color 0.2s var(--ease-rule);
 
     &:hover,
@@ -58,7 +72,7 @@
     overflow: hidden;
     pointer-events: none;
     color: var(--text);
-    opacity: 0.72;
+    opacity: 0.62;
 }
 
 .skills-mario__ground {
@@ -79,6 +93,25 @@
         height: 3px;
         opacity: 0.4;
         background: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 26px);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: -7px 0 auto;
+        height: 10px;
+        opacity: 0.38;
+        background: linear-gradient(90deg,
+            currentColor 0 1px, transparent 1px 25%,
+            currentColor 25% calc(25% + 1px), transparent calc(25% + 1px) 50%,
+            currentColor 50% calc(50% + 1px), transparent calc(50% + 1px) 75%,
+            currentColor 75% calc(75% + 1px), transparent calc(75% + 1px));
+    }
+}
+
+@media (hover: none) {
+    .mario-deck {
+        opacity: 0.76;
     }
 }
 

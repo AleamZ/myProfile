@@ -8,6 +8,9 @@ import { DataCore } from './DataCore'
 import { SceneDirector } from './SceneDirector'
 import { IdentityScene } from './scenes/IdentityScene'
 import { ProjectsScene } from './scenes/ProjectsScene'
+import { ExperienceScene } from './scenes/ExperienceScene'
+import { SkillsScene } from './scenes/SkillsScene'
+import { ContactScene } from './scenes/ContactScene'
 import { downgradeSceneQuality } from './worldMotion'
 import { listenForWebGLContextLoss } from './worldReadiness'
 
@@ -71,9 +74,27 @@ function dprForQuality(quality: RenderQuality): number | [number, number] {
 }
 
 function ChapterScenes({ quality }: { quality: RenderQuality }) {
-  const { chapter, localProgress, activeProject } = useSceneSnapshot()
+  const {
+    chapter,
+    localProgress,
+    activeProject,
+    activeExperience,
+    activeSkillGroup,
+    contactEngaged,
+  } = useSceneSnapshot()
   const identityProgress = chapter === 'identity' ? localProgress : 1
   const projectsProgress = chapter === 'identity' ? 0 : chapter === 'projects' ? localProgress : 1
+  const experienceProgress = chapter === 'identity' || chapter === 'projects'
+    ? 0
+    : chapter === 'experience'
+      ? localProgress
+      : 1
+  const skillsProgress = chapter === 'skills'
+    ? localProgress
+    : chapter === 'contact'
+      ? 1
+      : 0
+  const contactProgress = chapter === 'contact' ? localProgress : 0
 
   return (
     <>
@@ -84,6 +105,9 @@ function ChapterScenes({ quality }: { quality: RenderQuality }) {
         projectCount={PROJECTS.length}
         quality={quality}
       />
+      <ExperienceScene progress={experienceProgress} activeExperience={activeExperience} quality={quality} />
+      <SkillsScene progress={skillsProgress} activeSkillGroup={activeSkillGroup} quality={quality} />
+      <ContactScene progress={contactProgress} contactEngaged={contactEngaged} quality={quality} />
     </>
   )
 }

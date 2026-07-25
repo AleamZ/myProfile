@@ -1,10 +1,41 @@
-import type { CSSProperties } from 'react'
+import { useEffect, useRef } from 'react'
+import type {
+    CSSProperties,
+    FocusEvent as ReactFocusEvent,
+} from 'react'
 import { SKILLS } from '../../data/skills'
 import { useLang } from '../../i18n/LanguageProvider'
+import { useSceneStore } from '../../scene/sceneHooks'
 import SkillsMario from '../skillsMario/skillsMario'
 
 const Skills = () => {
     const { t, lang } = useLang()
+    const store = useSceneStore()
+    const hoveredGroup = useRef<number | null>(null)
+    const focusedGroup = useRef<number | null>(null)
+
+    useEffect(() => () => {
+        store.setActiveSkillGroup(null)
+    }, [store])
+
+    const enterGroup = (index: number) => {
+        hoveredGroup.current = index
+        store.setActiveSkillGroup(index)
+    }
+    const leaveGroup = () => {
+        hoveredGroup.current = null
+        store.setActiveSkillGroup(focusedGroup.current)
+    }
+    const focusGroup = (index: number) => {
+        focusedGroup.current = index
+        store.setActiveSkillGroup(index)
+    }
+    const blurGroup = (event: ReactFocusEvent<HTMLDivElement>) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            focusedGroup.current = null
+            store.setActiveSkillGroup(hoveredGroup.current)
+        }
+    }
 
     return (
         <section className="skills" id="skills" data-scene="skills" aria-labelledby="skills-heading">
@@ -15,7 +46,17 @@ const Skills = () => {
 
             <dl className="skills__list">
                 {SKILLS.map((group, gi) => (
-                    <div className="skills__group reveal" key={group.id} style={{ '--g': gi } as CSSProperties}>
+                    <div
+                        className="skills__group reveal"
+                        key={group.id}
+                        style={{ '--g': gi } as CSSProperties}
+                        data-skill-group={gi}
+                        tabIndex={0}
+                        onPointerEnter={() => enterGroup(gi)}
+                        onPointerLeave={leaveGroup}
+                        onFocus={() => focusGroup(gi)}
+                        onBlur={blurGroup}
+                    >
                         <dt className="skills__cat">{group.title[lang]}</dt>
                         <dd className="skills__items">
                             {group.items.map((item, i) => (

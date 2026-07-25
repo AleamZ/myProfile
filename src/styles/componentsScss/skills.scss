@@ -146,3 +146,95 @@
         gap: 12px 8px;
     }
 }
+
+// Constellation index: every semantic group is a focusable coordinate in the
+// same network represented by the fixed canvas.
+.skills__list {
+    position: relative;
+    border: 1px solid var(--glass-border);
+    background: color-mix(in srgb, var(--glass-bg) 68%, transparent);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hl);
+    backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+}
+
+.skills__group {
+    z-index: 0;
+    padding-inline: clamp(18px, 3vw, 40px);
+    outline: none;
+    transition: background-color 0.28s var(--ease-rule), z-index 0s 0.28s;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: clamp(7px, 1.2vw, 16px);
+        top: 50%;
+        width: 5px;
+        height: 5px;
+        border: 1px solid var(--muted);
+        border-radius: 50%;
+        background: var(--bg);
+        opacity: 0.42;
+        transform: translateY(-50%) scale(0.72);
+        transition: opacity 0.26s var(--ease-rule), transform 0.26s var(--ease-rule), border-color 0.26s var(--ease-rule);
+    }
+
+    &:hover,
+    &:focus-visible,
+    &:focus-within {
+        z-index: 1;
+        background: color-mix(in srgb, var(--tag-hover-bg) 74%, transparent);
+        transition-delay: 0s;
+    }
+
+    &:focus-visible {
+        box-shadow: inset 0 0 0 1px var(--line-strong);
+    }
+
+    &:hover::after,
+    &:focus-visible::after,
+    &:focus-within::after {
+        border-color: var(--accent);
+        opacity: 1;
+        transform: translateY(-50%) scale(1.25);
+    }
+}
+
+.skills__cat {
+    color: color-mix(in srgb, var(--muted) 82%, var(--text));
+    transition: color 0.24s var(--ease-rule), transform 0.24s var(--ease-rule);
+}
+
+.skills__group:hover .skills__cat,
+.skills__group:focus-visible .skills__cat,
+.skills__group:focus-within .skills__cat {
+    color: var(--text);
+    transform: translateX(4px);
+}
+
+.skills__tag {
+    background: color-mix(in srgb, var(--glass-bg) 56%, transparent);
+}
+
+@media (max-width: 720px) {
+    .skills__group {
+        padding-inline: 28px 16px;
+    }
+
+    .skills__group::after {
+        left: 11px;
+        top: 35px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skills__list {
+        backdrop-filter: none;
+    }
+
+    .skills__group,
+    .skills__group::after,
+    .skills__cat {
+        transition: none;
+    }
+}

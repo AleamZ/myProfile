@@ -329,3 +329,111 @@
         font-size: clamp(5rem, 22vw, 8rem);
     }
 }
+
+// Orbital route instrument: the semantic tabs remain the foreground controls
+// while the fixed world supplies the long-form trajectory behind them.
+.exp__explorer {
+    position: relative;
+    padding: clamp(12px, 2vw, 24px);
+    border: 1px solid var(--glass-border);
+    background: color-mix(in srgb, var(--glass-bg) 78%, transparent);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hl);
+    backdrop-filter: blur(var(--glass-blur)) saturate(125%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(125%);
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 12px;
+        border: 1px solid var(--line-faint);
+        pointer-events: none;
+    }
+}
+
+.exp__rail {
+    position: relative;
+    z-index: 1;
+    border-bottom-color: var(--line-faint);
+}
+
+.exp__tab {
+    min-height: 76px;
+    padding-inline: 30px 14px;
+    border-top-color: var(--line-faint);
+    transition: background-color 0.28s var(--ease-rule);
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        width: 7px;
+        height: 1px;
+        background: var(--muted);
+        opacity: 0.4;
+        transform: translateY(-50%);
+        transition: width 0.3s var(--ease-rule), opacity 0.3s var(--ease-rule);
+    }
+
+    &:hover,
+    &:focus-visible {
+        background: color-mix(in srgb, var(--tag-hover-bg) 68%, transparent);
+    }
+
+    &.is-active {
+        background: color-mix(in srgb, var(--glass-bg) 88%, var(--tag-hover-bg));
+    }
+
+    &.is-active::after {
+        width: 13px;
+        background: var(--accent);
+        opacity: 0.9;
+    }
+
+    &-company {
+        color: color-mix(in srgb, var(--muted) 84%, var(--text));
+    }
+}
+
+.exp__panel {
+    z-index: 1;
+    min-height: clamp(540px, 64vh, 660px);
+    padding: clamp(24px, 3.5vw, 48px);
+    border-left: 1px solid var(--line);
+    background: linear-gradient(128deg, color-mix(in srgb, var(--glass-bg) 62%, transparent), transparent 72%);
+}
+
+.exp__panel-inner {
+    min-height: inherit;
+}
+
+.exp__tag {
+    background: color-mix(in srgb, var(--glass-bg) 62%, transparent);
+}
+
+@media (max-width: 860px) {
+    .exp__explorer {
+        padding: 12px;
+    }
+
+    .exp__panel {
+        min-height: clamp(560px, 100vh, 720px);
+        padding: clamp(24px, 6vw, 40px) clamp(14px, 4vw, 24px);
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .exp__panel {
+        min-height: 690px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .exp__explorer,
+    .exp__tab {
+        backdrop-filter: none;
+        transition: none;
+    }
+}
