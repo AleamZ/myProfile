@@ -168,30 +168,17 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
 .name__glyph {
     --glyph-shift-x: 0em;
     --glyph-shift-y: 0em;
-    --glyph-lift: 0px;
 
     display: inline-block;
     opacity: calc(1 - var(--identity-progress) * 0.14);
     transform: translate3d(
         calc(var(--identity-progress) * var(--glyph-shift-x)),
-        calc(var(--identity-progress) * var(--glyph-shift-y) + var(--glyph-lift)),
+        calc(var(--identity-progress) * var(--glyph-shift-y)),
         0
     );
-    // Grazed by the cursor spotlight → polished white top edge (never glow)
     transition:
-        color 0.4s var(--ease-rule),
-        -webkit-text-fill-color 0.4s var(--ease-rule),
-        text-shadow 0.4s var(--ease-rule),
         transform 0.5s var(--ease-type),
         opacity 0.35s var(--ease-rule);
-
-    &.is-lit {
-        --glyph-lift: -3px;
-
-        color: var(--accent); // fallback for engines without -webkit-text-fill-color
-        -webkit-text-fill-color: var(--accent);
-        text-shadow: 0 -1px 0 var(--lit-edge);
-    }
 }
 
 .name__line:nth-child(1) .name__glyph {
@@ -286,7 +273,7 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
 @media (prefers-reduced-motion: reduce) {
     .name__glyph {
         opacity: 1;
-        transform: translate3d(0, var(--glyph-lift), 0);
+        transform: none;
         transition: none;
     }
 }

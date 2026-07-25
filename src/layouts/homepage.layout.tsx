@@ -7,6 +7,7 @@ import Skills from '../components/skills/skills'
 import Contact from '../components/contact/contact'
 import Background from '../components/background/background.hompage'
 import Footer from '../components/footer/footer'
+import MissionNavigator from '../components/missionNavigator/missionNavigator'
 import { WorldBoundary } from '../components/world/WorldBoundary'
 import { getWorldPresentation, worldReadinessReducer } from '../components/world/worldReadiness'
 import { useSceneDirector } from '../hooks/useSceneDirector'
@@ -55,6 +56,7 @@ const Homepage = () => {
                 </Suspense>
             </WorldBoundary>
             <MHeader />
+            <MissionNavigator />
             <main id="main" className="content">
                 <HomepageBanner />
                 <Projects />

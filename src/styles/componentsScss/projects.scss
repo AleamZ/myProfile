@@ -674,7 +674,7 @@
     width: 100%;
     padding: 5px 12px;
     text-align: left;
-    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: 12px;
     line-height: 1.5;
     color: var(--muted);
@@ -750,7 +750,7 @@
 }
 
 .code__file {
-    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.04em;
     color: var(--text);
@@ -777,7 +777,7 @@
 .code__body {
     margin: 0;
     padding-block: 20px;
-    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: 13px;
     line-height: 1.7;
 }

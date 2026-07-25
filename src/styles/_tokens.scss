@@ -1,116 +1,156 @@
-// ── PLATINE PROOF · design tokens ──────────────────────────────
-// Dark (default) = strict grayscale luminance ladder.
-// Light = "liquid glass": frosted surfaces over soft aurora lighting.
+// ORBITAL DATA JOURNEY · shared mission tokens
 
 :root {
-    // Luminance ladder (dark)
-    --bg: #08080a;
-    --bg-elev: #0e0e11;
-    --text: #ededed;
-    --accent: #ffffff;
-    --muted: #8a8a8a;
+    // Approved source palette. Semantic tokens below are the only theme swaps.
+    --void: #05070D;
+    --carbon: #0B1020;
+    --plasma: #6EE7FF;
+    --spectral: #8B7CFF;
+    --ion: #ECF7FF;
+    --telemetry: #8391A7;
 
-    --line: rgba(237, 237, 237, 0.13);
-    --line-faint: rgba(237, 237, 237, 0.06);
+    // Deep Space theme
+    --bg: var(--void);
+    --bg-elev: var(--carbon);
+    --text: var(--ion);
+    --accent: var(--plasma);
+    --muted: var(--telemetry);
+    --energy-primary: var(--plasma);
+    --energy-secondary: var(--spectral);
+
+    // Surfaces
+    --surface-0: rgba(5, 7, 13, 0.82);
+    --surface-1: rgba(11, 16, 32, 0.72);
+    --surface-2: rgba(18, 25, 48, 0.86);
+    --surface-solid: #0B1020;
+    --surface-nav: rgba(5, 7, 13, 0.74);
+    --surface-nav-strong: rgba(5, 7, 13, 0.93);
+    --surface-hover: rgba(110, 231, 255, 0.08);
+    --surface-border: rgba(131, 145, 167, 0.24);
+    --surface-shadow: 0 18px 52px rgba(0, 0, 0, 0.34);
+
+    // Emitted light, keyboard focus, and calibration grid
+    --glow-plasma: 0 0 44px rgba(110, 231, 255, 0.24);
+    --glow-plasma-sm: 0 0 16px rgba(110, 231, 255, 0.34);
+    --glow-spectral: 0 0 36px rgba(139, 124, 255, 0.2);
+    --focus-ring: var(--plasma);
+    --focus-halo: 0 0 0 4px rgba(110, 231, 255, 0.14);
+    --grid-line: rgba(131, 145, 167, 0.13);
+    --grid-line-strong: rgba(110, 231, 255, 0.22);
+    --grid-size: 72px;
+
+    --line: var(--surface-border);
+    --line-faint: rgba(131, 145, 167, 0.1);
+    --line-strong: rgba(110, 231, 255, 0.34);
 
     // Rhythm & layout
     --baseline: 8px;
     --margin: clamp(20px, 4vw, 56px);
     --maxw: 1440px;
     --header-h: 64px;
+    --chapter-hold: max(900px, 118svh);
+    --chapter-pad: clamp(88px, 14vh, 168px);
 
-    // Corner radii — 0 in dark (sharp Swiss editorial); rounded in light glass
-    --radius: 0;
-    --radius-sm: 0;
-    --radius-pill: 0;
+    --radius: 2px;
+    --radius-sm: 2px;
+    --radius-pill: 999px;
 
-    // The whole site moves on exactly two curves
     --ease-rule: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-type: cubic-bezier(0.16, 1, 0.3, 1);
 
-    // Cursor spotlight position (driven by rAF lerp loop)
-    --mx: 50%;
-    --my: 38%;
+    // Static illumination; the persistent data core owns spatial motion.
+    --mx: 58%;
+    --my: 34%;
+    --spotlight: radial-gradient(680px circle at var(--mx) var(--my), rgba(110, 231, 255, 0.075), transparent 68%);
+    --vignette: radial-gradient(130% 120% at 50% 42%, transparent 54%, rgba(0, 0, 0, 0.54) 100%);
+    --grain-opacity: 0.022;
+    --grain-blend: soft-light;
 
-    // Display name gradient
-    --platinum: linear-gradient(180deg, #ffffff 0%, #dcdcdc 30%, #c8c8c8 50%, #a9a9a9 72%, #8e8e8e 100%);
+    --platinum: linear-gradient(180deg, #ECF7FF 0%, #C9D9E7 46%, #8391A7 100%);
 
-    // Type families (loaded in index.html)
-    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    // Type roles: compressed mission display, readable UI, compact telemetry.
+    --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
     --font-ui: 'Inter', system-ui, Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
 
-    // ── Theme-driven effect + surface tokens (dark values) ─────
-    --spotlight: radial-gradient(620px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.07), transparent 60%);
-    --vignette: radial-gradient(130% 130% at 50% 38%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
-    --grain-opacity: 0.035;
-    --grain-blend: overlay;
-
-    --cursor: rgba(237, 237, 237, 0.6);
-    --cursor-fill: rgba(237, 237, 237, 0.9);
-
-    // Liquid-glass surfaces — in dark these read as near-solid planes
-    --glass-bg: rgba(14, 14, 17, 0.7);
-    --glass-border: var(--line);
-    --glass-shadow: none;
-    --glass-hl: transparent;
+    // Compatibility aliases for existing components.
+    --glass-bg: var(--surface-1);
+    --glass-border: var(--surface-border);
+    --glass-shadow: var(--surface-shadow);
+    --glass-hl: rgba(236, 247, 255, 0.08);
     --glass-blur: 14px;
-
-    // Engaged hairline — hover borders, active card edges
-    --line-strong: rgba(237, 237, 237, 0.3);
-    // Watermark figures (experience year)
-    --watermark-ink: rgba(237, 237, 237, 0.05);
-    // Polished top edge on cursor-lit name glyphs
-    --lit-edge: rgba(255, 255, 255, 0.38);
-    // Sheen band core + blend — name load sheen and theme-switch re-fire
-    --sheen-core: rgba(255, 255, 255, 0.38);
-    --sheen-blend: overlay;
-    // Raking light across skill chips (matte metal in dark, glass in light)
-    --sheen: rgba(255, 255, 255, 0.08);
-    --tag-hover-bg: rgba(255, 255, 255, 0.04);
-    // Glint riding the cursor along the masthead hairline
-    --rule-glint: rgba(255, 255, 255, 0.35);
+    --watermark-ink: rgba(131, 145, 167, 0.08);
+    --lit-edge: rgba(110, 231, 255, 0.38);
+    --sheen-core: rgba(110, 231, 255, 0.2);
+    --sheen-blend: screen;
+    --sheen: rgba(110, 231, 255, 0.08);
+    --tag-hover-bg: rgba(110, 231, 255, 0.06);
+    --rule-glint: rgba(110, 231, 255, 0.34);
 }
 
-// ── Light theme ────────────────────────────────────────────────
+// Solar Flare keeps the same source palette but shifts semantic contrast and light.
 [data-theme='light'] {
-    --bg: #e8eaf2;
-    --bg-elev: #f4f5fa; // solid light surface (loaders, etc.)
-    --text: #16161d;
-    --accent: #0a0a12; // reserved: hover / active / lit
-    --muted: #5c5c67;
+    --bg: #F3F7FA;
+    --bg-elev: #E8EFF5;
+    --text: #111827;
+    --accent: #006D82;
+    --muted: #56657A;
+    --energy-primary: #006D82;
+    --energy-secondary: #6655D6;
 
-    --line: rgba(22, 22, 34, 0.14);
-    --line-faint: rgba(22, 22, 34, 0.06);
+    --surface-0: rgba(243, 247, 250, 0.82);
+    --surface-1: rgba(255, 255, 255, 0.68);
+    --surface-2: rgba(232, 239, 245, 0.9);
+    --surface-solid: #F7FAFC;
+    --surface-nav: rgba(243, 247, 250, 0.76);
+    --surface-nav-strong: rgba(247, 250, 252, 0.94);
+    --surface-hover: rgba(0, 109, 130, 0.08);
+    --surface-border: rgba(30, 45, 64, 0.18);
+    --surface-shadow: 0 20px 58px rgba(43, 61, 84, 0.15);
 
-    // Dark graphite gradient so the name reads as polished metal on light
-    --platinum: linear-gradient(180deg, #3b3b47 0%, #18181f 46%, #45454f 100%);
+    --glow-plasma: 0 0 42px rgba(110, 231, 255, 0.28);
+    --glow-plasma-sm: 0 0 14px rgba(0, 109, 130, 0.2);
+    --glow-spectral: 0 0 36px rgba(139, 124, 255, 0.18);
+    --focus-ring: #006D82;
+    --focus-halo: 0 0 0 4px rgba(0, 109, 130, 0.12);
+    --grid-line: rgba(30, 45, 64, 0.1);
+    --grid-line-strong: rgba(0, 109, 130, 0.18);
 
-    // Lighting: a glossy white bloom that follows the cursor over the glass
-    --spotlight: radial-gradient(620px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.6), transparent 60%);
-    --vignette: radial-gradient(130% 130% at 50% 36%, transparent 58%, rgba(26, 26, 56, 0.1) 100%);
-    --grain-opacity: 0.025;
+    --line: var(--surface-border);
+    --line-faint: rgba(30, 45, 64, 0.08);
+    --line-strong: rgba(0, 109, 130, 0.3);
+    --platinum: linear-gradient(180deg, #182131 0%, #334155 50%, #006D82 100%);
+    --spotlight: radial-gradient(720px circle at 62% 30%, rgba(255, 180, 112, 0.2), transparent 66%);
+    --vignette: radial-gradient(130% 120% at 50% 38%, transparent 62%, rgba(64, 78, 96, 0.11) 100%);
+    --grain-opacity: 0.016;
     --grain-blend: multiply;
 
-    --cursor: rgba(22, 22, 34, 0.55);
-    --cursor-fill: rgba(22, 22, 34, 0.85);
-
-    --glass-bg: rgba(255, 255, 255, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.7);
-    --glass-shadow: 0 22px 60px rgba(30, 32, 64, 0.16);
-    --glass-hl: rgba(255, 255, 255, 0.75);
-    --glass-blur: 22px;
-
-    // Soft, generous corners for the liquid-glass language
-    --radius: 22px;
-    --radius-sm: 14px;
-    --radius-pill: 999px;
-
-    --line-strong: rgba(22, 22, 34, 0.34);
-    --watermark-ink: rgba(22, 22, 34, 0.06);
-    --lit-edge: rgba(255, 255, 255, 0.6); // crisp glass edge above the near-black lit glyph
-    --sheen-core: rgba(255, 255, 255, 0.6); // screen blend reads over the graphite gradient
+    --glass-bg: var(--surface-1);
+    --glass-border: var(--surface-border);
+    --glass-shadow: var(--surface-shadow);
+    --glass-hl: rgba(255, 255, 255, 0.72);
+    --glass-blur: 20px;
+    --watermark-ink: rgba(17, 24, 39, 0.06);
+    --lit-edge: rgba(255, 255, 255, 0.6);
+    --sheen-core: rgba(255, 255, 255, 0.48);
     --sheen-blend: screen;
-    --sheen: rgba(255, 255, 255, 0.45); // light over glass
-    --tag-hover-bg: rgba(255, 255, 255, 0.4);
-    --rule-glint: rgba(255, 255, 255, 0.9); // refraction on the glass edge
+    --sheen: rgba(255, 255, 255, 0.4);
+    --tag-hover-bg: rgba(0, 109, 130, 0.06);
+    --rule-glint: rgba(0, 109, 130, 0.28);
+}
+
+@media (max-width: 960px) {
+    :root {
+        --chapter-hold: max(760px, 102svh);
+        --chapter-pad: clamp(72px, 10vh, 112px);
+    }
+}
+
+@media (max-width: 600px) {
+    :root {
+        --header-h: 60px;
+        --chapter-hold: max(680px, 94svh);
+        --chapter-pad: clamp(64px, 9vh, 88px);
+        --grid-size: 48px;
+    }
 }

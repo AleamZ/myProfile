@@ -21,7 +21,6 @@ const ThemeSwitcher = () => {
         <button
             type="button"
             className="theme-toggle"
-            data-magnetic
             aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
             aria-pressed={!isDark}
             onClick={toggle}

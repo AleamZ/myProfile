@@ -42,7 +42,6 @@ const Footer = () => {
                     <button
                         type="button"
                         className="site-footer__btn"
-                        data-magnetic
                         aria-pressed={motionOn}
                         onClick={toggleMotion}
                     >
@@ -51,7 +50,7 @@ const Footer = () => {
                             <span className="site-footer__dot" aria-hidden="true" />
                         </span>
                     </button>
-                    <button type="button" className="site-footer__btn" data-magnetic onClick={toTop}>
+                    <button type="button" className="site-footer__btn" onClick={toTop}>
                         <span className="site-footer__btn-label">
                             {t.footer.backToTop}
                             <span aria-hidden="true" className="site-footer__arrow">

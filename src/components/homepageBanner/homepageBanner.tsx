@@ -29,7 +29,7 @@ const HomepageBanner = () => {
                     <span className="name__line" key={line}>
                         <span className="name__inner" aria-hidden="true">
                             {line.split('').map((char, i) => (
-                                <span className="name__glyph" data-glyph key={`${line}-${i}`}>
+                                <span className="name__glyph" key={`${line}-${i}`}>
                                     {char}
                                 </span>
                             ))}

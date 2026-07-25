@@ -1,0 +1,235 @@
+.mission-nav {
+    position: fixed;
+    inset: var(--header-h) auto 0 0;
+    z-index: 45;
+    width: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--grid-line);
+    background: var(--surface-nav);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+}
+
+.mission-nav__track {
+    position: absolute;
+    top: 22px;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.mission-nav__track-label {
+    writing-mode: vertical-rl;
+}
+
+.mission-nav__track-value {
+    color: var(--text);
+    letter-spacing: 0.04em;
+}
+
+.mission-nav__chapters {
+    display: grid;
+    gap: 5px;
+}
+
+.mission-nav__chapter {
+    position: relative;
+}
+
+.mission-nav__link {
+    position: relative;
+    width: 48px;
+    min-height: 48px;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    transition: color 180ms var(--ease-rule), background-color 180ms var(--ease-rule);
+}
+
+.mission-nav__index {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+}
+
+.mission-nav__label {
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    width: max-content;
+    max-width: 180px;
+    padding: 7px 9px;
+    border: 1px solid var(--surface-border);
+    background: var(--surface-solid);
+    color: var(--text);
+    font-size: 10px;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(4px, -50%);
+    transition: opacity 180ms var(--ease-rule), transform 180ms var(--ease-rule);
+}
+
+.mission-nav__signal {
+    position: absolute;
+    right: -1px;
+    width: 3px;
+    height: 18px;
+    background: var(--energy-primary);
+    box-shadow: var(--glow-plasma-sm);
+    opacity: 0;
+    transform: scaleY(0.25);
+    transition: opacity 180ms var(--ease-rule), transform 180ms var(--ease-rule);
+}
+
+.mission-nav__link:hover,
+.mission-nav__link:focus-visible,
+.mission-nav__link[aria-current='location'] {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+.mission-nav__link:hover .mission-nav__label,
+.mission-nav__link:focus-visible .mission-nav__label {
+    opacity: 1;
+    transform: translate(0, -50%);
+}
+
+.mission-nav__link[aria-current='location'] {
+    .mission-nav__index {
+        color: var(--energy-primary);
+    }
+
+    .mission-nav__signal {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+.mission-nav__progress {
+    position: absolute;
+    bottom: 24px;
+    width: 2px;
+    height: 82px;
+    overflow: hidden;
+    background: var(--grid-line);
+
+    span {
+        position: absolute;
+        inset: auto 0 0;
+        height: var(--mission-progress);
+        background: linear-gradient(0deg, var(--energy-secondary), var(--energy-primary));
+        box-shadow: var(--glow-plasma-sm);
+        transition: height 140ms linear;
+    }
+}
+
+@media (max-height: 720px) and (min-width: 961px) {
+    .mission-nav__track {
+        display: none;
+    }
+
+    .mission-nav__progress {
+        bottom: 12px;
+        height: 48px;
+    }
+}
+
+@media (max-width: 960px) {
+    .mission-nav {
+        inset: auto max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+        width: auto;
+        height: 72px;
+        flex-direction: row;
+        border: 1px solid var(--surface-border);
+        background: var(--surface-nav-strong);
+        box-shadow: var(--surface-shadow);
+    }
+
+    .mission-nav__track {
+        display: none;
+    }
+
+    .mission-nav__chapters {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0;
+        padding: 5px 4px 7px;
+    }
+
+    .mission-nav__link {
+        width: 100%;
+        height: 58px;
+        min-height: 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .mission-nav__index {
+        font-size: 9px;
+    }
+
+    .mission-nav__label {
+        position: static;
+        width: 100%;
+        max-width: none;
+        padding: 0 2px;
+        border: 0;
+        background: transparent;
+        color: currentColor;
+        font-size: clamp(7px, 1.7vw, 10px);
+        line-height: 1.2;
+        letter-spacing: 0.05em;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 1;
+        transform: none;
+    }
+
+    .mission-nav__signal {
+        inset: auto 18% 1px;
+        width: auto;
+        height: 2px;
+        transform: scaleX(0.25);
+    }
+
+    .mission-nav__link[aria-current='location'] .mission-nav__signal {
+        transform: scaleX(1);
+    }
+
+    .mission-nav__progress {
+        inset: auto 0 -1px;
+        width: 100%;
+        height: 2px;
+
+        span {
+            inset: 0 auto 0 0;
+            width: var(--mission-progress);
+            height: 100%;
+            transition-property: width;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mission-nav__link,
+    .mission-nav__label,
+    .mission-nav__signal,
+    .mission-nav__progress span {
+        transition: none;
+    }
+}

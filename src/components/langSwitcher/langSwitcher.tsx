@@ -10,7 +10,6 @@ const LangSwitcher = () => {
                 <button
                     key={l.code}
                     type="button"
-                    data-magnetic
                     className={`lang__btn${lang === l.code ? ' is-active' : ''}`}
                     aria-pressed={lang === l.code}
                     lang={l.code}

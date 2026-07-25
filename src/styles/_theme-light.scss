@@ -1,5 +1,5 @@
-// ── PLATINE PROOF · Light theme (liquid glass) ─────────────────
-// Frosted glass surfaces floating over the aurora lighting. Loaded LAST so
+// ORBITAL DATA JOURNEY · Solar Flare theme overrides
+// Pale atmospheric surfaces with restrained warm refraction. Loaded LAST so
 // these win over the component defaults. Non-3D surfaces use backdrop-filter;
 // the coverflow cards (which live in a rotated preserve-3d stage) use a higher
 // translucency instead, to avoid backdrop-filter glitches inside 3D contexts.
@@ -7,7 +7,8 @@
 [data-theme='light'] {
     // Header glass once it detaches on scroll
     .site-header.is-scrolled {
-        background: var(--glass-bg);
+        background: var(--surface-nav);
+        border-color: var(--grid-line);
         backdrop-filter: blur(18px) saturate(170%);
         -webkit-backdrop-filter: blur(18px) saturate(170%);
         box-shadow: inset 0 1px 0 var(--glass-hl), 0 10px 30px rgba(30, 32, 64, 0.08);
@@ -15,20 +16,20 @@
 
     // Coverflow cards → translucent glass tiles
     .cf__card {
-        background: rgba(255, 255, 255, 0.62);
+        background: var(--surface-1);
         border-color: var(--glass-border);
         box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hl);
     }
 
     // Centred card is solid (no see-through) so the focused project reads clearly
     .cf__card.is-active {
-        background: var(--bg-elev);
+        background: var(--surface-solid);
         border-color: var(--glass-border);
         box-shadow: 0 28px 64px rgba(30, 32, 64, 0.2), inset 0 1px 0 var(--glass-hl);
     }
 
     .cf__thumb {
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--surface-0);
     }
 
     .cf__card.is-active .cf__thumb {
@@ -36,7 +37,7 @@
     }
 
     .cf__open {
-        background: rgba(255, 255, 255, 0.55);
+        background: var(--surface-1);
     }
 
     // Nav arrows + section loader glass
@@ -55,7 +56,7 @@
 
     // Modal — translucent scrim + glass panel
     .modal {
-        background: rgba(226, 229, 242, 0.5);
+        background: rgba(232, 239, 245, 0.72);
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
     }

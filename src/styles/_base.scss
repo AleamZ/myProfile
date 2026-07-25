@@ -1,4 +1,4 @@
-// ── PLATINE PROOF · base / reset / global ──────────────────────
+// ORBITAL DATA JOURNEY · base / reset / global
 
 *,
 *::before,
@@ -36,10 +36,10 @@ body {
     overflow-x: hidden;
 }
 
-// Inverted, hueless text selection
+// Selection echoes the data core without reducing legibility.
 ::selection {
-    background: var(--text);
-    color: var(--bg);
+    background: var(--energy-primary);
+    color: var(--void);
 }
 
 a {
@@ -71,10 +71,21 @@ p {
     margin: 0;
 }
 
-// Focus never removed — 1px solid silver, offset
+h1,
+h2,
+h3 {
+    font-family: var(--font-display);
+}
+
+:where(.index, .eyebrow, .projects__count, .exp__edu, .contact__loc) {
+    font-family: var(--font-mono);
+}
+
+// Focus remains visible against both themes and the WebGL scene.
 :where(a, button, [tabindex], [role="button"]):focus-visible {
-    outline: 1px solid var(--text);
-    outline-offset: 2px;
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+    box-shadow: var(--focus-halo);
 }
 
 // Screen-reader-only
@@ -209,83 +220,9 @@ p {
     }
 }
 
-// ── Custom cursor (only present when pointer fx are enabled) ────
-.cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 90;
-    width: 8px;
-    height: 8px;
-    background: transparent;
-    pointer-events: none;
-    display: none;
-    will-change: transform;
-
-    // Visual ring — 30px box centred on the 8px host; every state is scale-only
-    &::after {
-        content: '';
-        position: absolute;
-        inset: -11px;
-        border: 3.75px solid var(--cursor); // 3.75 × 0.2667 ≈ a 1px ring at rest
-        border-radius: 50%;
-        background: transparent;
-        transform: scale(0.2667); // reads as the original 8px ring
-        transition: transform 0.25s var(--ease-rule),
-            background-color 0.25s var(--ease-rule),
-            border-color 0.25s var(--ease-rule);
-        will-change: transform;
-    }
-}
-
-body.has-pointer-fx {
-    cursor: none;
-
-    a,
-    button,
-    [role="button"],
-    [data-magnetic] {
-        cursor: none;
-    }
-
-    .cursor {
-        display: block;
-    }
-
-    // Keep keyboard focus rings above the custom cursor layer (z 90)
-    :where(a, button, [tabindex], [role="button"]):focus-visible {
-        position: relative;
-        z-index: 95;
-        outline-offset: 3px;
-    }
-}
-
-body.cursor-link .cursor::after {
-    transform: scale(1);
-    background: var(--cursor-fill);
-    border-color: transparent;
-}
-
-// Press: the needle dips — pairs with the magnetic pull
-body.cursor-down .cursor::after {
-    transform: scale(0.2);
-}
-
-body.cursor-link.cursor-down .cursor::after {
-    transform: scale(0.85);
-}
-
-// While a modal is open: lock scroll + restore a real cursor over the dialog.
+// Dialogs own scroll while open; native pointer behavior remains intact.
 body.modal-open {
     overflow: hidden;
-
-    &.has-pointer-fx {
-        cursor: auto;
-    }
-
-    .cursor {
-        display: none;
-    }
 }
 
 // ── Reduced motion: collapse everything to instant + visible ───
@@ -319,7 +256,4 @@ body.modal-open {
         transform: scaleX(1) !important;
     }
 
-    .cursor {
-        display: none !important;
-    }
 }

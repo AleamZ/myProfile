@@ -26,7 +26,7 @@
     transition: transform 0.15s var(--ease-rule);
 }
 
-// Press on the inner span — the magnetic rAF loop owns the button's transform
+// Press feedback stays local to the icon so the target never moves.
 .theme-toggle:active .theme-toggle__icon {
     transform: scale(0.88);
 }

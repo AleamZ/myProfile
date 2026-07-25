@@ -1,4 +1,4 @@
-// ── PLATINE PROOF · page shell ─────────────────────────────────
+// ORBITAL DATA JOURNEY · page shell and chapter hold rhythm
 .homepage {
     position: relative;
     min-height: 100vh;
@@ -14,5 +14,37 @@
     width: 100%;
     max-width: var(--maxw);
     margin: 0 auto;
-    padding: 0 var(--margin);
+    padding: 0 var(--margin) 0 max(var(--margin), 88px);
+}
+
+.content > :is(.hero, .experience, .skills, .contact) {
+    min-height: var(--chapter-hold);
+}
+
+.content > [data-scene] {
+    scroll-margin-top: calc(var(--header-h) + 16px);
+}
+
+@media (max-width: 960px) {
+    .homepage {
+        padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    }
+
+    .content {
+        padding-inline: var(--margin);
+    }
+
+    .content > .projects {
+        min-height: max(900px, 112svh);
+    }
+}
+
+@media (max-width: 600px) {
+    .content > [data-scene] {
+        scroll-margin-top: calc(var(--header-h) + 8px);
+    }
+
+    .content > .projects {
+        min-height: max(780px, 105svh);
+    }
 }

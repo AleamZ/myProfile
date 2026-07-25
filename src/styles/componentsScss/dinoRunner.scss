@@ -240,7 +240,7 @@
 
 .dino__hud--left {
     left: clamp(0px, 1vw, 12px);
-    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.1em;
     color: var(--muted);
