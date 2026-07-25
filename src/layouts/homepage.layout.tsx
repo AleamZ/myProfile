@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useState } from 'react'
+import { lazy, Suspense, useCallback, useReducer, useState } from 'react'
 import MHeader from '../components/header/header'
 import HomepageBanner from '../components/homepageBanner/homepageBanner'
 import Projects from '../components/projects/projects'
@@ -8,9 +8,11 @@ import Contact from '../components/contact/contact'
 import Background from '../components/background/background.hompage'
 import Footer from '../components/footer/footer'
 import { WorldBoundary } from '../components/world/WorldBoundary'
+import { getWorldPresentation, worldReadinessReducer } from '../components/world/worldReadiness'
 import { useSceneDirector } from '../hooks/useSceneDirector'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { detectWebGL, selectSceneQuality } from '../scene/quality'
+import { useTheme } from '../theme/ThemeProvider'
 
 const WorldCanvas = lazy(() => import('../components/world/WorldCanvas'))
 
@@ -27,17 +29,29 @@ function readInitialSceneQuality() {
 const Homepage = () => {
     useSceneDirector()
     useScrollReveal()
+    const { theme } = useTheme()
     const [quality] = useState(readInitialSceneQuality)
-    const [worldReady, setWorldReady] = useState(false)
-    const onWorldFirstFrame = useCallback(() => setWorldReady(true), [])
+    const [worldReadiness, dispatchWorldReadiness] = useReducer(worldReadinessReducer, 'pending')
+    const onWorldFirstFrame = useCallback(() => dispatchWorldReadiness({ type: 'first-frame' }), [])
+    const onWorldUnavailable = useCallback(() => dispatchWorldReadiness({ type: 'unavailable' }), [])
+    const worldPresentation = getWorldPresentation(theme, worldReadiness)
 
     return (
-        <div className="homepage" data-world={worldReady ? 'active' : undefined}>
+        <div
+            className={`homepage${worldPresentation.ambienceClass ? ` ${worldPresentation.ambienceClass}` : ''}`}
+            data-world={worldPresentation.worldAttribute}
+        >
             <a className="skip-link" href="#main">Skip to content</a>
             <Background />
-            <WorldBoundary fallback={null}>
+            <WorldBoundary fallback={null} onError={onWorldUnavailable}>
                 <Suspense fallback={null}>
-                    {quality !== 'fallback' && <WorldCanvas quality={quality} onFirstFrame={onWorldFirstFrame} />}
+                    {quality !== 'fallback' && (
+                        <WorldCanvas
+                            quality={quality}
+                            onFirstFrame={onWorldFirstFrame}
+                            onUnavailable={onWorldUnavailable}
+                        />
+                    )}
                 </Suspense>
             </WorldBoundary>
             <MHeader />

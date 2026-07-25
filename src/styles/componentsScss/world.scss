@@ -19,7 +19,9 @@
     .world-canvas {
         opacity: 1;
     }
+}
 
+[data-theme='dark'] .homepage.world-ambience-dimmed {
     [data-world-ambience] {
         opacity: 0.14;
         visibility: visible;
@@ -31,7 +33,7 @@
 
 @media (prefers-reduced-motion: reduce) {
     .world-canvas,
-    .homepage[data-world='active'] [data-world-ambience] {
+    [data-theme='dark'] .homepage.world-ambience-dimmed [data-world-ambience] {
         transition: none;
     }
 }

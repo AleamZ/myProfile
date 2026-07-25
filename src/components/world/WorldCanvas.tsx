@@ -5,12 +5,25 @@ import type { SceneQuality } from './world.types'
 import { DataCore } from './DataCore'
 import { SceneDirector } from './SceneDirector'
 import { downgradeSceneQuality } from './worldMotion'
+import { listenForWebGLContextLoss } from './worldReadiness'
 
 type RenderQuality = Exclude<SceneQuality, 'fallback'>
 
 interface WorldCanvasProps {
   quality: RenderQuality
   onFirstFrame?: () => void
+  onUnavailable?: () => void
+}
+
+function ContextLossHandler({ onUnavailable }: { onUnavailable?: () => void }) {
+  const canvas = useThree(({ gl }) => gl.domElement)
+
+  useEffect(() => {
+    if (!onUnavailable) return
+    return listenForWebGLContextLoss(canvas, onUnavailable)
+  }, [canvas, onUnavailable])
+
+  return null
 }
 
 function RendererLifecycle({ visible }: { visible: boolean }) {
@@ -53,7 +66,7 @@ function dprForQuality(quality: RenderQuality): number | [number, number] {
   return 1
 }
 
-export default function WorldCanvas({ quality, onFirstFrame }: WorldCanvasProps) {
+export default function WorldCanvas({ quality, onFirstFrame, onUnavailable }: WorldCanvasProps) {
   const [rendererQuality, setRendererQuality] = useState(quality)
   const hasDowngraded = useRef(false)
   const visible = useDocumentVisibility()
@@ -78,6 +91,7 @@ export default function WorldCanvas({ quality, onFirstFrame }: WorldCanvasProps)
       >
         <PerformanceMonitor onChange={onPerformanceChange}>
           <RendererLifecycle visible={visible} />
+          <ContextLossHandler onUnavailable={onUnavailable} />
           <FirstFrameSignal onFirstFrame={onFirstFrame} />
           <SceneDirector />
           <DataCore quality={rendererQuality} />
@@ -86,4 +100,3 @@ export default function WorldCanvas({ quality, onFirstFrame }: WorldCanvasProps)
     </div>
   )
 }
-
