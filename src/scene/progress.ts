@@ -5,8 +5,13 @@ export interface SceneSectionBounds {
   height: number
 }
 
-export function sceneProgressFromProbe(probeY: number, sections: readonly SceneSectionBounds[]): number {
+export function sceneProgressFromProbe(
+  probeY: number,
+  sections: readonly SceneSectionBounds[],
+  maximumProbeY?: number,
+): number {
   if (sections.length === 0 || probeY <= sections[0].top) return 0
+  if (maximumProbeY !== undefined && probeY >= maximumProbeY) return 1
 
   let sectionIndex = 0
   for (let index = 1; index < sections.length; index += 1) {

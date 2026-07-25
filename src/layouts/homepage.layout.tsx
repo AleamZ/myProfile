@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useReducer, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useReducer, useState } from 'react'
 import MHeader from '../components/header/header'
 import HomepageBanner from '../components/homepageBanner/homepageBanner'
 import Projects from '../components/projects/projects'
@@ -11,6 +11,7 @@ import MissionNavigator from '../components/missionNavigator/missionNavigator'
 import { WorldBoundary } from '../components/world/WorldBoundary'
 import { getWorldPresentation, worldReadinessReducer } from '../components/world/worldReadiness'
 import { useSceneDirector } from '../hooks/useSceneDirector'
+import { useMotionCapability } from '../hooks/useMotionCapability'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { detectWebGL, selectSceneQuality } from '../scene/quality'
 import { useTheme } from '../theme/ThemeProvider'
@@ -20,7 +21,7 @@ const WorldCanvas = lazy(() => import('../components/world/WorldCanvas'))
 function readInitialSceneQuality() {
     return selectSceneQuality({
         webgl: detectWebGL(),
-        reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
+        reducedMotion: false,
         coarsePointer: window.matchMedia?.('(pointer: coarse)').matches ?? false,
         width: window.innerWidth,
         dpr: window.devicePixelRatio || 1,
@@ -31,11 +32,16 @@ const Homepage = () => {
     useSceneDirector()
     useScrollReveal()
     const { theme } = useTheme()
+    const motionEnabled = useMotionCapability()
     const [quality] = useState(readInitialSceneQuality)
     const [worldReadiness, dispatchWorldReadiness] = useReducer(worldReadinessReducer, 'pending')
     const onWorldFirstFrame = useCallback(() => dispatchWorldReadiness({ type: 'first-frame' }), [])
     const onWorldUnavailable = useCallback(() => dispatchWorldReadiness({ type: 'unavailable' }), [])
     const worldPresentation = getWorldPresentation(theme, worldReadiness)
+
+    useEffect(() => {
+        if (!motionEnabled) onWorldUnavailable()
+    }, [motionEnabled, onWorldUnavailable])
 
     return (
         <div
@@ -46,7 +52,7 @@ const Homepage = () => {
             <Background />
             <WorldBoundary fallback={null} onError={onWorldUnavailable}>
                 <Suspense fallback={null}>
-                    {quality !== 'fallback' && (
+                    {motionEnabled && quality !== 'fallback' && (
                         <WorldCanvas
                             quality={quality}
                             onFirstFrame={onWorldFirstFrame}

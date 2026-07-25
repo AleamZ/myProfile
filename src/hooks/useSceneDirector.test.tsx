@@ -21,7 +21,13 @@ function DirectorHarness() {
   useSceneDirector()
   const scene = useSceneSnapshot()
 
-  return <output data-testid="chapter">{scene.chapter}</output>
+  return (
+    <>
+      <output data-testid="chapter">{scene.chapter}</output>
+      <output data-testid="document-progress">{scene.documentProgress}</output>
+      <output data-testid="local-progress">{scene.localProgress}</output>
+    </>
+  )
 }
 
 describe('useSceneDirector', () => {
@@ -147,5 +153,69 @@ describe('useSceneDirector', () => {
     expect(disconnect).toHaveBeenCalledTimes(1)
     expect(removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function))
     expect(removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function))
+  })
+
+  it.each([
+    ['normal', false],
+    ['reduced', true],
+  ] as const)('reaches Contact at 100% at maximum scroll in the %s-motion path', (_label, reducedMotion) => {
+    const kill = vi.fn()
+    let onUpdate: (() => void) | undefined
+    let runFrame: FrameRequestCallback | undefined
+    const requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
+      runFrame = callback
+      return 1
+    })
+    class MockIntersectionObserver {
+      observe = vi.fn()
+      disconnect = vi.fn()
+    }
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: reducedMotion })))
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
+    vi.stubGlobal('requestAnimationFrame', requestAnimationFrame)
+    vi.stubGlobal('cancelAnimationFrame', vi.fn())
+    vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(900)
+    vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(5800)
+    let scrollY = 4900
+    vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => scrollY)
+
+    const sectionGeometry: Record<string, { top: number; height: number }> = {
+      identity: { top: 0, height: 900 },
+      projects: { top: 900, height: 1200 },
+      experience: { top: 2100, height: 1400 },
+      skills: { top: 3500, height: 1000 },
+      contact: { top: 4500, height: 1000 },
+    }
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      const geometry = sectionGeometry[this.dataset.scene ?? '']
+      const top = this.classList.contains('site-header') ? 0 : geometry.top - window.scrollY
+      const height = this.classList.contains('site-header') ? 64 : geometry.height
+      return { top, bottom: top + height, height } as DOMRect
+    })
+    create.mockImplementation((config) => {
+      onUpdate = config.onUpdate
+      return { kill }
+    })
+
+    const { getByTestId } = render(
+      <SceneProvider>
+        <div className="homepage">
+          <header className="site-header" />
+          {Object.keys(sectionGeometry).map((scene) => <section data-scene={scene} key={scene} />)}
+          <DirectorHarness />
+        </div>
+      </SceneProvider>,
+    )
+
+    if (reducedMotion) {
+      window.dispatchEvent(new Event('scroll'))
+      act(() => runFrame?.(0))
+    } else {
+      act(() => onUpdate?.())
+    }
+
+    expect(getByTestId('chapter')).toHaveTextContent('contact')
+    expect(getByTestId('document-progress')).toHaveTextContent('1')
+    expect(getByTestId('local-progress')).toHaveTextContent('1')
   })
 })

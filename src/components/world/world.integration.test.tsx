@@ -1,4 +1,5 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { useEffect } from 'react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../../App'
@@ -21,6 +22,13 @@ vi.mock('gsap/ScrollTrigger', () => ({
   ScrollTrigger: { create: createScrollTrigger, refresh: vi.fn() },
 }))
 
+vi.mock('./WorldCanvas', () => ({
+  default: ({ onFirstFrame }: { onFirstFrame?: () => void }) => {
+    useEffect(() => onFirstFrame?.(), [onFirstFrame])
+    return <div className="world-canvas" data-testid="world-canvas" />
+  },
+}))
+
 class MockIntersectionObserver implements IntersectionObserver {
   readonly root = null
   readonly rootMargin = '0px'
@@ -32,17 +40,37 @@ class MockIntersectionObserver implements IntersectionObserver {
   unobserve = vi.fn()
 }
 
-function installMatchMedia(reducedMotion: boolean) {
-  vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
-    matches: query === '(prefers-reduced-motion: reduce)' ? reducedMotion : false,
-    media: query,
+function installMatchMedia(initialReducedMotion: boolean) {
+  let reducedMotion = initialReducedMotion
+  const listeners = new Set<(event: MediaQueryListEvent) => void>()
+  const reducedMotionQuery = {
+    get matches() {
+      return reducedMotion
+    },
+    media: '(prefers-reduced-motion: reduce)',
     onchange: null,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
+    addEventListener: vi.fn((_type: string, listener: (event: MediaQueryListEvent) => void) => listeners.add(listener)),
+    removeEventListener: vi.fn((_type: string, listener: (event: MediaQueryListEvent) => void) => listeners.delete(listener)),
     addListener: vi.fn(),
     removeListener: vi.fn(),
     dispatchEvent: vi.fn(() => true),
-  })))
+  }
+
+  vi.stubGlobal('matchMedia', vi.fn((query: string) => query === reducedMotionQuery.media
+    ? reducedMotionQuery
+    : {
+        ...reducedMotionQuery,
+        matches: false,
+        media: query,
+      }))
+
+  return {
+    setReducedMotion(matches: boolean) {
+      reducedMotion = matches
+      const event = { matches, media: reducedMotionQuery.media } as MediaQueryListEvent
+      listeners.forEach((listener) => listener(event))
+    },
+  }
 }
 
 function expectCorePageContent() {
@@ -66,6 +94,7 @@ describe('homepage progressive enhancement', () => {
   afterEach(() => {
     document.documentElement.classList.remove('js')
     delete document.documentElement.dataset.theme
+    delete document.documentElement.dataset.bgfx
     vi.clearAllMocks()
     vi.unstubAllGlobals()
   })
@@ -113,5 +142,47 @@ describe('homepage progressive enhancement', () => {
 
     await user.click(within(missionNavigation).getByRole('link', { name: 'Contact' }))
     expect(window.location.hash).toBe('#contact')
+  })
+
+  it('honors initial motion-off and unmounts, resets, and remounts the world on footer toggles', async () => {
+    const user = userEvent.setup()
+    detectWebGL.mockReturnValue(true)
+    installMatchMedia(false)
+    document.documentElement.dataset.bgfx = 'off'
+
+    const { container } = render(<App />)
+    const motionToggle = screen.getByRole('button', { name: 'Motion' })
+
+    expect(motionToggle).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.queryByTestId('world-canvas')).not.toBeInTheDocument()
+
+    await user.click(motionToggle)
+    await waitFor(() => expect(screen.getByTestId('world-canvas')).toBeInTheDocument())
+    await waitFor(() => expect(container.querySelector('.homepage')).toHaveAttribute('data-world', 'active'))
+
+    await user.click(motionToggle)
+    await waitFor(() => expect(screen.queryByTestId('world-canvas')).not.toBeInTheDocument())
+    expect(container.querySelector('.homepage')).not.toHaveAttribute('data-world')
+    expect(container.querySelector('.homepage')).not.toHaveClass('world-ambience-dimmed')
+
+    await user.click(motionToggle)
+    await waitFor(() => expect(screen.getByTestId('world-canvas')).toBeInTheDocument())
+  })
+
+  it('unmounts and restores the world when reduced motion changes live', async () => {
+    detectWebGL.mockReturnValue(true)
+    const media = installMatchMedia(false)
+    document.documentElement.dataset.bgfx = 'on'
+
+    const { container } = render(<App />)
+    await waitFor(() => expect(screen.getByTestId('world-canvas')).toBeInTheDocument())
+    await waitFor(() => expect(container.querySelector('.homepage')).toHaveAttribute('data-world', 'active'))
+
+    act(() => media.setReducedMotion(true))
+    expect(screen.queryByTestId('world-canvas')).not.toBeInTheDocument()
+    expect(container.querySelector('.homepage')).not.toHaveAttribute('data-world')
+
+    act(() => media.setReducedMotion(false))
+    await waitFor(() => expect(screen.getByTestId('world-canvas')).toBeInTheDocument())
   })
 })

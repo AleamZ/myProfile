@@ -12,6 +12,7 @@ const ACTIVE_PROBE_GUTTER = 24
 
 interface SceneLayout {
   probeOffset: number
+  maximumProbeY?: number
   sections: SceneSectionBounds[]
 }
 
@@ -22,19 +23,32 @@ function measureSceneLayout(): SceneLayout {
     const bounds = section.getBoundingClientRect()
     return { top: bounds.top + scrollY, height: bounds.height }
   })
+  const scrollHeight = Math.max(
+    document.scrollingElement?.scrollHeight ?? 0,
+    document.documentElement.scrollHeight,
+    document.body?.scrollHeight ?? 0,
+  )
+  const maximumScrollY = Math.max(scrollHeight - window.innerHeight, 0)
+  const probeOffset = Math.max(headerBottom, 0) + ACTIVE_PROBE_GUTTER
 
   return {
-    probeOffset: Math.max(headerBottom, 0) + ACTIVE_PROBE_GUTTER,
+    probeOffset,
+    maximumProbeY: maximumScrollY > 0 ? maximumScrollY + probeOffset : undefined,
     sections,
   }
 }
 
 function progressForLayout(layout: SceneLayout): number {
-  return sceneProgressFromProbe(window.scrollY + layout.probeOffset, layout.sections)
+  return sceneProgressFromProbe(
+    window.scrollY + layout.probeOffset,
+    layout.sections,
+    layout.maximumProbeY,
+  )
 }
 
 function discreteProgressForLayout(layout: SceneLayout): number {
   const progress = progressForLayout(layout)
+  if (progress >= 1) return 1
   const chapterIndex = Math.min(Math.floor(progress * CHAPTERS.length), CHAPTERS.length - 1)
   return chapterIndex / CHAPTERS.length
 }

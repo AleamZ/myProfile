@@ -21,4 +21,17 @@ describe('chapterFromProgress', () => {
     expect(sceneProgressFromProbe(2003 + 1413 / 2, sections)).toBeCloseTo(0.5)
     expect(sceneProgressFromProbe(5109, sections)).toBe(1)
   })
+
+  it('reaches final Contact progress at the maximum reachable viewport probe', () => {
+    const sections = [
+      { top: 0, height: 900 },
+      { top: 900, height: 1200 },
+      { top: 2100, height: 1400 },
+      { top: 3500, height: 1000 },
+      { top: 4500, height: 1000 },
+    ]
+
+    expect(sceneProgressFromProbe(900, sections, 4988)).toBeCloseTo(0.2)
+    expect(sceneProgressFromProbe(4988, sections, 4988)).toBe(1)
+  })
 })
