@@ -136,7 +136,14 @@ const Projects = () => {
     }
 
     return (
-        <section className="projects" id="work" data-scene="projects" aria-labelledby="work-heading" ref={sectionRef}>
+        <section
+            className="projects"
+            id="work"
+            data-scene="projects"
+            data-active-project={active}
+            aria-labelledby="work-heading"
+            ref={sectionRef}
+        >
             <div className="projects__head reveal">
                 <h2 id="work-heading" className="sr-only">Work</h2>
                 <span className="index">02&nbsp;/&nbsp;{t.sections.work}</span>

@@ -2,8 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PerformanceMonitor } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import type { SceneQuality } from './world.types'
+import { PROJECTS } from '../../data/projects'
+import { useSceneSnapshot } from '../../scene/sceneHooks'
 import { DataCore } from './DataCore'
 import { SceneDirector } from './SceneDirector'
+import { IdentityScene } from './scenes/IdentityScene'
+import { ProjectsScene } from './scenes/ProjectsScene'
 import { downgradeSceneQuality } from './worldMotion'
 import { listenForWebGLContextLoss } from './worldReadiness'
 
@@ -66,6 +70,24 @@ function dprForQuality(quality: RenderQuality): number | [number, number] {
   return 1
 }
 
+function ChapterScenes({ quality }: { quality: RenderQuality }) {
+  const { chapter, localProgress, activeProject } = useSceneSnapshot()
+  const identityProgress = chapter === 'identity' ? localProgress : 1
+  const projectsProgress = chapter === 'identity' ? 0 : chapter === 'projects' ? localProgress : 1
+
+  return (
+    <>
+      <IdentityScene progress={identityProgress} quality={quality} />
+      <ProjectsScene
+        progress={projectsProgress}
+        activeProject={activeProject}
+        projectCount={PROJECTS.length}
+        quality={quality}
+      />
+    </>
+  )
+}
+
 export default function WorldCanvas({ quality, onFirstFrame, onUnavailable }: WorldCanvasProps) {
   const [rendererQuality, setRendererQuality] = useState(quality)
   const hasDowngraded = useRef(false)
@@ -94,6 +116,7 @@ export default function WorldCanvas({ quality, onFirstFrame, onUnavailable }: Wo
           <ContextLossHandler onUnavailable={onUnavailable} />
           <FirstFrameSignal onFirstFrame={onFirstFrame} />
           <SceneDirector />
+          <ChapterScenes quality={rendererQuality} />
           <DataCore quality={rendererQuality} />
         </PerformanceMonitor>
       </Canvas>

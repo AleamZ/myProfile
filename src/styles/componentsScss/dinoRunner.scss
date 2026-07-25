@@ -8,8 +8,19 @@
 .dino {
     position: relative;
     width: 100%;
-    margin-top: clamp(32px, 7vh, 72px);
-    pointer-events: none;
+    margin-top: auto;
+    padding-top: clamp(40px, 8vh, 88px);
+    opacity: 0.24;
+    filter: saturate(0.35) contrast(0.72);
+    pointer-events: auto;
+    transition: opacity 0.35s var(--ease-rule), filter 0.35s var(--ease-rule);
+
+    &:hover,
+    &:focus-within,
+    &:has(.dino__scene.is-play) {
+        opacity: 1;
+        filter: saturate(1) contrast(1);
+    }
 }
 
 .dino__scene {
@@ -270,9 +281,23 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .dino {
+        transition: none;
+    }
+
     .dino__leg--a,
     .dino__leg--b,
     .dino__ground::before {
         animation: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .dino {
+        padding-top: 40px;
+    }
+
+    .dino__scene {
+        height: 164px;
     }
 }

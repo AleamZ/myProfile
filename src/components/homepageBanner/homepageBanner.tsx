@@ -1,13 +1,21 @@
+import type { CSSProperties } from 'react'
 import HeroAside from '../heroAside/heroAside'
 import { useLang } from '../../i18n/LanguageProvider'
+import { useSceneSnapshot } from '../../scene/sceneHooks'
 
 const NAME_LINES = ['NGUYEN', 'TIEN', 'DAT']
 
 const HomepageBanner = () => {
     const { t } = useLang()
+    const { chapter, localProgress } = useSceneSnapshot()
+    const identityProgress = chapter === 'identity' ? localProgress : 1
 
     return (
-        <section className="hero" data-scene="identity">
+        <section
+            className="hero"
+            data-scene="identity"
+            style={{ '--identity-progress': identityProgress } as CSSProperties}
+        >
             <div className="hero__head">
                 <p className="eyebrow">
                     <span className="eyebrow__rule" aria-hidden="true" />

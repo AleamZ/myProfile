@@ -1,6 +1,9 @@
 // ── PLATINE PROOF · hero + stack ───────────────────────────────
 
 .hero {
+    --identity-progress: 0;
+
+    position: relative;
     min-height: 100vh;
     min-height: 100svh;
     display: grid;
@@ -163,19 +166,51 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
 .name__line:nth-child(3) .name__inner { animation-delay: 500ms, 1600ms; }
 
 .name__glyph {
+    --glyph-shift-x: 0em;
+    --glyph-shift-y: 0em;
+    --glyph-lift: 0px;
+
+    display: inline-block;
+    opacity: calc(1 - var(--identity-progress) * 0.14);
+    transform: translate3d(
+        calc(var(--identity-progress) * var(--glyph-shift-x)),
+        calc(var(--identity-progress) * var(--glyph-shift-y) + var(--glyph-lift)),
+        0
+    );
     // Grazed by the cursor spotlight → polished white top edge (never glow)
     transition:
         color 0.4s var(--ease-rule),
         -webkit-text-fill-color 0.4s var(--ease-rule),
         text-shadow 0.4s var(--ease-rule),
-        transform 0.5s var(--ease-type);
+        transform 0.5s var(--ease-type),
+        opacity 0.35s var(--ease-rule);
 
     &.is-lit {
+        --glyph-lift: -3px;
+
         color: var(--accent); // fallback for engines without -webkit-text-fill-color
         -webkit-text-fill-color: var(--accent);
         text-shadow: 0 -1px 0 var(--lit-edge);
-        transform: translateY(-3px);
     }
+}
+
+.name__line:nth-child(1) .name__glyph {
+    --glyph-shift-x: -0.12em;
+    --glyph-shift-y: -0.055em;
+}
+
+.name__line:nth-child(2) .name__glyph {
+    --glyph-shift-x: 0.06em;
+    --glyph-shift-y: 0.025em;
+}
+
+.name__line:nth-child(3) .name__glyph {
+    --glyph-shift-x: 0.15em;
+    --glyph-shift-y: 0.07em;
+}
+
+.name__glyph:nth-child(3n) {
+    --glyph-shift-x: 0.09em;
 }
 
 @keyframes name-rise {
@@ -246,4 +281,12 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
 
 @keyframes hero-exit-fade {
     to { opacity: 0.4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .name__glyph {
+        opacity: 1;
+        transform: translate3d(0, var(--glyph-lift), 0);
+        transition: none;
+    }
 }
