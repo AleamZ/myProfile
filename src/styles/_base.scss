@@ -220,9 +220,14 @@ h3 {
     }
 }
 
-// Dialogs own scroll while open; native pointer behavior remains intact.
+// Dialogs own scroll and page chrome while open.
 body.modal-open {
     overflow: hidden;
+
+    :is(.site-header, .mission-nav) {
+        visibility: hidden;
+        pointer-events: none;
+    }
 }
 
 // ── Reduced motion: collapse everything to instant + visible ───
