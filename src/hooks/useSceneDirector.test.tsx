@@ -34,20 +34,25 @@ describe('useSceneDirector', () => {
   it('warps cached section geometry into scene progress and cleans up its trigger', () => {
     const kill = vi.fn()
     let onUpdate: ((self: { progress: number }) => void) | undefined
-    vi.stubGlobal('scrollY', 725)
+    let onRefresh: (() => void) | undefined
+    let scrollY = 725
+    let headerBottom = 60
+    let projectsTop = 793.359
+    vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => scrollY)
     const getBoundingClientRect = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect')
       .mockImplementation(function (this: HTMLElement) {
-        const absoluteTop = this.dataset.scene === 'projects' ? 793 : 0
-        const height = this.classList.contains('site-header') ? 68 : this.dataset.scene === 'projects' ? 1210 : 793
+        const absoluteTop = this.dataset.scene === 'projects' ? projectsTop : 0
+        const height = this.classList.contains('site-header') ? headerBottom : this.dataset.scene === 'projects' ? 1210 : projectsTop
 
         return {
           top: this.classList.contains('site-header') ? 0 : absoluteTop - window.scrollY,
-          bottom: this.classList.contains('site-header') ? 68 : absoluteTop - window.scrollY + height,
+          bottom: this.classList.contains('site-header') ? headerBottom : absoluteTop - window.scrollY + height,
           height,
         } as DOMRect
       })
     create.mockImplementation((config) => {
       onUpdate = config.onUpdate
+      onRefresh = config.onRefresh
       return { kill }
     })
 
@@ -73,6 +78,12 @@ describe('useSceneDirector', () => {
     act(() => onUpdate?.({ progress: 0.159 }))
     expect(getByTestId('chapter')).toHaveTextContent('projects')
     expect(getBoundingClientRect).toHaveBeenCalledTimes(measuredAtSetup)
+
+    scrollY = 720
+    headerBottom = 64
+    projectsTop = 800
+    act(() => onRefresh?.())
+    expect(getByTestId('chapter')).toHaveTextContent('projects')
 
     unmount()
     expect(kill).toHaveBeenCalledTimes(1)

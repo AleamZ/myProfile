@@ -8,6 +8,7 @@ import { useSceneStore } from '../scene/sceneHooks'
 gsap.registerPlugin(ScrollTrigger)
 
 const sceneSelector = '[data-scene]'
+const ACTIVE_PROBE_GUTTER = 24
 
 interface SceneLayout {
   probeOffset: number
@@ -23,7 +24,7 @@ function measureSceneLayout(): SceneLayout {
   })
 
   return {
-    probeOffset: Math.max(headerBottom, 0) + 1,
+    probeOffset: Math.max(headerBottom, 0) + ACTIVE_PROBE_GUTTER,
     sections,
   }
 }
