@@ -5,6 +5,7 @@ import ProjectModal from './projectModal'
 import LogoMark from '../logo/logoMark'
 import DinoRunner from '../dinoRunner/dinoRunner'
 import { useLang } from '../../i18n/LanguageProvider'
+import { useSceneStore } from '../../scene/sceneHooks'
 
 const pad = (n: number) => String(n + 1).padStart(2, '0')
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
@@ -21,6 +22,7 @@ const screenshotUrl = (p: Project): string | null => {
 
 const Projects = () => {
     const { t, lang } = useLang()
+    const store = useSceneStore()
     const count = PROJECTS.length
     const [active, setActive] = useState(0)
     const [openId, setOpenId] = useState<string | null>(null)
@@ -34,6 +36,10 @@ const Projects = () => {
     // Work section is "ready" once every preview has settled (loaded or errored),
     // with a hard timeout so a slow screenshot never blocks the reveal.
     const ready = forceReady || (previewReady && settled >= totalShots)
+
+    useEffect(() => {
+        store.setActiveProject(active)
+    }, [active, store])
 
     const sectionRef = useRef<HTMLElement>(null)
     const pressed = useRef(false)
@@ -130,7 +136,7 @@ const Projects = () => {
     }
 
     return (
-        <section className="projects" id="work" aria-labelledby="work-heading" ref={sectionRef}>
+        <section className="projects" id="work" data-scene="projects" aria-labelledby="work-heading" ref={sectionRef}>
             <div className="projects__head reveal">
                 <h2 id="work-heading" className="sr-only">Work</h2>
                 <span className="index">02&nbsp;/&nbsp;{t.sections.work}</span>

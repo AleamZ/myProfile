@@ -7,7 +7,7 @@ const Skills = () => {
     const { t, lang } = useLang()
 
     return (
-        <section className="skills" id="skills" aria-labelledby="skills-heading">
+        <section className="skills" id="skills" data-scene="skills" aria-labelledby="skills-heading">
             <div className="skills__head reveal">
                 <h2 id="skills-heading" className="sr-only">{t.sections.skills}</h2>
                 <span className="index">04&nbsp;/&nbsp;{t.sections.skills}</span>

@@ -6,9 +6,11 @@ import Skills from '../components/skills/skills'
 import Contact from '../components/contact/contact'
 import Background from '../components/background/background.hompage'
 import Footer from '../components/footer/footer'
+import { useSceneDirector } from '../hooks/useSceneDirector'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 
 const Homepage = () => {
+    useSceneDirector()
     useScrollReveal()
 
     return (

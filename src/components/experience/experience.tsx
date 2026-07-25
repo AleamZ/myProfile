@@ -1,17 +1,23 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { EDUCATION, EXPERIENCE } from '../../data/experience'
 import { useLang } from '../../i18n/LanguageProvider'
 import ExpSpiders from '../expSpiders/expSpiders'
+import { useSceneStore } from '../../scene/sceneHooks'
 
 const startYear = (period: string) => period.match(/\d{4}/)?.[0] ?? ''
 
 const Experience = () => {
     const { t, lang } = useLang()
+    const store = useSceneStore()
     const [active, setActive] = useState(0)
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
     const len = EXPERIENCE.length
     const job = EXPERIENCE[active]
+
+    useEffect(() => {
+        store.setActiveExperience(active)
+    }, [active, store])
 
     const select = (i: number) => {
         const next = (i + len) % len
@@ -43,7 +49,7 @@ const Experience = () => {
     }
 
     return (
-        <section className="experience" id="experience" aria-labelledby="experience-heading">
+        <section className="experience" id="experience" data-scene="experience" aria-labelledby="experience-heading">
             <div className="exp__head reveal">
                 <h2 id="experience-heading" className="sr-only">{t.sections.experience}</h2>
                 <span className="index">03&nbsp;/&nbsp;{t.sections.experience}</span>

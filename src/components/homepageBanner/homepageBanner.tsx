@@ -7,7 +7,7 @@ const HomepageBanner = () => {
     const { t } = useLang()
 
     return (
-        <section className="hero">
+        <section className="hero" data-scene="identity">
             <div className="hero__head">
                 <p className="eyebrow">
                     <span className="eyebrow__rule" aria-hidden="true" />

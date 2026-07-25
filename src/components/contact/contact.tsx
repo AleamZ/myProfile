@@ -13,7 +13,7 @@ const Contact = () => {
     const { t } = useLang()
 
     return (
-        <section className="contact" id="contact" aria-labelledby="contact-heading">
+        <section className="contact" id="contact" data-scene="contact" aria-labelledby="contact-heading">
             <div className="contact__head reveal">
                 <h2 id="contact-heading" className="sr-only">{t.sections.contact}</h2>
                 <span className="index">05&nbsp;/&nbsp;{t.sections.contact}</span>
