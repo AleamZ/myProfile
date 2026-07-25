@@ -23,7 +23,7 @@ vi.mock('gsap/ScrollTrigger', () => ({
 }))
 
 vi.mock('./WorldCanvas', () => ({
-  default: ({ onFirstFrame }: { onFirstFrame?: () => void }) => {
+  default: function MockWorldCanvas({ onFirstFrame }: { onFirstFrame?: () => void }) {
     useEffect(() => onFirstFrame?.(), [onFirstFrame])
     return <div className="world-canvas" data-testid="world-canvas" />
   },

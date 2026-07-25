@@ -17,8 +17,8 @@ vi.mock('gsap/ScrollTrigger', () => ({
   ScrollTrigger: { create },
 }))
 
-function DirectorHarness() {
-  useSceneDirector()
+function DirectorHarness({ motionEnabled = true }: { motionEnabled?: boolean }) {
+  useSceneDirector(motionEnabled)
   const scene = useSceneSnapshot()
 
   return (
@@ -95,9 +95,10 @@ describe('useSceneDirector', () => {
     expect(kill).toHaveBeenCalledTimes(1)
   })
 
-  it('keeps the reduced-motion chapter synchronized on scroll and cleans up its side effects', () => {
+  it('keeps reduced-motion progress synchronized and reconfigures for live motion changes', () => {
     const disconnect = vi.fn()
     const observe = vi.fn()
+    const triggerKill = vi.fn()
     const requestAnimationFrame = vi.fn<(callback: FrameRequestCallback) => number>()
     let runFrame: FrameRequestCallback | undefined
     requestAnimationFrame.mockImplementation((callback) => {
@@ -126,17 +127,19 @@ describe('useSceneDirector', () => {
     })
     const addEventListener = vi.spyOn(window, 'addEventListener')
     const removeEventListener = vi.spyOn(window, 'removeEventListener')
-
-    const { getByTestId, unmount } = render(
+    create.mockReturnValue({ kill: triggerKill })
+    const director = (motionEnabled: boolean) => (
       <SceneProvider>
         <div className="homepage">
           <header className="site-header" />
           <section data-scene="identity" />
           <section data-scene="projects" />
-          <DirectorHarness />
+          <DirectorHarness motionEnabled={motionEnabled} />
         </div>
-      </SceneProvider>,
+      </SceneProvider>
     )
+
+    const { getByTestId, rerender, unmount } = render(director(false))
 
     window.innerHeight = 800
     scrollY = 725
@@ -149,10 +152,14 @@ describe('useSceneDirector', () => {
     expect(addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true })
     expect(addEventListener).toHaveBeenCalledWith('resize', expect.any(Function))
 
-    unmount()
+    rerender(director(true))
     expect(disconnect).toHaveBeenCalledTimes(1)
     expect(removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function))
     expect(removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function))
+    expect(create).toHaveBeenCalledTimes(1)
+
+    unmount()
+    expect(triggerKill).toHaveBeenCalledTimes(1)
   })
 
   it.each([
@@ -176,7 +183,7 @@ describe('useSceneDirector', () => {
     vi.stubGlobal('cancelAnimationFrame', vi.fn())
     vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(900)
     vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(5800)
-    let scrollY = 4900
+    const scrollY = 4900
     vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => scrollY)
 
     const sectionGeometry: Record<string, { top: number; height: number }> = {
@@ -202,7 +209,7 @@ describe('useSceneDirector', () => {
         <div className="homepage">
           <header className="site-header" />
           {Object.keys(sectionGeometry).map((scene) => <section data-scene={scene} key={scene} />)}
-          <DirectorHarness />
+          <DirectorHarness motionEnabled={!reducedMotion} />
         </div>
       </SceneProvider>,
     )

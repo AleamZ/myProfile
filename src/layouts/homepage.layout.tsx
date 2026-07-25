@@ -29,10 +29,10 @@ function readInitialSceneQuality() {
 }
 
 const Homepage = () => {
-    useSceneDirector()
-    useScrollReveal()
     const { theme } = useTheme()
     const motionEnabled = useMotionCapability()
+    useSceneDirector(motionEnabled)
+    useScrollReveal()
     const [quality] = useState(readInitialSceneQuality)
     const [worldReadiness, dispatchWorldReadiness] = useReducer(worldReadinessReducer, 'pending')
     const onWorldFirstFrame = useCallback(() => dispatchWorldReadiness({ type: 'first-frame' }), [])

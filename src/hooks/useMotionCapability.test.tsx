@@ -24,24 +24,18 @@ describe('useMotionCapability', () => {
     const removeEventListener = vi.fn()
     const disconnect = vi.fn()
     const observe = vi.fn()
+    let triggerMutation: (() => void) | undefined
 
     class MockMutationObserver {
-      constructor(private readonly callback: MutationCallback) {}
+      constructor(private readonly callback: MutationCallback) {
+        triggerMutation = () => this.callback([], {} as MutationObserver)
+      }
       observe = observe
       disconnect = disconnect
       takeRecords = vi.fn(() => [])
-      trigger() {
-        this.callback([], this as unknown as MutationObserver)
-      }
     }
 
-    let mutationObserver: MockMutationObserver | undefined
-    vi.stubGlobal('MutationObserver', class extends MockMutationObserver {
-      constructor(callback: MutationCallback) {
-        super(callback)
-        mutationObserver = this
-      }
-    })
+    vi.stubGlobal('MutationObserver', MockMutationObserver)
     vi.stubGlobal('matchMedia', vi.fn(() => ({
       get matches() {
         return reducedMotion
@@ -61,7 +55,7 @@ describe('useMotionCapability', () => {
     expect(screen.getByText('disabled')).toBeInTheDocument()
 
     document.documentElement.dataset.bgfx = 'on'
-    act(() => mutationObserver?.trigger())
+    act(() => triggerMutation?.())
     expect(screen.getByText('enabled')).toBeInTheDocument()
 
     reducedMotion = true

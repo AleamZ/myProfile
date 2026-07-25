@@ -53,13 +53,11 @@ function discreteProgressForLayout(layout: SceneLayout): number {
   return chapterIndex / CHAPTERS.length
 }
 
-export function useSceneDirector() {
+export function useSceneDirector(motionEnabled: boolean) {
   const store = useSceneStore()
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-
-    if (reducedMotion) {
+    if (!motionEnabled) {
       const sections = Array.from(document.querySelectorAll<HTMLElement>(sceneSelector))
       let layout = measureSceneLayout()
       const sync = () => store.setProgress(discreteProgressForLayout(layout))
@@ -145,5 +143,5 @@ export function useSceneDirector() {
       if (resizeFrame !== undefined) window.cancelAnimationFrame(resizeFrame)
       trigger.kill()
     }
-  }, [store])
+  }, [motionEnabled, store])
 }
