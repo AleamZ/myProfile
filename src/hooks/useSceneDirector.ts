@@ -1,28 +1,41 @@
 import { useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { CHAPTERS, type Chapter } from '../components/world/world.types'
+import { CHAPTERS } from '../components/world/world.types'
+import { sceneProgressFromProbe, type SceneSectionBounds } from '../scene/progress'
 import { useSceneStore } from '../scene/sceneHooks'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const sceneSelector = '[data-scene]'
 
-function syncNearestSection(sections: HTMLElement[], setProgress: (progress: number) => void) {
-  if (sections.length === 0) return
+interface SceneLayout {
+  probeOffset: number
+  sections: SceneSectionBounds[]
+}
 
-  const viewportMiddle = window.innerHeight / 2
-  const nearest = sections.reduce((current, section) => {
-    const currentDistance = Math.abs(current.getBoundingClientRect().top + current.getBoundingClientRect().height / 2 - viewportMiddle)
-    const sectionRect = section.getBoundingClientRect()
-    const sectionDistance = Math.abs(sectionRect.top + sectionRect.height / 2 - viewportMiddle)
-
-    return sectionDistance < currentDistance ? section : current
+function measureSceneLayout(): SceneLayout {
+  const scrollY = window.scrollY
+  const headerBottom = document.querySelector<HTMLElement>('.site-header')?.getBoundingClientRect().bottom ?? 0
+  const sections = Array.from(document.querySelectorAll<HTMLElement>(sceneSelector), (section) => {
+    const bounds = section.getBoundingClientRect()
+    return { top: bounds.top + scrollY, height: bounds.height }
   })
-  const chapter = nearest.dataset.scene as Chapter | undefined
-  const chapterIndex = chapter ? CHAPTERS.indexOf(chapter) : -1
 
-  if (chapterIndex >= 0) setProgress(chapterIndex / CHAPTERS.length)
+  return {
+    probeOffset: Math.max(headerBottom, 0) + 1,
+    sections,
+  }
+}
+
+function progressForLayout(layout: SceneLayout): number {
+  return sceneProgressFromProbe(window.scrollY + layout.probeOffset, layout.sections)
+}
+
+function discreteProgressForLayout(layout: SceneLayout): number {
+  const progress = progressForLayout(layout)
+  const chapterIndex = Math.min(Math.floor(progress * CHAPTERS.length), CHAPTERS.length - 1)
+  return chapterIndex / CHAPTERS.length
 }
 
 export function useSceneDirector() {
@@ -33,46 +46,79 @@ export function useSceneDirector() {
 
     if (reducedMotion) {
       const sections = Array.from(document.querySelectorAll<HTMLElement>(sceneSelector))
-      const sync = () => syncNearestSection(sections, store.setProgress)
+      let layout = measureSceneLayout()
+      const sync = () => store.setProgress(discreteProgressForLayout(layout))
       sync()
+      let active = true
       let animationFrame: number | undefined
-      const scheduleSync = () => {
+      let measureBeforeSync = false
+      const scheduleSync = (measure = false) => {
+        measureBeforeSync ||= measure
         if (animationFrame !== undefined) return
         animationFrame = window.requestAnimationFrame(() => {
           animationFrame = undefined
+          if (measureBeforeSync) {
+            layout = measureSceneLayout()
+            measureBeforeSync = false
+          }
           sync()
         })
       }
+      const onScroll = () => scheduleSync()
+      const onResize = () => scheduleSync(true)
+
+      void document.fonts?.ready.then(() => {
+        if (active) scheduleSync(true)
+      })
 
       if (typeof IntersectionObserver !== 'undefined') {
         const observer = new IntersectionObserver(sync, { threshold: [0, 0.5, 1] })
         sections.forEach((section) => observer.observe(section))
-        window.addEventListener('scroll', scheduleSync, { passive: true })
-        window.addEventListener('resize', scheduleSync)
+        window.addEventListener('scroll', onScroll, { passive: true })
+        window.addEventListener('resize', onResize)
         return () => {
+          active = false
           observer.disconnect()
-          window.removeEventListener('scroll', scheduleSync)
-          window.removeEventListener('resize', scheduleSync)
+          window.removeEventListener('scroll', onScroll)
+          window.removeEventListener('resize', onResize)
           if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame)
         }
       }
 
-      window.addEventListener('scroll', scheduleSync, { passive: true })
-      window.addEventListener('resize', scheduleSync)
+      window.addEventListener('scroll', onScroll, { passive: true })
+      window.addEventListener('resize', onResize)
       return () => {
-        window.removeEventListener('scroll', scheduleSync)
-        window.removeEventListener('resize', scheduleSync)
+        active = false
+        window.removeEventListener('scroll', onScroll)
+        window.removeEventListener('resize', onResize)
         if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame)
       }
     }
 
+    let layout = measureSceneLayout()
+    const sync = () => store.setProgress(progressForLayout(layout))
+    const refreshLayout = () => {
+      layout = measureSceneLayout()
+      sync()
+    }
     const trigger = ScrollTrigger.create({
       trigger: '.homepage',
       start: 'top top',
       end: 'bottom bottom',
-      onUpdate: (self) => store.setProgress(self.progress),
+      onUpdate: sync,
+      onRefresh: refreshLayout,
     })
+    sync()
     let active = true
+    let resizeFrame: number | undefined
+    const onResize = () => {
+      if (resizeFrame !== undefined) return
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = undefined
+        refreshLayout()
+      })
+    }
+    window.addEventListener('resize', onResize)
 
     void document.fonts?.ready.then(() => {
       if (active) ScrollTrigger.refresh()
@@ -80,6 +126,8 @@ export function useSceneDirector() {
 
     return () => {
       active = false
+      window.removeEventListener('resize', onResize)
+      if (resizeFrame !== undefined) window.cancelAnimationFrame(resizeFrame)
       trigger.kill()
     }
   }, [store])

@@ -27,12 +27,25 @@ function DirectorHarness() {
 describe('useSceneDirector', () => {
   afterEach(() => {
     vi.clearAllMocks()
+    vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
 
-  it('routes document scroll progress into the scene store and cleans up its trigger', () => {
+  it('warps cached section geometry into scene progress and cleans up its trigger', () => {
     const kill = vi.fn()
     let onUpdate: ((self: { progress: number }) => void) | undefined
+    vi.stubGlobal('scrollY', 725)
+    const getBoundingClientRect = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        const absoluteTop = this.dataset.scene === 'projects' ? 793 : 0
+        const height = this.classList.contains('site-header') ? 68 : this.dataset.scene === 'projects' ? 1210 : 793
+
+        return {
+          top: this.classList.contains('site-header') ? 0 : absoluteTop - window.scrollY,
+          bottom: this.classList.contains('site-header') ? 68 : absoluteTop - window.scrollY + height,
+          height,
+        } as DOMRect
+      })
     create.mockImplementation((config) => {
       onUpdate = config.onUpdate
       return { kill }
@@ -41,6 +54,9 @@ describe('useSceneDirector', () => {
     const { getByTestId, unmount } = render(
       <SceneProvider>
         <div className="homepage">
+          <header className="site-header" />
+          <section data-scene="identity" />
+          <section data-scene="projects" />
           <DirectorHarness />
         </div>
       </SceneProvider>,
@@ -53,8 +69,10 @@ describe('useSceneDirector', () => {
       end: 'bottom bottom',
     }))
 
-    act(() => onUpdate?.({ progress: 0.5 }))
-    expect(getByTestId('chapter')).toHaveTextContent('experience')
+    const measuredAtSetup = getBoundingClientRect.mock.calls.length
+    act(() => onUpdate?.({ progress: 0.159 }))
+    expect(getByTestId('chapter')).toHaveTextContent('projects')
+    expect(getBoundingClientRect).toHaveBeenCalledTimes(measuredAtSetup)
 
     unmount()
     expect(kill).toHaveBeenCalledTimes(1)
@@ -77,25 +95,34 @@ describe('useSceneDirector', () => {
     vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
     vi.stubGlobal('requestAnimationFrame', requestAnimationFrame)
     vi.stubGlobal('cancelAnimationFrame', vi.fn())
+    let scrollY = 0
+    vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => scrollY)
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      const absoluteTop = this.dataset.scene === 'projects' ? 793 : 0
+      const height = this.classList.contains('site-header') ? 68 : this.dataset.scene === 'projects' ? 1413 : 793
+
+      return {
+        top: this.classList.contains('site-header') ? 0 : absoluteTop - window.scrollY,
+        bottom: this.classList.contains('site-header') ? 68 : absoluteTop - window.scrollY + height,
+        height,
+      } as DOMRect
+    })
     const addEventListener = vi.spyOn(window, 'addEventListener')
     const removeEventListener = vi.spyOn(window, 'removeEventListener')
-    let projectsNearest = false
 
     const { getByTestId, unmount } = render(
       <SceneProvider>
         <div className="homepage">
+          <header className="site-header" />
           <section data-scene="identity" />
           <section data-scene="projects" />
           <DirectorHarness />
         </div>
       </SceneProvider>,
     )
-    const [identity, projects] = Array.from(document.querySelectorAll<HTMLElement>('[data-scene]'))
-    vi.spyOn(identity, 'getBoundingClientRect').mockImplementation(() => ({ top: projectsNearest ? 750 : 350, height: 100 }) as DOMRect)
-    vi.spyOn(projects, 'getBoundingClientRect').mockImplementation(() => ({ top: projectsNearest ? 350 : 750, height: 100 }) as DOMRect)
 
     window.innerHeight = 800
-    projectsNearest = true
+    scrollY = 725
     window.dispatchEvent(new Event('scroll'))
     act(() => runFrame?.(0))
 
