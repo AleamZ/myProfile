@@ -194,6 +194,16 @@
     }
 }
 
+@media (max-width: 480px) {
+    .contact__beacon .contact__email {
+        max-width: 100%;
+        font-size: min(4.1vw, 1rem);
+        letter-spacing: -0.04em;
+        overflow-wrap: normal;
+        white-space: nowrap;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .contact__beacon {
         backdrop-filter: none;
