@@ -814,6 +814,7 @@
     .cf {
         --cf-card-w: clamp(220px, 80vw, 300px);
         --cf-step: 62vw;
+        overflow-x: clip;
 
         &::before {
             left: 0;
