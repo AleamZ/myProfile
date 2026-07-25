@@ -128,12 +128,9 @@ Run: `npm test -- src/scene/progress.test.ts`
 
 Expected: FAIL because `./progress` does not exist.
 
-- [ ] **Step 5: Commit the harness**
+- [ ] **Step 5: Preserve RED evidence and continue directly into Task 2**
 
-```powershell
-git add package.json package-lock.json vite.config.ts src/test/setup.ts src/scene/progress.test.ts
-git commit -m "test: add portfolio scene test harness"
-```
+Record the failing command and expected missing-module output in the implementation report. Do not commit a failing test suite; Task 1 and Task 2 form one TDD deliverable and are committed together only after the progress implementation turns the suite green.
 
 ---
 
@@ -242,8 +239,8 @@ Expected: TypeScript and Vite build PASS.
 - [ ] **Step 7: Commit the progress foundation**
 
 ```powershell
-git add src/App.tsx src/components/world/world.types.ts src/scene
-git commit -m "feat: add typed orbital scene store"
+git add package.json package-lock.json vite.config.ts src/test/setup.ts src/App.tsx src/components/world/world.types.ts src/scene
+git commit -m "feat: add tested orbital scene foundation"
 ```
 
 ---
