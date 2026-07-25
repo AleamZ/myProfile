@@ -1,0 +1,37 @@
+.world-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.1s var(--ease-rule);
+    contain: strict;
+
+    canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+}
+
+.homepage[data-world='active'] {
+    .world-canvas {
+        opacity: 1;
+    }
+
+    [data-world-ambience] {
+        opacity: 0.14;
+        visibility: visible;
+        transition:
+            opacity 1.1s var(--ease-rule),
+            visibility 0s;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .world-canvas,
+    .homepage[data-world='active'] [data-world-ambience] {
+        transition: none;
+    }
+}

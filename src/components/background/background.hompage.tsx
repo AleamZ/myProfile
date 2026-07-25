@@ -245,7 +245,7 @@ const Background = () => {
 
             <div className="fx-vignette" aria-hidden="true" />
 
-            <div className="fx-night" aria-hidden="true">
+            <div className="fx-night" data-world-ambience="" aria-hidden="true">
                 <div className="fx-night__stars">
                     {starLayers.map((l) => (
                         <i
@@ -264,7 +264,7 @@ const Background = () => {
                 </div>
             </div>
 
-            <div className="fx-hairline" aria-hidden="true">
+            <div className="fx-hairline" data-world-ambience="" aria-hidden="true">
                 <div className="fx-hairline__grid" />
                 <div className="fx-hairline__scan" />
                 <div className="fx-hairline__scan--b" />
