@@ -24,7 +24,9 @@ export interface ChapterProps {
  * come from here, so they cannot drift apart from one another.
  */
 const Chapter = ({ id, index, title, meta, edge, wide, tall, children }: ChapterProps) => {
-    const innerRef = useChapterVar<HTMLDivElement>(id)
+    // Written to the travel layer, not the sticky one: --chapter drives --in
+    // and --out, which live on .chapter__travel.
+    const travelRef = useChapterVar<HTMLDivElement>(id)
     const headingId = `${id}-title`
 
     return (
@@ -34,16 +36,18 @@ const Chapter = ({ id, index, title, meta, edge, wide, tall, children }: Chapter
             data-chapter={id}
             aria-labelledby={headingId}
         >
-            <div className="chapter__inner" ref={innerRef}>
-                <header className="chapter__head">
-                    <span className="chapter__index t-data" aria-hidden="true">{index}</span>
-                    <h2 className="chapter__title t-title" id={headingId}>{title}</h2>
-                    <span className="chapter__rule" aria-hidden="true" />
-                    {meta ? <span className="chapter__meta t-data">{meta}</span> : null}
-                </header>
+            <div className="chapter__inner">
+                <div className="chapter__travel" ref={travelRef}>
+                    <header className="chapter__head">
+                        <span className="chapter__index t-data" aria-hidden="true">{index}</span>
+                        <h2 className="chapter__title t-title" id={headingId}>{title}</h2>
+                        <span className="chapter__rule" aria-hidden="true" />
+                        {meta ? <span className="chapter__meta t-data">{meta}</span> : null}
+                    </header>
 
-                <div className={`chapter__body${wide ? ' chapter__body--wide' : ''}`}>
-                    {children}
+                    <div className={`chapter__body${wide ? ' chapter__body--wide' : ''}`}>
+                        {children}
+                    </div>
                 </div>
             </div>
         </section>

@@ -67,6 +67,12 @@ function useDisposable<T extends { dispose(): void }>(create: () => T): T {
   return held.current
 }
 
+// The camera closes on the instrument across the page: 8 units out at the
+// opening, 5.2 by the end. Combined with the chapters flying past it, the
+// scroll reads as travel rather than as a list moving.
+const DOLLY_FAR = 8
+const DOLLY_NEAR = 5.2
+
 function Gimbal({ anchor }: { anchor: RefObject<HTMLElement | null> }) {
   const root = useRef<Group>(null)
   const rings = useRef<Group>(null)
@@ -95,7 +101,7 @@ function Gimbal({ anchor }: { anchor: RefObject<HTMLElement | null> }) {
 
   const attitude = useMemo(() => ({ x: 0.18, y: 0.3, z: 0, charge: 0.5 }), [])
 
-  useFrame((_, delta) => {
+  useFrame(({ camera }, delta) => {
     const group = root.current
     const ringGroup = rings.current
     const coreGroup = core.current
@@ -103,14 +109,25 @@ function Gimbal({ anchor }: { anchor: RefObject<HTMLElement | null> }) {
     const node = anchor.current
     if (!group || !ringGroup || !coreGroup || !dustGroup) return
 
+    const { reading } = stage.get()
+
+    camera.position.z = MathUtils.damp(
+      camera.position.z,
+      DOLLY_FAR + (DOLLY_NEAR - DOLLY_FAR) * reading.overall,
+      2.4,
+      delta,
+    )
+
     // The one binding between the two coordinate systems: the object is placed
     // where the grid says it goes, not at a number somebody liked the look of.
+    // The lens distance has to be the camera's live position, or dollying it
+    // would slide the object off the grid cell it is supposed to fill.
     if (node) {
       const rect = node.getBoundingClientRect()
       const placement = placeInWorld(
         { left: rect.left, width: rect.width, top: rect.top, height: rect.height },
         { width: size.width, height: size.height },
-        LENS,
+        { distance: camera.position.z, fov: LENS.fov },
       )
       group.position.x = MathUtils.damp(group.position.x, placement.x, 6, delta)
       group.position.y = MathUtils.damp(group.position.y, placement.y, 6, delta)
@@ -118,7 +135,6 @@ function Gimbal({ anchor }: { anchor: RefObject<HTMLElement | null> }) {
       group.scale.setScalar(MathUtils.damp(group.scale.x, target, 6, delta))
     }
 
-    const { reading } = stage.get()
     const index = Math.min(Math.max(CHAPTERS.indexOf(reading.id), 0), ATTITUDE.length - 1)
     const from = ATTITUDE[index]
     const to = ATTITUDE[Math.min(index + 1, ATTITUDE.length - 1)]
@@ -138,9 +154,13 @@ function Gimbal({ anchor }: { anchor: RefObject<HTMLElement | null> }) {
     latticeInk.opacity = MathUtils.damp(latticeInk.opacity, 0.05 + attitude.charge * 0.06, 3.4, delta)
     dustInk.opacity = MathUtils.damp(dustInk.opacity, 0.22 + attitude.charge * 0.24, 3.4, delta)
 
-    coreGroup.rotation.y += delta * 0.05
-    coreGroup.rotation.x += delta * 0.016
-    dustGroup.rotation.y -= delta * 0.018
+    coreGroup.rotation.y += delta * 0.22
+    coreGroup.rotation.x += delta * 0.07
+    dustGroup.rotation.y -= delta * 0.09
+    dustGroup.rotation.x += delta * 0.03
+    // A full turn of the rings across the page, on top of the per-chapter
+    // attitude — the object is visibly turning at any moment you look at it.
+    ringGroup.rotation.z += delta * 0.12
   })
 
   return (

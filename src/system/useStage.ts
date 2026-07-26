@@ -5,6 +5,13 @@ import { stage, type StageState } from './stage'
 const SECTION_SELECTOR = '[data-chapter]'
 const PROBE_GUTTER = 24
 
+// Kept in step with --ramp-in in chapter.scss by hand — the two live in
+// different languages and nothing enforces it automatically. Jump-navigation
+// (the rail, the skip link) targets a point just past this, so landing on a
+// chapter shows it already standing still rather than mid-arrival: dim,
+// tipped away and a third the size it settles at.
+export const CHAPTER_ARRIVAL_RATIO = 0.18
+
 /**
  * Subscribes a component to the readout. Only the telemetry column and the
  * chapter rail should use this — it re-renders on every scroll tick, which is
@@ -35,6 +42,20 @@ function measure(): { sections: SectionBounds[]; maxScrollY: number; probeOffset
     maxScrollY: Math.max(scrollHeight - window.innerHeight, 0),
     probeOffset: PROBE_GUTTER,
   }
+}
+
+/**
+ * Where to scroll to for a chapter to read as arrived rather than mid-flight.
+ * Used by anything that jumps directly to a chapter — the rail, the skip
+ * link — instead of the browser's default "scroll its top edge to the
+ * viewport top", which lands during the arrival ramp.
+ */
+export function scrollTargetForChapter(id: ChapterId): number | null {
+  const node = document.querySelector<HTMLElement>(`[data-chapter="${id}"]`)
+  if (!node) return null
+  const rect = node.getBoundingClientRect()
+  const top = rect.top + window.scrollY
+  return top + rect.height * CHAPTER_ARRIVAL_RATIO - PROBE_GUTTER + 4
 }
 
 /**

@@ -1,8 +1,29 @@
 // ── The one section template ───────────────────────────────────
 // Every chapter is built from this and nothing else: same grid, same head,
-// same rule weight, same arrival. Sections differ only in what they put in the
-// body. That sameness is the coherence — five bespoke layouts is what made the
-// page read as five unrelated pages.
+// same rule weight, same choreography. Sections differ only in what they put
+// in the body.
+//
+// The choreography is the point of this file. Chapters do not fade past one
+// another — they travel through a shared perspective space: arriving from far
+// off and tipped away, squaring up as they take the screen, then rotating and
+// flying past the camera on the way out.
+//
+// Two nested layers do this, and the split matters:
+//   .chapter__inner  — sticky, exactly one viewport tall, stays put. It is
+//                       what carries `perspective`, so the vanishing point is
+//                       always the centre of what the reader is looking at.
+//   .chapter__travel — the grid, and the thing that actually moves. It reads
+//                       its ancestor's perspective as a viewer looking in, so
+//                       nothing here declares perspective of its own.
+// Putting both jobs on one element was the earlier bug: a `perspective()`
+// function embedded in an element's own transform is measured against that
+// element's own (tiny) box, not the viewport, so the travel warped around the
+// wrong point instead of the screen's centre.
+
+.stage-space {
+    position: relative;
+    z-index: 2;
+}
 
 .chapter {
     position: relative;
@@ -10,69 +31,96 @@
 }
 
 .chapter__inner {
-    // Arrival is deliberately much shorter than departure: jumping straight to
-    // a chapter from the rail lands at progress 0, and a long entry ramp would
-    // greet the reader with a half-faded page.
-    --ramp-in: 0.05;
-    --ramp-out: 0.18;
-    --in: clamp(0, calc(var(--chapter) / var(--ramp-in)), 1);
-    --out: clamp(0, calc((var(--chapter) - (1 - var(--ramp-out))) / var(--ramp-out)), 1);
-    --here: clamp(0, calc(var(--in) - var(--out)), 1);
-
     // Sticky, not pinned: pinning injects a spacer and freezes the section's
     // document position, which is exactly what the reader measures to work out
-    // which chapter is on screen. Sticky leaves the geometry alone.
+    // which chapter is on screen.
     position: sticky;
     top: 0;
     min-height: 100svh;
-    display: grid;
-    grid-template-columns: repeat(12, var(--col));
-    column-gap: var(--gutter);
-    align-content: center;
-    width: 100%;
-    padding-block: clamp(64px, 10vh, 120px);
+    display: flex;
+    align-items: center;
+    // No overflow rule here on purpose: `body` already carries
+    // `overflow-x: clip` (see _base.scss), so a chapter mid-flight cannot
+    // widen the page. Clipping per-chapter as well double-clips at the exact
+    // sub-pixel edge of the resting (untransformed) grid and shears text off.
+    perspective: 1500px;
+    perspective-origin: 46% 50%;
 }
 
 // A sticky box taller than the viewport pins at the top and its own overflow
-// becomes unreachable — the reader can never scroll to the bottom of it. Any
-// chapter whose body does not fit one screen opts out.
+// becomes unreachable. Any chapter whose body does not fit one screen opts out
+// of the pin — but it keeps the travel.
 .chapter--tall .chapter__inner {
     position: static;
     min-height: 0;
 }
 
-// Arrive, hold, depart. The hold is the point: without it a chapter merely
-// slides past, which is what made the page feel like stacked panels.
-.js .chapter__inner {
-    opacity: calc(0.35 + 0.65 * var(--here));
-    transform: translate3d(0, calc((1 - var(--in)) * 2.6vh - var(--out) * 2.6vh), 0);
+.chapter__travel {
+    // Arrival is shorter than departure: most of the time the reader is
+    // watching a chapter leave, not arrive, so that is where the travel earns
+    // its keep. A long entry ramp also means jumping in from the rail lands
+    // mid-approach, half a screen away from the content.
+    --ramp-in: 0.18;
+    --ramp-out: 0.3;
+    --in: clamp(0, calc(var(--chapter) / var(--ramp-in)), 1);
+    --out: clamp(0, calc((var(--chapter) - (1 - var(--ramp-out))) / var(--ramp-out)), 1);
+    --here: clamp(0, calc(var(--in) - var(--out)), 1);
+
+    // How far off, and how far past. Departure travels toward the camera, so
+    // a chapter grows and blows through the viewport rather than shrinking
+    // politely away.
+    --z: calc((1 - var(--in)) * -1150px + var(--out) * 900px);
+    --tip: calc((1 - var(--in)) * 26deg - var(--out) * 30deg);
+    --swing: calc((1 - var(--in)) * -14deg + var(--out) * 10deg);
+    --roll: calc((1 - var(--in)) * 4deg - var(--out) * 3deg);
+
+    display: grid;
+    grid-template-columns: repeat(12, var(--col));
+    column-gap: var(--gutter);
+    width: 100%;
+    padding-block: clamp(64px, 10vh, 120px);
+    transform-style: preserve-3d;
+}
+
+.js .chapter__travel {
+    opacity: calc(0.06 + 0.94 * var(--here));
+    transform:
+        translate3d(0, 0, var(--z))
+        rotateX(var(--tip))
+        rotateY(var(--swing))
+        rotateZ(var(--roll));
 }
 
 // The opening chapter is already on screen at load and the closing one has
-// nowhere to go; ramping them would land the reader on a dimmed page and
-// leave them reading the end through a veil.
-.js .chapter--opening .chapter__inner { --in: 1; }
-.js .chapter--closing .chapter__inner { --out: 0; }
+// nowhere to go; flying them in or out would mean landing on an empty page and
+// ending on one.
+.js .chapter--opening .chapter__travel { --in: 1; }
+.js .chapter--closing .chapter__travel { --out: 0; }
 
-// ── Head ───────────────────────────────────────────────────────
+// ── Depth inside the chapter ───────────────────────────────────
+// Each band sits on its own plane, so the rotation above parallaxes them
+// against one another instead of turning a flat card. That is the difference
+// between travelling through a space and sliding a picture across one.
 .chapter__head {
     grid-column: 1 / -1;
     display: flex;
     align-items: baseline;
     gap: clamp(12px, 1.6vw, 24px);
     margin-bottom: clamp(28px, 5vh, 64px);
+    transform: translateZ(90px);
 }
 
 .chapter__index {
     flex: none;
     color: var(--signal);
+    transform: translateZ(50px);
 }
 
 .chapter__title {
     flex: none;
 }
 
-// The rule draws itself once the head arrives — the only entrance a head gets.
+// Draws itself as the chapter squares up.
 .chapter__rule {
     flex: 1 1 auto;
     height: 1px;
@@ -88,13 +136,14 @@
     text-align: right;
 }
 
-// ── Body ───────────────────────────────────────────────────────
 // Ten columns of reading measure. The telemetry column owns eleven and twelve
 // and must never be written over — that readout is the one thing on the page
 // that is always visible.
 .chapter__body {
     grid-column: 1 / 11;
     min-width: 0;
+    transform: translateZ(20px);
+    transform-style: preserve-3d;
 }
 
 .chapter__body--wide {
@@ -103,7 +152,17 @@
 
 @media (max-width: 900px) {
     .chapter__inner {
+        perspective: 1100px;
+        perspective-origin: 50% 50%;
+    }
+
+    .chapter__travel {
         grid-template-columns: repeat(6, var(--col));
+        // Shallower on a narrow screen: at desktop depth the rotation throws
+        // content past the edges of a phone.
+        --z: calc((1 - var(--in)) * -700px + var(--out) * 520px);
+        --tip: calc((1 - var(--in)) * 18deg - var(--out) * 20deg);
+        --swing: 0deg;
     }
 
     .chapter__body,
@@ -113,10 +172,29 @@
 
     .chapter__head {
         flex-wrap: wrap;
+        transform: translateZ(50px);
     }
 
     .chapter__meta {
         flex: 1 1 100%;
         text-align: left;
+    }
+}
+
+// Travel is motion, and motion is exactly what this asks to be turned off.
+@media (prefers-reduced-motion: reduce) {
+    .chapter__inner {
+        perspective: none;
+    }
+
+    .js .chapter__travel {
+        opacity: 1;
+        transform: none;
+    }
+
+    .chapter__head,
+    .chapter__index,
+    .chapter__body {
+        transform: none;
     }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { CHAPTERS, type ChapterId } from '../system/chapters'
-import { useStageState } from '../system/useStage'
+import { scrollTargetForChapter, useStageState } from '../system/useStage'
 import { useLang } from '../i18n/LanguageProvider'
 import { LANGS } from '../i18n/lang'
 
@@ -44,7 +44,15 @@ const RAIL_INDEX: Record<ChapterId, string> = {
     contact: '05',
 }
 
-/** Chapter index down the left edge. Doubles as the page's navigation. */
+/**
+ * Chapter index down the left edge. Doubles as the page's navigation.
+ *
+ * Jumping straight to a chapter's top edge — the browser's default for a hash
+ * link — lands mid-arrival: dim, tipped away, a third of size. `scrollTo`
+ * targets the point just past that ramp instead, so a jump shows the chapter
+ * already standing still. The href is kept so the link still works with
+ * JavaScript disabled, and so middle-click / open-in-new-tab still resolve.
+ */
 export const Rail = () => {
     const { t } = useLang()
     const { reading } = useStageState()
@@ -65,6 +73,13 @@ export const Rail = () => {
                     href={`#${id}`}
                     aria-current={id === reading.id ? 'true' : undefined}
                     aria-label={labels[id]}
+                    onClick={(event) => {
+                        const target = scrollTargetForChapter(id)
+                        if (target === null) return
+                        event.preventDefault()
+                        window.scrollTo({ top: target, behavior: 'smooth' })
+                        window.history.replaceState(null, '', `#${id}`)
+                    }}
                 >
                     {RAIL_INDEX[id]}
                 </a>

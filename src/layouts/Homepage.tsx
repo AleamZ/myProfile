@@ -60,7 +60,11 @@ const Homepage = () => {
             <Rail />
             <Telemetry />
 
-            <main>
+            {/* Holds the perspective the chapters travel through. It must not
+                wrap the frame, rail, telemetry or canvas: perspective makes
+                its element the containing block for position: fixed, which
+                would tear all of them off the viewport. */}
+            <main className="stage-space">
                 <Identity />
                 <Work />
                 <Experience />
