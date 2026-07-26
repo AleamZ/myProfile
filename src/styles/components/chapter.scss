@@ -3,19 +3,28 @@
 // same rule weight, same choreography. Sections differ only in what they put
 // in the body.
 //
-// The choreography is the point of this file. Chapters do not fade past one
-// another — they travel through a shared perspective space: arriving from far
-// off and tipped away, squaring up as they take the screen, then rotating and
-// flying past the camera on the way out.
+// The choreography runs on three layers that stay coupled to one another
+// instead of running in isolation — which is what made the previous pass
+// read as a PowerPoint "fly in": one rigid block moving, then sitting dead
+// still until the next transition.
+//   1. Scroll travel   — .chapter__travel arrives, holds, departs.
+//   2. Live idle motion — a pointer tilt and a slow breathing keyframe run
+//      underneath the travel at all times, so a "held" chapter never actually
+//      stops moving the way a slide does.
+//   3. Instrument coupling — the 3D object publishes --rig-charge and
+//      --rig-spin every frame (see Instrument.tsx); the rule, the index glow
+//      and the active rail dot read them, so the typography visibly answers
+//      to what the WebGL object is doing rather than the two just happening
+//      to run at once.
 //
-// Two nested layers do this, and the split matters:
+// Two nested layers carry the travel, and the split matters:
 //   .chapter__inner  — sticky, exactly one viewport tall, stays put. It is
 //                       what carries `perspective`, so the vanishing point is
 //                       always the centre of what the reader is looking at.
 //   .chapter__travel — the grid, and the thing that actually moves. It reads
 //                       its ancestor's perspective as a viewer looking in, so
 //                       nothing here declares perspective of its own.
-// Putting both jobs on one element was the earlier bug: a `perspective()`
+// Putting both jobs on one element was an earlier bug: a `perspective()`
 // function embedded in an element's own transform is measured against that
 // element's own (tiny) box, not the viewport, so the travel warped around the
 // wrong point instead of the screen's centre.
@@ -84,10 +93,15 @@
 
 .js .chapter__travel {
     opacity: calc(0.06 + 0.94 * var(--here));
+    // The pointer tilt (--tilt-x/--tilt-y, published by system/pointer.ts) is
+    // additive with the scroll-driven tip/swing, not a replacement for it —
+    // a chapter mid-flight still leans with the cursor on top of its travel,
+    // which is what keeps the two reading as one continuous space rather than
+    // a travel effect with a hover effect bolted on.
     transform:
         translate3d(0, 0, var(--z))
-        rotateX(var(--tip))
-        rotateY(var(--swing))
+        rotateX(calc(var(--tip) + var(--tilt-y, 0deg) * var(--here)))
+        rotateY(calc(var(--swing) + var(--tilt-x, 0deg) * var(--here)))
         rotateZ(var(--roll));
 }
 
@@ -101,39 +115,70 @@
 // Each band sits on its own plane, so the rotation above parallaxes them
 // against one another instead of turning a flat card. That is the difference
 // between travelling through a space and sliding a picture across one.
+//
+// Each band also breathes on its own slow, offset cycle — small enough to
+// read as "alive" rather than as an obvious loop, and never quite in phase
+// with the others, so the whole head does not move as one plate. This is what
+// runs during the "held" middle of a chapter, when the scroll-driven travel
+// above has nothing left to animate.
 .chapter__head {
     grid-column: 1 / -1;
     display: flex;
     align-items: baseline;
     gap: clamp(12px, 1.6vw, 24px);
     margin-bottom: clamp(28px, 5vh, 64px);
-    transform: translateZ(90px);
+    animation: breathe-head 9s var(--ease-type) infinite;
 }
 
 .chapter__index {
     flex: none;
+    position: relative;
     color: var(--signal);
-    transform: translateZ(50px);
+    // The glow is the instrument's charge made visible in 2D — when the
+    // object is at its brightest (mid-chapter, rings wide open) the index
+    // number burns brighter too, in the same beat.
+    text-shadow: 0 0 calc(4px + var(--rig-charge, 0.6) * 14px) rgba(111, 227, 242, calc(0.3 + var(--rig-charge, 0.6) * 0.5));
+    animation: breathe-index 9s var(--ease-type) infinite -2.4s;
+}
+
+// A small dial ring behind the index number, its rotation driven directly by
+// the instrument's own spin — the one piece of UI chrome that is not merely
+// synced to the object but is *literally reading its rotation value*.
+.chapter__index::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -7px -9px;
+    border: 1px solid var(--line);
+    border-top-color: var(--line-signal);
+    border-radius: 50%;
+    transform: rotate(var(--rig-spin, 0deg));
+    opacity: 0.7;
 }
 
 .chapter__title {
     flex: none;
+    animation: breathe-title 9s var(--ease-type) infinite -1.1s;
 }
 
-// Draws itself as the chapter squares up.
+// Draws itself as the chapter squares up, and its glow tracks the instrument
+// exactly like the index does — the rule is the visual thread between "the
+// object is charged" and "this chapter is the one that's live".
 .chapter__rule {
     flex: 1 1 auto;
     height: 1px;
     background: var(--line);
+    box-shadow: 0 0 calc(var(--rig-charge, 0.6) * 10px) rgba(111, 227, 242, calc(var(--rig-charge, 0.6) * 0.45));
     transform-origin: left;
     transform: scaleX(var(--in));
-    transition: transform 0.8s var(--ease);
+    transition: transform 0.8s var(--ease), box-shadow 0.4s var(--ease);
 }
 
 .chapter__meta {
     flex: none;
     color: var(--ink-faint);
     text-align: right;
+    animation: breathe-meta 9s var(--ease-type) infinite -3.6s;
 }
 
 // Ten columns of reading measure. The telemetry column owns eleven and twelve
@@ -142,12 +187,42 @@
 .chapter__body {
     grid-column: 1 / 11;
     min-width: 0;
-    transform: translateZ(20px);
     transform-style: preserve-3d;
+    animation: breathe-body 11s var(--ease-type) infinite -4s;
 }
 
 .chapter__body--wide {
     grid-column: 1 / -1;
+}
+
+// Deliberately small: this is meant to be felt, not seen. Each keyframe's
+// resting transform is its OWN static value from before (translateZ(90px) for
+// the head, 50px for the index, 20px for the body) — the animation orbits
+// around that point rather than starting from identity, so nothing snaps when
+// a chapter first becomes visible mid-cycle.
+@keyframes breathe-head {
+    0%, 100% { transform: translateZ(90px) rotateZ(0deg); }
+    50% { transform: translateZ(97px) rotateZ(0.35deg); }
+}
+
+@keyframes breathe-index {
+    0%, 100% { transform: translateZ(50px); }
+    50% { transform: translateZ(58px); }
+}
+
+@keyframes breathe-title {
+    0%, 100% { transform: translateZ(0); }
+    50% { transform: translateZ(6px); }
+}
+
+@keyframes breathe-meta {
+    0%, 100% { transform: translateZ(0); }
+    50% { transform: translateZ(-5px); }
+}
+
+@keyframes breathe-body {
+    0%, 100% { transform: translateZ(20px); }
+    50% { transform: translateZ(26px) rotateX(-0.3deg); }
 }
 
 @media (max-width: 900px) {
@@ -172,7 +247,6 @@
 
     .chapter__head {
         flex-wrap: wrap;
-        transform: translateZ(50px);
     }
 
     .chapter__meta {
@@ -194,7 +268,14 @@
 
     .chapter__head,
     .chapter__index,
+    .chapter__title,
+    .chapter__meta,
     .chapter__body {
+        animation: none;
+        transform: none;
+    }
+
+    .chapter__index::before {
         transform: none;
     }
 }

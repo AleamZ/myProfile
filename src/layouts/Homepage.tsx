@@ -6,6 +6,7 @@ import Experience from '../components/sections/Experience'
 import Skills from '../components/sections/Skills'
 import Contact from '../components/sections/Contact'
 import { useStageDriver } from '../system/useStage'
+import { trackPointerTilt } from '../system/pointer'
 import { useLang } from '../i18n/LanguageProvider'
 
 const Instrument = lazy(() => import('../components/Instrument/Instrument'))
@@ -36,6 +37,11 @@ const Homepage = () => {
         // absorb them rather than shipping a slideshow.
         const small = window.matchMedia('(max-width: 900px)').matches
         setScene(small ? 'plain' : 'bloom')
+    }, [])
+
+    useEffect(() => {
+        if (prefersReducedMotion()) return
+        return trackPointerTilt()
     }, [])
 
     return (

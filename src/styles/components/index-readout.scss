@@ -5,14 +5,26 @@
 // is what made the previous build read as five unrelated pages.
 
 .work {
+    // A local, tighter lens over the list-and-readout pair: their own small
+    // scene nested inside the chapter's wider one, the way a film cuts to a
+    // closer lens for a two-shot without changing the wider set around it.
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
     gap: clamp(20px, 3vw, 56px);
     align-items: start;
+    perspective: 1100px;
 }
 
 // ── Index ──────────────────────────────────────────────────────
+// Rows arrive individually, staggered by --i, inside the chapter's own
+// arrival window — a chapter is not one rigid card flying in, it's a small
+// crowd of things each finding their own seat. Reads correctly whether
+// --chapter got here by scrolling or by a rail jump (which sets it directly
+// past the window, so every row is already seated when the reader lands).
 .work__row {
+    --i: 0;
+    --arrive: clamp(0, calc((var(--chapter, 0) - var(--i) * 0.014) / 0.09), 1);
+
     position: relative;
     width: 100%;
     display: grid;
@@ -24,7 +36,6 @@
     border-bottom: 1px solid var(--line);
     transition: color 0.3s var(--ease);
 
-    // A rule that draws in from the left, rather than a background swap.
     &::after {
         content: '';
         position: absolute;
@@ -42,6 +53,11 @@
     &:focus-visible .work__name {
         color: var(--ink);
     }
+}
+
+.js .work__row {
+    opacity: var(--arrive);
+    transform: translateZ(calc((1 - var(--arrive)) * -130px)) rotateX(calc((1 - var(--arrive)) * 42deg));
 }
 
 .work__no {
@@ -75,16 +91,21 @@
 }
 
 // ── Readout ────────────────────────────────────────────────────
+// A panel swinging into place on the same lens as the rows beside it, not a
+// fade-and-nudge: selecting a different row should feel like the readout is a
+// physical plate being turned to face the reader, matching the vocabulary the
+// rest of the page already uses for arrival.
 .work__readout {
     padding-left: clamp(0px, 1.5vw, 24px);
     border-left: 1px solid var(--line);
-    animation: readout-in 520ms var(--ease-type);
+    transform-style: preserve-3d;
+    animation: readout-in 640ms var(--ease-type);
 }
 
 @keyframes readout-in {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: rotateY(-16deg) translateZ(-70px);
     }
 }
 
@@ -199,5 +220,16 @@
         padding-top: 20px;
         border-left: 0;
         border-top: 1px solid var(--line);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .work__row {
+        opacity: 1;
+        transform: none;
+    }
+
+    .work__readout {
+        animation: none;
     }
 }

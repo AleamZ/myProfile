@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { CSSProperties } from 'react'
 import Chapter from '../Chapter'
 import { useLang } from '../../i18n/LanguageProvider'
 import { EDUCATION, EXPERIENCE } from '../../data/experience'
@@ -38,6 +39,7 @@ const Experience = () => {
                             <button
                                 type="button"
                                 className={`work__row${i === active ? ' is-active' : ''}`}
+                                style={{ '--i': i } as CSSProperties}
                                 aria-pressed={i === active}
                                 onPointerEnter={() => setActive(i)}
                                 onFocus={() => setActive(i)}

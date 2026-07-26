@@ -100,6 +100,7 @@ function Gimbal({ anchor }: { anchor: RefObject<HTMLElement | null> }) {
   }))
 
   const attitude = useMemo(() => ({ x: 0.18, y: 0.3, z: 0, charge: 0.5 }), [])
+  const docRoot = document.documentElement
 
   useFrame(({ camera }, delta) => {
     const group = root.current
@@ -161,6 +162,15 @@ function Gimbal({ anchor }: { anchor: RefObject<HTMLElement | null> }) {
     // A full turn of the rings across the page, on top of the per-chapter
     // attitude — the object is visibly turning at any moment you look at it.
     ringGroup.rotation.z += delta * 0.12
+
+    // The one thing that made the page read as five effects instead of one:
+    // nothing the DOM did ever referred back to this object. Publishing its
+    // live state onto the root lets ordinary CSS — a glow, a dial, a rule's
+    // brightness — visibly answer to what the instrument is doing, so the
+    // typography and the WebGL scene read as one machine instead of two
+    // unrelated animations that happen to run at the same time.
+    docRoot.style.setProperty('--rig-charge', attitude.charge.toFixed(3))
+    docRoot.style.setProperty('--rig-spin', `${((ringGroup.rotation.z * 180) / Math.PI) % 360}deg`)
   })
 
   return (

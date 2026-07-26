@@ -1,4 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import Chapter from '../Chapter'
 import { useLang } from '../../i18n/LanguageProvider'
 import { PLACES, PLACE_ROLE_LABEL } from '../../data/places'
@@ -94,6 +95,7 @@ const Contact = () => {
                                 <button
                                     type="button"
                                     className={`work__row${place.id === activeId ? ' is-active' : ''}`}
+                                    style={{ '--i': i } as CSSProperties}
                                     aria-pressed={place.id === activeId}
                                     onPointerEnter={() => setActiveId(place.id)}
                                     onPointerLeave={() => setActiveId(null)}
