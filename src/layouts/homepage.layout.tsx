@@ -15,6 +15,7 @@ import { useSceneDirector } from '../hooks/useSceneDirector'
 import { useMotionCapability } from '../hooks/useMotionCapability'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { detectWebGL, selectSceneQuality } from '../scene/quality'
+import { useSceneSnapshot } from '../scene/sceneHooks'
 
 const WorldCanvas = lazy(() => import('../components/world/WorldCanvas'))
 
@@ -30,6 +31,7 @@ function readInitialSceneQuality() {
 
 const Homepage = () => {
     const motionEnabled = useMotionCapability()
+    const { chapter } = useSceneSnapshot()
     useSceneDirector(motionEnabled)
     useScrollReveal()
     const [quality] = useState(readInitialSceneQuality)
@@ -46,6 +48,7 @@ const Homepage = () => {
         <div
             className={`homepage${worldPresentation.ambienceClass ? ` ${worldPresentation.ambienceClass}` : ''}`}
             data-world={worldPresentation.worldAttribute}
+            data-chapter={chapter}
         >
             <a className="skip-link" href="#main">Skip to content</a>
             <Background />

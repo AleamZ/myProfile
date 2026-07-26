@@ -40,6 +40,7 @@ export interface Strings {
     }
     skills: { frontend: string; backend: string; waysOfWorking: string; aiAssisted: string }
     contact: { lead: string }
+    places: { title: string; lead: string; hint: string; noPhoto: string }
     footer: { motion: string; backToTop: string }
     dino: { auto: string; play: string; gameOver: string; hint: string }
     mario: {
@@ -87,6 +88,12 @@ export const STRINGS: Record<Lang, Strings> = {
         },
         skills: { frontend: 'Frontend', backend: 'Backend', waysOfWorking: 'Ways of working', aiAssisted: 'AI-Assisted' },
         contact: { lead: 'Have a project in mind, or just want to say hi? My inbox is always open.' },
+        places: {
+            title: 'Where I am from',
+            lead: 'Three places in Vietnam that made me, and two I have been lucky enough to visit.',
+            hint: 'Hover a place',
+            noPhoto: 'Photo coming soon',
+        },
         footer: { motion: 'Motion', backToTop: 'Back to top' },
         dino: { auto: 'Auto', play: 'Play', gameOver: 'Game Over', hint: 'Space / tap to jump' },
         mario: { method: 'Move', ending: 'End', auto: 'Auto', stomp: 'Stomp', gun: 'Gun', ninja: 'Ninja', car: 'Car', pipe: 'Pipe', flag: 'Flag' },
@@ -122,6 +129,12 @@ export const STRINGS: Record<Lang, Strings> = {
         },
         skills: { frontend: 'Frontend', backend: 'Backend', waysOfWorking: 'Cách làm việc', aiAssisted: 'Hỗ trợ AI' },
         contact: { lead: 'Bạn có dự án hoặc chỉ muốn chào hỏi? Hộp thư của tôi luôn rộng mở.' },
+        places: {
+            title: 'Nơi tôi thuộc về',
+            lead: 'Ba nơi ở Việt Nam đã tạo nên tôi, và hai nơi tôi may mắn được đặt chân đến.',
+            hint: 'Rê chuột vào một địa điểm',
+            noPhoto: 'Ảnh sẽ cập nhật',
+        },
         footer: { motion: 'Hiệu ứng', backToTop: 'Lên đầu trang' },
         dino: { auto: 'Tự động', play: 'Tự chơi', gameOver: 'Thua rồi', hint: 'Space / chạm để nhảy' },
         mario: { method: 'Chiêu', ending: 'Kết', auto: 'Tự động', stomp: 'Giẫm', gun: 'Súng', ninja: 'Ninja', car: 'Xe', pipe: 'Cống', flag: 'Cờ' },
@@ -157,6 +170,12 @@ export const STRINGS: Record<Lang, Strings> = {
         },
         skills: { frontend: 'Frontend', backend: 'Backend', waysOfWorking: '업무 방식', aiAssisted: 'AI 활용' },
         contact: { lead: '프로젝트가 있으시거나 그냥 인사하고 싶으신가요? 제 메일함은 항상 열려 있습니다.' },
+        places: {
+            title: '내가 자란 곳',
+            lead: '나를 만든 베트남의 세 곳, 그리고 운 좋게 다녀온 두 나라.',
+            hint: '장소에 마우스를 올려보세요',
+            noPhoto: '사진 준비 중',
+        },
         footer: { motion: '모션', backToTop: '맨 위로' },
         dino: { auto: '자동', play: '플레이', gameOver: '게임 오버', hint: 'Space / 탭 점프' },
         mario: { method: '기술', ending: '엔딩', auto: '자동', stomp: '밟기', gun: '총', ninja: '닌자', car: '자동차', pipe: '파이프', flag: '깃발' },

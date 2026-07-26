@@ -28,6 +28,13 @@
     transition: opacity 1.4s var(--ease-rule);
 }
 
+// The closing chapter has its own planet. Hand the frame over: the abstract
+// core recedes as the globe arrives, so the two never share the screen as
+// competing objects.
+.homepage[data-chapter='contact'][data-world='active'] .world-canvas {
+    opacity: 0.1;
+}
+
 @media (max-width: 960px) {
     // Less scene on small screens: the type occupies most of the frame there,
     // and a busy canvas behind it costs legibility for no gain.

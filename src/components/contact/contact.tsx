@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
 import { useLang } from '../../i18n/LanguageProvider'
 import { useSceneStore } from '../../scene/sceneHooks'
+import PlacesGlobe from '../globe/placesGlobe'
 
 const EMAIL = 'datnguyentien.work@gmail.com'
 
@@ -30,6 +31,8 @@ const Contact = () => {
                 <span className="index">05&nbsp;/&nbsp;{t.sections.contact}</span>
                 <span className="contact__loc">{t.aside.city} · {t.aside.available}</span>
             </div>
+
+            <PlacesGlobe />
 
             <div className="contact__main">
                 <p className="contact__lead reveal">

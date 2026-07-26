@@ -1,0 +1,262 @@
+// ── COLD START · places globe (closing chapter) ────────────────
+// A night-side planet drawn in hairlines, with the visitor's route arced over
+// it. Hovering a place turns the globe to face it and zooms a photo out of the
+// marker itself, so the image arrives from the point rather than beside it.
+
+.globe {
+    position: relative;
+    margin-top: clamp(48px, 9vh, 120px);
+}
+
+.globe__intro {
+    max-width: 46ch;
+    margin-bottom: clamp(24px, 5vh, 48px);
+}
+
+.globe__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--text);
+}
+
+.globe__lead {
+    margin-top: 10px;
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.globe__body {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(20px, 4vw, 56px);
+    align-items: center;
+}
+
+// ── The manifest ───────────────────────────────────────────────
+.globe__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.globe__trigger {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 10px 1fr;
+    grid-template-areas:
+        'role dot name'
+        '.    .   country';
+    align-items: center;
+    gap: 0 10px;
+    padding: 10px 12px 10px 0;
+    text-align: left;
+    border-bottom: 1px solid var(--line-faint);
+    transition: background-color 0.28s var(--ease-rule);
+
+    &:hover,
+    &:focus-visible {
+        background: var(--surface-hover);
+    }
+}
+
+.globe__role {
+    grid-area: role;
+    min-width: 9ch;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.28s var(--ease-rule);
+}
+
+.globe__dot {
+    grid-area: dot;
+    justify-self: center;
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    transition: background-color 0.28s var(--ease-rule), border-color 0.28s var(--ease-rule);
+}
+
+.globe__name {
+    grid-area: name;
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    letter-spacing: -0.005em;
+    color: var(--text);
+}
+
+.globe__country {
+    grid-area: country;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.globe__item.is-active {
+    .globe__trigger { background: var(--surface-hover); }
+    .globe__role { color: var(--accent); }
+
+    .globe__dot {
+        background: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--glow-plasma-sm);
+    }
+}
+
+// ── The stage ──────────────────────────────────────────────────
+.globe__stage {
+    --marker-on: 0;
+    --marker-x: 50%;
+    --marker-y: 50%;
+    --card-tx: 18px;
+    --card-origin: left center;
+
+    position: relative;
+    aspect-ratio: 1;
+    max-height: 68vh;
+    margin-inline: auto;
+    width: 100%;
+}
+
+.globe__canvas {
+    position: absolute;
+    inset: 0;
+}
+
+.globe__hint {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: calc(1 - var(--marker-on));
+    transition: opacity 0.3s var(--ease-rule);
+    pointer-events: none;
+}
+
+// ── The photo card, zooming out of the marker ──────────────────
+.globe__card {
+    position: absolute;
+    left: var(--marker-x);
+    top: var(--marker-y);
+    z-index: 2;
+    width: clamp(180px, 42%, 260px);
+    margin: 0;
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    box-shadow: var(--surface-shadow);
+    pointer-events: none;
+    opacity: var(--marker-on);
+    transform: translate(var(--card-tx), -50%) scale(calc(0.72 + 0.28 * var(--marker-on)));
+    transform-origin: var(--card-origin);
+    transition:
+        opacity 0.28s var(--ease-rule),
+        transform 0.42s var(--ease-type);
+}
+
+// A hairline back to the marker, so the card reads as pulled out of the point.
+.globe__card::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 18px;
+    height: 1px;
+    background: var(--line-signal);
+    opacity: var(--marker-on);
+}
+
+.globe__photo {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--bg-elev);
+    border-bottom: 1px solid var(--line);
+
+    img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(0.3) contrast(1.04) brightness(0.86) saturate(0.9);
+    }
+}
+
+// Shown through a missing or still-loading image, so the card is never empty.
+.globe__initials {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 2rem;
+    letter-spacing: 0.06em;
+    color: var(--watermark-ink);
+}
+
+.globe__caption {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 12px 12px;
+}
+
+.globe__caption-name {
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    color: var(--text);
+}
+
+.globe__caption-note {
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+// "Hover a place" is wrong advice on touch, and on a phone the hint lands
+// under the bottom navigation bar. The list below the globe is obviously
+// tappable, so the prompt has no job here.
+@media (hover: none) {
+    .globe__hint {
+        display: none;
+    }
+}
+
+@media (max-width: 860px) {
+    .globe__body {
+        grid-template-columns: minmax(0, 1fr);
+        gap: clamp(16px, 4vh, 32px);
+    }
+
+    .globe__stage {
+        max-height: 52vh;
+        order: -1; // lead with the planet, then the manifest
+    }
+
+    .globe__card {
+        width: clamp(160px, 54%, 220px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .globe__card,
+    .globe__hint,
+    .globe__trigger,
+    .globe__role,
+    .globe__dot {
+        transition: none;
+    }
+}
