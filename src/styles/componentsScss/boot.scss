@@ -1,0 +1,141 @@
+// ── COLD START · start-up sequence ─────────────────────────────
+// A registration mark draws itself over the deep field while the page settles,
+// then the panel wipes upward. Plays once per tab, never under reduced motion.
+
+.boot {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    background: var(--void);
+    // Wipes upward rather than fading: a fade leaves the panel sitting over the
+    // hero at half strength for its whole duration, which reads as a stall.
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 760ms var(--ease-rule);
+
+    &.is-done {
+        clip-path: inset(0 0 100% 0);
+        pointer-events: none;
+    }
+}
+
+// ── The registration mark ──────────────────────────────────────
+.boot__mark {
+    position: relative;
+    width: min(46vw, 320px);
+    height: min(46vw, 320px);
+    display: grid;
+    place-items: center;
+}
+
+.boot__mark-h,
+.boot__mark-v {
+    position: absolute;
+    background: var(--line-strong);
+}
+
+.boot__mark-h {
+    left: 0;
+    right: 0;
+    height: 1px;
+    transform: scaleX(0);
+    animation: boot-draw-h 900ms var(--ease-rule) 80ms forwards;
+}
+
+.boot__mark-v {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    transform: scaleY(0);
+    animation: boot-draw-v 900ms var(--ease-rule) 340ms forwards;
+}
+
+// The core, arriving as a ring rather than as a dot: it is the same shape the
+// world canvas is about to take over.
+.boot__mark-ring {
+    width: 42%;
+    aspect-ratio: 1;
+    border: 1px solid var(--line-signal);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.2);
+    animation: boot-ring 1100ms var(--ease-type) 620ms forwards;
+}
+
+@keyframes boot-draw-h {
+    to { transform: scaleX(1); }
+}
+
+@keyframes boot-draw-v {
+    to { transform: scaleY(1); }
+}
+
+@keyframes boot-ring {
+    to {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+}
+
+// ── The readout ────────────────────────────────────────────────
+.boot__foot {
+    position: absolute;
+    left: var(--margin);
+    right: var(--margin);
+    bottom: clamp(28px, 6vh, 56px);
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2vw, 24px);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+    animation: fade-in 600ms var(--ease-rule) 200ms backwards;
+}
+
+.boot__label {
+    flex: none;
+    color: var(--text);
+}
+
+.boot__bar {
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--line-faint);
+    overflow: hidden;
+}
+
+.boot__bar-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    box-shadow: var(--glow-plasma-sm);
+    transform: scaleX(0);
+    transform-origin: left;
+    // Smooths the jump from the waiting asymptote to 100% when the page
+    // reports ready.
+    transition: transform 260ms var(--ease-rule);
+}
+
+.boot__readout {
+    flex: none;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+// ── Hold the introduction until the panel lifts ────────────────
+// Without this the hero would play its entrance behind the panel and the
+// visitor would arrive just after it finished.
+html.is-booting :is(.hero, .site-header, .mission-nav) *,
+html.is-booting :is(.hero, .site-header, .mission-nav) {
+    animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .boot {
+        display: none;
+    }
+}

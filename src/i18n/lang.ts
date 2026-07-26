@@ -41,6 +41,7 @@ export interface Strings {
     skills: { frontend: string; backend: string; waysOfWorking: string; aiAssisted: string }
     contact: { lead: string }
     places: { title: string; lead: string; hint: string; noPhoto: string }
+    boot: { label: string }
     footer: { motion: string; backToTop: string }
     dino: { auto: string; play: string; gameOver: string; hint: string }
     mario: {
@@ -94,6 +95,7 @@ export const STRINGS: Record<Lang, Strings> = {
             hint: 'Hover a place',
             noPhoto: 'Photo coming soon',
         },
+        boot: { label: 'Cold start' },
         footer: { motion: 'Motion', backToTop: 'Back to top' },
         dino: { auto: 'Auto', play: 'Play', gameOver: 'Game Over', hint: 'Space / tap to jump' },
         mario: { method: 'Move', ending: 'End', auto: 'Auto', stomp: 'Stomp', gun: 'Gun', ninja: 'Ninja', car: 'Car', pipe: 'Pipe', flag: 'Flag' },
@@ -135,6 +137,7 @@ export const STRINGS: Record<Lang, Strings> = {
             hint: 'Rê chuột vào một địa điểm',
             noPhoto: 'Ảnh sẽ cập nhật',
         },
+        boot: { label: 'Khởi động' },
         footer: { motion: 'Hiệu ứng', backToTop: 'Lên đầu trang' },
         dino: { auto: 'Tự động', play: 'Tự chơi', gameOver: 'Thua rồi', hint: 'Space / chạm để nhảy' },
         mario: { method: 'Chiêu', ending: 'Kết', auto: 'Tự động', stomp: 'Giẫm', gun: 'Súng', ninja: 'Ninja', car: 'Xe', pipe: 'Cống', flag: 'Cờ' },
@@ -176,6 +179,7 @@ export const STRINGS: Record<Lang, Strings> = {
             hint: '장소에 마우스를 올려보세요',
             noPhoto: '사진 준비 중',
         },
+        boot: { label: '시작 중' },
         footer: { motion: '모션', backToTop: '맨 위로' },
         dino: { auto: '자동', play: '플레이', gameOver: '게임 오버', hint: 'Space / 탭 점프' },
         mario: { method: '기술', ending: '엔딩', auto: '자동', stomp: '밟기', gun: '총', ninja: '닌자', car: '자동차', pipe: '파이프', flag: '깃발' },

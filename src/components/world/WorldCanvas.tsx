@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PerformanceMonitor } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import type { SceneQuality } from './world.types'
 import { PROJECTS } from '../../data/projects'
 import { useSceneSnapshot } from '../../scene/sceneHooks'
@@ -142,6 +143,22 @@ export default function WorldCanvas({ quality, onFirstFrame, onUnavailable }: Wo
           <SceneDirector />
           <ChapterScenes quality={rendererQuality} />
           <DataCore quality={rendererQuality} />
+          {/*
+            The whole scene is additive hairlines, so bloom is not a filter
+            bolted on top — it is what makes those lines read as emitted light
+            rather than as drawn strokes. Skipped on the low tier, where the
+            extra passes cost more than the look is worth.
+          */}
+          {rendererQuality !== 'low' && (
+            <EffectComposer multisampling={0} enableNormalPass={false}>
+              <Bloom
+                intensity={0.5}
+                luminanceThreshold={0.22}
+                luminanceSmoothing={0.36}
+                mipmapBlur
+              />
+            </EffectComposer>
+          )}
         </PerformanceMonitor>
       </Canvas>
     </div>

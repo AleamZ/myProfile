@@ -9,6 +9,7 @@ import Background from '../components/background/background.hompage'
 import Footer from '../components/footer/footer'
 import MissionNavigator from '../components/missionNavigator/missionNavigator'
 import PixelSquadron from '../components/pixelSquadron/pixelSquadron'
+import BootSequence from '../components/boot/bootSequence'
 import { WorldBoundary } from '../components/world/WorldBoundary'
 import { getWorldPresentation, worldReadinessReducer } from '../components/world/worldReadiness'
 import { useSceneDirector } from '../hooks/useSceneDirector'
@@ -50,6 +51,20 @@ const Homepage = () => {
         return trackScrollVelocity()
     }, [motionEnabled])
 
+    // What the start-up sequence actually waits on. A page with no world to
+    // draw is settled the moment its fonts resolve.
+    const [fontsReady, setFontsReady] = useState(() => document.fonts?.status === 'loaded')
+    useEffect(() => {
+        let live = true
+        void document.fonts?.ready.then(() => {
+            if (live) setFontsReady(true)
+        })
+        return () => {
+            live = false
+        }
+    }, [])
+    const worldSettled = !motionEnabled || quality === 'fallback' || worldReadiness === 'active'
+
     return (
         <div
             className={`homepage${worldPresentation.ambienceClass ? ` ${worldPresentation.ambienceClass}` : ''}`}
@@ -57,6 +72,7 @@ const Homepage = () => {
             data-chapter={chapter}
         >
             <a className="skip-link" href="#main">Skip to content</a>
+            <BootSequence ready={fontsReady && worldSettled} />
             <Background />
             <WorldBoundary fallback={null} onError={onWorldUnavailable}>
                 <Suspense fallback={null}>

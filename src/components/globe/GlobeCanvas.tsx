@@ -260,6 +260,13 @@ export default function GlobeCanvas(props: GlobeCanvasProps) {
       dpr={[1, 1.75]}
       onPointerMissed={() => props.onHover(null)}
     >
+      {/*
+        No bloom here, deliberately. The composer lifts its whole buffer very
+        slightly, and this canvas is inset in the page rather than full-bleed,
+        so that lift renders as a visible lighter rectangle around the globe.
+        The world canvas covers the viewport and has no edge to give away, which
+        is why it keeps its bloom. The markers carry their own halo mesh.
+      */}
       <Globe {...props} />
     </Canvas>
   )
