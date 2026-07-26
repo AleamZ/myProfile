@@ -5,32 +5,25 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/ALeam LOGO.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#04060D" />
-  <meta name="description" content="Nguyen Tien Dat — Frontend Developer. React, Next.js, TypeScript, Node." />
+  <meta name="theme-color" content="#05070D" />
+  <meta name="description" content="Nguyen Tien Dat — Frontend Developer. React, Next.js, TypeScript." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" />
+    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
   <title>Nguyen Tien Dat — Frontend Developer</title>
   <script>
-    // Paint the deep field before first frame; read the motion preference early
-    // so ambient layers never flash on for a visitor who turned them off.
-    (function () {
-      document.documentElement.dataset.theme = 'dark';
-      document.documentElement.style.background = '#04060C';
-      try {
-        var fx = localStorage.getItem('pp-bgfx');
-        document.documentElement.dataset.bgfx = fx === 'off' ? 'off' : 'on';
-      } catch (e) {
-        document.documentElement.dataset.bgfx = 'on';
-      }
-    })();
+    // Paint the field before first frame, and mark that scripting is available
+    // so the stylesheet can opt into hidden-then-revealed states. Without the
+    // flag the no-JS page would sit at whatever the entrance animation starts
+    // from and never arrive.
+    document.documentElement.classList.add('js');
+    document.documentElement.style.background = '#05070D';
   </script>
 </head>
 
-<body style="margin: 0; padding: 0;">
-  <div id="root">
-  </div>
+<body>
+  <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

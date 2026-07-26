@@ -1,121 +1,86 @@
-// COLD START · deep-field instrument tokens
+// ══ SINGLE INSTRUMENT · tokens ═════════════════════════════════
 //
-// Colour law: cyan and violet are EMITTED LIGHT, never paint.
-//   · --plasma  is the signal. Active chapter, live dot, focus, one hairline.
-//     It is never a fill wider than 4px and never sits behind body text.
-//   · --spectral is the field. Radial gradients, halos and 3D depth only.
-//     It never touches type and never becomes a solid material.
-// Everything a visitor actually reads is neutral ice or graphite. That
-// restraint is what separates an instrument from a screensaver.
+// One page, one device. The rail, the margins, the reading column, the
+// telemetry column and the 3D object are all derived from the one grid below;
+// nothing is placed by eye. That is what makes the scene and the content read
+// as parts of the same object instead of a page sitting in front of wallpaper.
+//
+// Colour law: cyan is the only signal, and it is emitted light, never paint.
+// It marks what is live — the current chapter, the focused item, a rule that
+// is being drawn — and never fills an area. Everything read is a cool neutral.
 
 :root {
-    // ── Source palette ─────────────────────────────────────────
-    --void: #04060c; // the deep field
-    --carbon: #0a0e19; // instrument housing
-    --graphite: #141b2b; // machined edge
-    --ion: #e8eef8; // ice white
-    --telemetry: #7b8799; // cool graphite (AA on void)
-    --plasma: #67e8f9; // the signal
-    --spectral: #7c6bf2; // the field
+    // ── The grid. Single source of truth; grid.ts reads these back. ──
+    --frame: clamp(14px, 2.2vw, 36px); // housing inset
+    --rail: clamp(40px, 4vw, 60px); // chapter index rail
+    --gutter: clamp(10px, 1.1vw, 20px);
+    --cols: 12;
 
-    // ── Semantic ───────────────────────────────────────────────
+    --col: max(0px, calc((100vw - var(--frame) * 2 - var(--rail) - var(--gutter) * 11) / 12));
+    // Reading measure and telemetry slot, expressed in the same columns.
+    --read-span: calc(var(--col) * 7 + var(--gutter) * 6);
+    --tele-span: calc(var(--col) * 2 + var(--gutter));
+
+    // ── Palette ────────────────────────────────────────────────
+    --void: #05070d; // the field everything sits on
+    --panel: #0a0d16; // recessed surface
+    --ink: #e9eef7; // primary readout
+    --ink-dim: #9aa6b8; // secondary readout
+    --ink-faint: #59647a; // labels, units
+    --signal: #6fe3f2; // live. never an area fill.
+
     --bg: var(--void);
-    --bg-elev: var(--carbon);
-    --text: var(--ion);
-    --text-dim: #a7b3c6;
-    --muted: var(--telemetry);
-    --accent: var(--plasma);
-    --energy-primary: var(--plasma);
-    --energy-secondary: var(--spectral);
+    --text: var(--ink);
+    --muted: var(--ink-dim);
 
-    // ── Surfaces — cool neutrals, never tinted ─────────────────
-    --surface-0: rgba(4, 6, 12, 0.78);
-    --surface-1: rgba(10, 14, 25, 0.6);
-    --surface-2: rgba(16, 22, 38, 0.86);
-    --surface-solid: #0a0e19;
-    --surface-nav: rgba(4, 6, 12, 0.6);
-    --surface-nav-strong: rgba(6, 9, 17, 0.94);
-    --surface-hover: rgba(232, 238, 248, 0.045);
-    --surface-border: rgba(232, 238, 248, 0.1);
-    --surface-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+    // ── Hairlines. One weight, three strengths. ────────────────
+    --line: rgba(233, 238, 247, 0.09);
+    --line-lit: rgba(233, 238, 247, 0.2);
+    --line-signal: rgba(111, 227, 242, 0.5);
 
-    // ── Hairlines — neutral by default, signal only when live ──
-    --line: rgba(232, 238, 248, 0.1);
-    --line-faint: rgba(232, 238, 248, 0.05);
-    --line-strong: rgba(232, 238, 248, 0.22);
-    --line-signal: rgba(103, 232, 249, 0.42);
+    --surface: rgba(10, 13, 22, 0.72);
+    --surface-lit: rgba(15, 20, 33, 0.86);
+    --shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
 
-    // ── Emitted light — small and low, never a wash ────────────
-    --glow-plasma: 0 0 30px rgba(103, 232, 249, 0.14);
-    --glow-plasma-sm: 0 0 10px rgba(103, 232, 249, 0.3);
-    --glow-spectral: 0 0 64px rgba(124, 107, 242, 0.14);
-    --focus-ring: var(--plasma);
-    --focus-halo: 0 0 0 3px rgba(103, 232, 249, 0.16);
-    --grid-line: rgba(232, 238, 248, 0.055);
-    --grid-line-strong: rgba(103, 232, 249, 0.16);
-    --grid-size: 80px;
+    --glow: 0 0 12px rgba(111, 227, 242, 0.35);
+    --focus-ring: var(--signal);
 
-    // ── Rhythm & layout ────────────────────────────────────────
-    --baseline: 8px;
-    --margin: clamp(20px, 4vw, 56px);
-    --maxw: 1440px;
-    --header-h: 64px;
-    --chapter-hold: max(1180px, 190svh);
-    --chapter-pad: clamp(88px, 14vh, 168px);
+    // ── Rhythm ─────────────────────────────────────────────────
+    --step: 8px;
+    --chapter-run: 190svh; // scroll runway per chapter
+    --radius: 0; // square. this is an instrument, not a card UI.
 
-    --radius: 2px;
-    --radius-sm: 2px;
-    --radius-pill: 999px;
-
-    --ease-rule: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-type: cubic-bezier(0.16, 1, 0.3, 1);
 
-    // ── Atmosphere. The data core owns spatial motion; these only
-    // shape where the eye lands. ───────────────────────────────
-    --mx: 58%;
-    --my: 34%;
-    --spotlight: radial-gradient(900px circle at var(--mx) var(--my), rgba(124, 107, 242, 0.1), transparent 62%);
-    --vignette: radial-gradient(122% 106% at 50% 40%, transparent 40%, rgba(2, 3, 7, 0.74) 100%);
-    --grain-opacity: 0.026;
-    --grain-blend: soft-light;
+    // ── Type. Two families: a width-variable grotesque, and data. ──
+    --font: 'Archivo', system-ui, sans-serif;
+    --font-data: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
 
-    // Cold platinum for the display name — grayscale, no hue.
-    --platinum: linear-gradient(176deg, #ffffff 0%, #dce6f4 32%, #9dabc1 72%, #647287 100%);
+    --wd-wide: 125; // display
+    --wd-mid: 112; // subheads
+    --wd-body: 100; // running text
 
-    // ── Type roles ─────────────────────────────────────────────
-    // Archivo at expanded width reads like silkscreen on an instrument
-    // panel — wide, engineered, and nothing like a scoreboard condensed.
-    --font-display: 'Archivo', 'Inter', system-ui, sans-serif;
-    --font-ui: 'Inter', system-ui, Arial, sans-serif;
-    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
-
-    // ── Aliases kept for existing components ───────────────────
-    --glass-bg: var(--surface-1);
-    --glass-border: var(--surface-border);
-    --glass-shadow: var(--surface-shadow);
-    --glass-hl: rgba(232, 238, 248, 0.07);
-    --glass-blur: 16px;
-    --watermark-ink: rgba(232, 238, 248, 0.045);
-    --lit-edge: rgba(103, 232, 249, 0.34);
-    --sheen-core: rgba(232, 238, 248, 0.16);
-    --sheen-blend: screen;
-    --sheen: rgba(232, 238, 248, 0.06);
-    --tag-hover-bg: rgba(232, 238, 248, 0.05);
-    --rule-glint: rgba(103, 232, 249, 0.3);
+    --t-display: clamp(3rem, 10.5vw, 9.5rem);
+    --t-title: clamp(1.6rem, 3.4vw, 3.1rem);
+    --t-lead: clamp(0.95rem, 1.15vw, 1.1rem);
+    --t-body: 0.9rem;
+    --t-data: 10px;
+    --track-data: 0.22em;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 900px) {
     :root {
-        --chapter-hold: max(980px, 168svh);
-        --chapter-pad: clamp(72px, 10vh, 112px);
+        --cols: 6;
+        --col: max(0px, calc((100vw - var(--frame) * 2 - var(--rail) - var(--gutter) * 5) / 6));
+        --read-span: calc(100% - 0px);
+        --chapter-run: 160svh;
     }
 }
 
 @media (max-width: 600px) {
     :root {
-        --header-h: 60px;
-        --chapter-hold: max(880px, 152svh);
-        --chapter-pad: clamp(64px, 9vh, 88px);
-        --grid-size: 52px;
+        --rail: 0px;
+        --chapter-run: 140svh;
     }
 }

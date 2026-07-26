@@ -1,0 +1,126 @@
+// ── 05 Contact ─────────────────────────────────────────────────
+// Where I am from, then how to reach me. The place list is the same index
+// shape as every other chapter; the globe is its readout.
+
+.contact {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(40px, 8vh, 96px);
+}
+
+// ── Globe ──────────────────────────────────────────────────────
+.globe__stage {
+    --marker-on: 0;
+    --marker-x: 50%;
+    --marker-y: 50%;
+    --card-shift: 16px;
+    --card-origin: left center;
+
+    position: relative;
+    aspect-ratio: 1;
+    width: 100%;
+    max-height: 56svh;
+    margin-inline: auto;
+}
+
+.globe__canvas {
+    position: absolute !important;
+    inset: 0;
+}
+
+// The card lifts out of the marker itself, tracked to its projected position,
+// and leaves with it when the point turns behind the planet.
+.globe__card {
+    position: absolute;
+    left: var(--marker-x);
+    top: var(--marker-y);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: clamp(160px, 44%, 240px);
+    margin: 0;
+    padding: 11px 13px;
+    background: var(--surface-lit);
+    border: 1px solid var(--line-lit);
+    box-shadow: var(--shadow);
+    pointer-events: none;
+    opacity: var(--marker-on);
+    transform: translate(var(--card-shift), -50%) scale(calc(0.8 + 0.2 * var(--marker-on)));
+    transform-origin: var(--card-origin);
+    transition: opacity 0.26s var(--ease), transform 0.4s var(--ease-type);
+}
+
+// A hairline back to the point, so the card reads as pulled out of it.
+.globe__card::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 16px;
+    height: 1px;
+    background: var(--line-signal);
+    opacity: var(--marker-on);
+}
+
+.globe__card-name {
+    font-size: 13px;
+    color: var(--ink);
+}
+
+.globe__card-note {
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--ink-dim);
+}
+
+// ── Reach ──────────────────────────────────────────────────────
+.contact__reach {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 3vh, 28px);
+    padding-top: clamp(24px, 4vh, 44px);
+    border-top: 1px solid var(--line);
+}
+
+.contact__lead {
+    max-width: 44ch;
+    font-size: var(--t-lead);
+    line-height: 1.6;
+    color: var(--ink-dim);
+}
+
+.contact__email {
+    align-self: flex-start;
+    // Sized to stay on one line beside the socials: at a larger step the
+    // address broke after the "@", which is the one place it must not.
+    font-size: clamp(1.2rem, 3.4vw, 2.8rem);
+    font-variation-settings: 'wdth' var(--wd-mid);
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+    transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+
+    &:hover,
+    &:focus-visible {
+        color: var(--signal);
+        border-bottom-color: var(--line-signal);
+    }
+}
+
+.contact__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+}
+
+.contact__social {
+    color: var(--ink-faint);
+    transition: color 0.3s var(--ease);
+
+    &:hover,
+    &:focus-visible {
+        color: var(--signal);
+    }
+}

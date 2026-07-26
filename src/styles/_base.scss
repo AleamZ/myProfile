@@ -1,4 +1,4 @@
-// COLD START · base / reset / global
+// ══ SINGLE INSTRUMENT · base ═══════════════════════════════════
 
 *,
 *::before,
@@ -7,42 +7,40 @@
 }
 
 html {
-    -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
     background: var(--bg);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
     margin: 0;
-    min-height: 100vh;
+    min-height: 100svh;
     background: var(--bg);
     color: var(--text);
-    font-family: var(--font-ui);
-    font-weight: 400;
+    font-family: var(--font);
+    font-variation-settings: 'wdth' var(--wd-body);
     font-size: 16px;
-    line-height: 1.5;
+    line-height: 1.55;
     font-synthesis: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    // `clip`, not `hidden`: hidden makes the body a scroll container, and the
-    // chapter stages below rely on position: sticky resolving against the
-    // document scrollport.
+    // clip, not hidden: hidden makes the body a scroll container and every
+    // position: sticky on the page then resolves against the wrong scrollport.
     overflow-x: clip;
 }
 
-// Selection echoes the data core without reducing legibility.
-::selection {
-    background: var(--energy-primary);
-    color: var(--void);
-}
-
-// Display type is set wide — Archivo's width axis is what makes the headings
-// read as silkscreen on a panel rather than as a default sans.
 h1,
 h2,
-h3 {
-    font-variation-settings: 'wdth' 118;
+h3,
+p {
+    margin: 0;
+}
+
+ol,
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 a {
@@ -60,38 +58,50 @@ button {
     cursor: pointer;
 }
 
-ol,
-ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+img {
+    max-width: 100%;
+    display: block;
 }
 
-h1,
-h2,
-h3,
-p {
-    margin: 0;
+::selection {
+    background: var(--signal);
+    color: var(--void);
 }
 
-h1,
-h2,
-h3 {
-    font-family: var(--font-display);
-}
-
-:where(.index, .eyebrow, .projects__count, .exp__edu, .contact__loc) {
-    font-family: var(--font-mono);
-}
-
-// Focus remains visible against both themes and the WebGL scene.
-:where(a, button, [tabindex], [role="button"]):focus-visible {
-    outline: 2px solid var(--focus-ring);
+:where(a, button, [tabindex]):focus-visible {
+    outline: 1px solid var(--focus-ring);
     outline-offset: 3px;
-    box-shadow: var(--focus-halo);
 }
 
-// Screen-reader-only
+// ── Two type roles, used consistently everywhere ───────────────
+// Anything that is a measurement, an index, a coordinate or a status is data.
+// Anything a person reads as language is text. Nothing sits in between.
+.t-data {
+    font-family: var(--font-data);
+    font-size: var(--t-data);
+    letter-spacing: var(--track-data);
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.t-display {
+    font-size: var(--t-display);
+    font-weight: 600;
+    font-variation-settings: 'wdth' var(--wd-wide);
+    line-height: 0.86;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+}
+
+.t-title {
+    font-size: var(--t-title);
+    font-weight: 600;
+    font-variation-settings: 'wdth' var(--wd-mid);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+}
+
 .sr-only {
     position: absolute;
     width: 1px;
@@ -99,208 +109,58 @@ h3 {
     padding: 0;
     margin: -1px;
     overflow: hidden;
-    clip: rect(0 0 0 0);
     clip-path: inset(50%);
     white-space: nowrap;
     border: 0;
 }
 
-// Skip link
 .skip-link {
     position: fixed;
     top: 8px;
     left: 8px;
-    z-index: 100;
-    padding: 10px 16px;
-    background: var(--bg-elev);
-    color: var(--text);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    transform: translateY(-220%);
-    transition: transform 0.3s var(--ease-rule);
+    z-index: 300;
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line-lit);
+    transform: translateY(-200%);
+    transition: transform 0.25s var(--ease);
 
     &:focus {
-        transform: translateY(0);
+        transform: none;
     }
 }
 
-// ── Generic scroll reveal (progressive enhancement) ────────────
-// Default state is visible; the `.js` flag opts into hidden-then-reveal,
-// and IntersectionObserver adds `.is-inview`. Reduced motion forces visible
-// (see the block at the bottom of this file).
-.js .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.5s var(--ease-type), transform 0.5s var(--ease-type);
-    transition-delay: var(--reveal-delay, 0s);
-}
-.js .reveal.is-inview {
-    opacity: 1;
-    transform: none;
-}
-
-// ── Section-head signature: index → meta (+80ms) → rule draws ──
-.projects__head,
-.exp__head,
-.skills__head,
-.contact__head {
-    position: relative;
-
-    &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: clamp(-28px, -3vh, -16px); // sits inside the head's margin-bottom
-        height: 1px;
-        background: var(--line);
-        transform-origin: left;
-    }
-}
-
-.js .reveal:is(.projects__head, .exp__head, .skills__head, .contact__head) {
-    opacity: 1; // the container never hides — its parts arrive in order
-    transform: none;
-
-    .index,
-    .projects__count,
-    .exp__edu,
-    .contact__loc {
-        opacity: 0;
-        transform: translateY(12px);
-        transition: opacity 0.5s var(--ease-type), transform 0.5s var(--ease-type);
-    }
-
-    .projects__count,
-    .exp__edu,
-    .contact__loc {
-        transition-delay: 80ms;
-    }
-
-    &::after {
-        transform: scaleX(0);
-        transition: transform 0.7s var(--ease-rule) 160ms;
-    }
-
-    &.is-inview {
-        .index,
-        .projects__count,
-        .exp__edu,
-        .contact__loc {
-            opacity: 1;
-            transform: none;
-        }
-
-        &::after {
-            transform: scaleX(1);
-        }
-    }
-}
-
-// ── Chapter stages ─────────────────────────────────────────────
-// Each chapter holds a full screen while its own 0→1 progress plays out, then
-// hands over. Sticky rather than pinned: pinning injects a spacer and freezes
-// the section's document position, which is exactly what the scene director
-// measures to work out where the visitor is.
-//
-// `--chapter-progress` is written by useChapterStage; `--scroll-v` by
-// trackScrollVelocity. Registering both lets them interpolate instead of
-// jumping between style writes.
-@property --chapter-progress {
+// ── Registered so scroll-driven values interpolate ─────────────
+@property --chapter {
     syntax: '<number>';
     inherits: true;
     initial-value: 0;
-}
-
-@property --scroll-v {
-    syntax: '<number>';
-    inherits: true;
-    initial-value: 0;
-}
-
-.chapter-stage {
-    --ramp: 0.15;
-    --enter: clamp(0, calc(var(--chapter-progress) / var(--ramp)), 1);
-    --exit: clamp(0, calc((var(--chapter-progress) - (1 - var(--ramp))) / var(--ramp)), 1);
-    --presence: clamp(0, calc(var(--enter) - var(--exit)), 1);
-
-    position: relative;
-}
-
-// The first chapter is already on screen when the page loads — there is no
-// approach to animate, and ramping it in means landing on a dimmed hero.
-// Likewise the last chapter has nowhere to depart to; fading it out would
-// leave the visitor reading the page through a veil at the bottom.
-.chapter-stage--opening {
-    --enter: 1;
-}
-
-.chapter-stage--closing {
-    --exit: 0;
-}
-
-// `--hold` sticks the stage for the length of its chapter. Only for content
-// that fits one screen: a sticky box taller than the viewport pins at the top
-// and its own overflow becomes unreachable — the visitor can never scroll to
-// the bottom of it. The coverflow, the timeline and the globe are all taller
-// than a screen, so they take the envelope without the pin.
-.chapter-stage--hold {
-    position: sticky;
-    top: var(--header-h);
-    min-height: calc(100svh - var(--header-h));
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: clamp(20px, 4vh, 48px);
-}
-
-// Arrive, hold, depart — plus a lean into the direction of travel, so fast
-// scrolling reads as momentum rather than teleporting.
-.js .chapter-stage {
-    opacity: calc(0.34 + 0.66 * var(--presence));
-    transform:
-        translate3d(0, calc(((1 - var(--enter)) * 3.4vh) - (var(--exit) * 3.4vh)), 0)
-        skewY(calc(var(--scroll-v) * -0.4deg));
 }
 
 // ── Shared keyframes ───────────────────────────────────────────
-@keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-// Resting style is the END state (visible) so disabling motion
-// always leaves content fully shown.
-@keyframes rule-in {
+@keyframes rule-x {
     from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
 }
 
-@keyframes rise-in {
+@keyframes rule-y {
+    from { transform: scaleY(0); }
+}
+
+@keyframes rise {
     from {
         opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+        transform: translateY(10px);
     }
 }
 
-// Dialogs own scroll and page chrome while open.
-body.modal-open {
-    overflow: hidden;
-
-    :is(.site-header, .mission-nav) {
-        visibility: hidden;
-        pointer-events: none;
-    }
+@keyframes fade {
+    from { opacity: 0; }
 }
 
-// ── Reduced motion: collapse everything to instant + visible ───
 @media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
 
     *,
     *::before,
@@ -308,33 +168,5 @@ body.modal-open {
         animation-duration: 0.001ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.001ms !important;
-        scroll-behavior: auto !important;
     }
-
-    html {
-        scroll-behavior: auto;
-    }
-
-    .js .reveal {
-        opacity: 1 !important;
-        transform: none !important;
-        transition-delay: 0s !important;
-    }
-
-    .js .reveal :is(.index, .projects__count, .exp__edu, .contact__loc) {
-        opacity: 1 !important;
-        transform: none !important;
-    }
-
-    .js .reveal:is(.projects__head, .exp__head, .skills__head, .contact__head)::after {
-        transform: scaleX(1) !important;
-    }
-
-    // Stages still hold their screen — that is layout, not motion — but they
-    // neither fade nor lean.
-    .js .chapter-stage {
-        opacity: 1;
-        transform: none;
-    }
-
 }

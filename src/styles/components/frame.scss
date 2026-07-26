@@ -1,0 +1,209 @@
+// ── The housing ────────────────────────────────────────────────
+// A hairline frame, an index rail and a telemetry column, all fixed. They
+// belong to the scene and to the content equally, which is what stops the 3D
+// reading as wallpaper behind a webpage.
+
+.page {
+    position: relative;
+    min-height: 100svh;
+    padding-left: calc(var(--frame) + var(--rail));
+    padding-right: var(--frame);
+}
+
+.frame {
+    position: fixed;
+    inset: var(--frame);
+    z-index: 60;
+    pointer-events: none;
+    border: 1px solid var(--line);
+    animation: fade 900ms var(--ease) 200ms backwards;
+}
+
+// Corner ticks: the frame reads as machined rather than as a CSS border.
+.frame__tick {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border: 0 solid var(--line-lit);
+
+    &:nth-child(1) { top: -1px; left: -1px; border-top-width: 1px; border-left-width: 1px; }
+    &:nth-child(2) { top: -1px; right: -1px; border-top-width: 1px; border-right-width: 1px; }
+    &:nth-child(3) { bottom: -1px; left: -1px; border-bottom-width: 1px; border-left-width: 1px; }
+    &:nth-child(4) { bottom: -1px; right: -1px; border-bottom-width: 1px; border-right-width: 1px; }
+}
+
+// ── Chapter rail ───────────────────────────────────────────────
+.rail {
+    position: fixed;
+    top: 50%;
+    left: calc(var(--frame) + 1px);
+    z-index: 70;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: var(--rail);
+    padding-block: 4px;
+}
+
+.rail__item {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 9px 0;
+    text-align: center;
+    color: var(--ink-faint);
+    transition: color 0.3s var(--ease);
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 4px;
+        width: 12px;
+        height: 1px;
+        background: currentColor;
+        transform: translateX(-50%) scaleX(0);
+        transition: transform 0.35s var(--ease);
+    }
+
+    &:hover,
+    &:focus-visible {
+        color: var(--ink-dim);
+    }
+
+    &[aria-current='true'] {
+        color: var(--signal);
+
+        &::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+    }
+}
+
+// ── Telemetry ──────────────────────────────────────────────────
+// The signature: four slots that never move, following the reader down the
+// page. Each chapter writes its own values into them, so the readout is
+// continuous even though the content is not.
+.tele {
+    position: fixed;
+    top: 50%;
+    right: calc(var(--frame) + 1px);
+    z-index: 70;
+    transform: translateY(-50%);
+    width: var(--tele-span);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-right: 12px;
+    text-align: right;
+    animation: fade 900ms var(--ease) 500ms backwards;
+}
+
+.tele__slot {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-end;
+}
+
+.tele__label {
+    color: var(--ink-faint);
+}
+
+.tele__value {
+    font-family: var(--font-data);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    // Long project names must not push the column out of the grid.
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tele__value--signal {
+    color: var(--signal);
+}
+
+// Progress through the document, drawn as the one vertical rule on the right.
+.tele__meter {
+    width: 1px;
+    height: 68px;
+    align-self: flex-end;
+    margin-right: -12px;
+    background: var(--line);
+    position: relative;
+    overflow: hidden;
+
+    span {
+        position: absolute;
+        inset: 0 0 auto;
+        height: calc(var(--overall, 0) * 100%);
+        background: var(--signal);
+        box-shadow: var(--glow);
+    }
+}
+
+@media (max-width: 900px) {
+    .tele {
+        display: none; // the readout needs a column it cannot have here
+    }
+}
+
+@media (max-width: 600px) {
+    .rail {
+        top: auto;
+        bottom: calc(var(--frame) + 1px);
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+        width: auto;
+        gap: 0;
+        background: var(--surface-lit);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid var(--line);
+    }
+
+    .rail__item {
+        width: 46px;
+        padding: 13px 0;
+    }
+
+    .page {
+        padding-inline: var(--frame);
+        padding-bottom: 96px;
+    }
+}
+
+// ── Language ───────────────────────────────────────────────────
+// The only control on the page, set into the top edge of the housing so it
+// reads as part of the instrument rather than as a floating widget.
+.langbar {
+    position: fixed;
+    top: calc(var(--frame) + 1px);
+    right: calc(var(--frame) + 1px);
+    z-index: 80;
+    display: flex;
+    animation: fade 900ms var(--ease) 600ms backwards;
+}
+
+.langbar__btn {
+    padding: 9px 11px;
+    color: var(--ink-faint);
+    border-left: 1px solid var(--line);
+    transition: color 0.25s var(--ease), background-color 0.25s var(--ease);
+
+    &:hover,
+    &:focus-visible {
+        color: var(--ink-dim);
+    }
+
+    &.is-active {
+        color: var(--signal);
+        background: rgba(111, 227, 242, 0.05);
+    }
+}

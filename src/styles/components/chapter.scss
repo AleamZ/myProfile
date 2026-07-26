@@ -1,0 +1,122 @@
+// ── The one section template ───────────────────────────────────
+// Every chapter is built from this and nothing else: same grid, same head,
+// same rule weight, same arrival. Sections differ only in what they put in the
+// body. That sameness is the coherence — five bespoke layouts is what made the
+// page read as five unrelated pages.
+
+.chapter {
+    position: relative;
+    min-height: var(--chapter-run);
+}
+
+.chapter__inner {
+    // Arrival is deliberately much shorter than departure: jumping straight to
+    // a chapter from the rail lands at progress 0, and a long entry ramp would
+    // greet the reader with a half-faded page.
+    --ramp-in: 0.05;
+    --ramp-out: 0.18;
+    --in: clamp(0, calc(var(--chapter) / var(--ramp-in)), 1);
+    --out: clamp(0, calc((var(--chapter) - (1 - var(--ramp-out))) / var(--ramp-out)), 1);
+    --here: clamp(0, calc(var(--in) - var(--out)), 1);
+
+    // Sticky, not pinned: pinning injects a spacer and freezes the section's
+    // document position, which is exactly what the reader measures to work out
+    // which chapter is on screen. Sticky leaves the geometry alone.
+    position: sticky;
+    top: 0;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: repeat(12, var(--col));
+    column-gap: var(--gutter);
+    align-content: center;
+    width: 100%;
+    padding-block: clamp(64px, 10vh, 120px);
+}
+
+// A sticky box taller than the viewport pins at the top and its own overflow
+// becomes unreachable — the reader can never scroll to the bottom of it. Any
+// chapter whose body does not fit one screen opts out.
+.chapter--tall .chapter__inner {
+    position: static;
+    min-height: 0;
+}
+
+// Arrive, hold, depart. The hold is the point: without it a chapter merely
+// slides past, which is what made the page feel like stacked panels.
+.js .chapter__inner {
+    opacity: calc(0.35 + 0.65 * var(--here));
+    transform: translate3d(0, calc((1 - var(--in)) * 2.6vh - var(--out) * 2.6vh), 0);
+}
+
+// The opening chapter is already on screen at load and the closing one has
+// nowhere to go; ramping them would land the reader on a dimmed page and
+// leave them reading the end through a veil.
+.js .chapter--opening .chapter__inner { --in: 1; }
+.js .chapter--closing .chapter__inner { --out: 0; }
+
+// ── Head ───────────────────────────────────────────────────────
+.chapter__head {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: baseline;
+    gap: clamp(12px, 1.6vw, 24px);
+    margin-bottom: clamp(28px, 5vh, 64px);
+}
+
+.chapter__index {
+    flex: none;
+    color: var(--signal);
+}
+
+.chapter__title {
+    flex: none;
+}
+
+// The rule draws itself once the head arrives — the only entrance a head gets.
+.chapter__rule {
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--line);
+    transform-origin: left;
+    transform: scaleX(var(--in));
+    transition: transform 0.8s var(--ease);
+}
+
+.chapter__meta {
+    flex: none;
+    color: var(--ink-faint);
+    text-align: right;
+}
+
+// ── Body ───────────────────────────────────────────────────────
+// Ten columns of reading measure. The telemetry column owns eleven and twelve
+// and must never be written over — that readout is the one thing on the page
+// that is always visible.
+.chapter__body {
+    grid-column: 1 / 11;
+    min-width: 0;
+}
+
+.chapter__body--wide {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+    .chapter__inner {
+        grid-template-columns: repeat(6, var(--col));
+    }
+
+    .chapter__body,
+    .chapter__body--wide {
+        grid-column: 1 / -1;
+    }
+
+    .chapter__head {
+        flex-wrap: wrap;
+    }
+
+    .chapter__meta {
+        flex: 1 1 100%;
+        text-align: left;
+    }
+}

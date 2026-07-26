@@ -1,0 +1,203 @@
+// ── Index + readout ────────────────────────────────────────────
+// The shape chapters 02 through 05 all share: a numbered index on the left,
+// and a readout on the right that changes with the selected row. One shape
+// repeated is what makes the page read as one document; five bespoke layouts
+// is what made the previous build read as five unrelated pages.
+
+.work {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(20px, 3vw, 56px);
+    align-items: start;
+}
+
+// ── Index ──────────────────────────────────────────────────────
+.work__row {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 3.2ch minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0 14px;
+    padding: 13px 2px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    transition: color 0.3s var(--ease);
+
+    // A rule that draws in from the left, rather than a background swap.
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 1px;
+        background: var(--signal);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.45s var(--ease);
+    }
+
+    &:hover .work__name,
+    &:focus-visible .work__name {
+        color: var(--ink);
+    }
+}
+
+.work__no {
+    color: var(--ink-faint);
+    transition: color 0.3s var(--ease);
+}
+
+.work__name {
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    font-variation-settings: 'wdth' var(--wd-mid);
+    letter-spacing: -0.005em;
+    color: var(--ink-dim);
+    transition: color 0.3s var(--ease);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.work__year {
+    color: var(--ink-faint);
+    white-space: nowrap;
+}
+
+.work__row.is-active {
+    .work__no { color: var(--signal); }
+    .work__name { color: var(--ink); }
+
+    &::after {
+        transform: scaleX(1);
+    }
+}
+
+// ── Readout ────────────────────────────────────────────────────
+.work__readout {
+    padding-left: clamp(0px, 1.5vw, 24px);
+    border-left: 1px solid var(--line);
+    animation: readout-in 520ms var(--ease-type);
+}
+
+@keyframes readout-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+.work__blurb {
+    font-size: var(--t-lead);
+    line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 44ch;
+}
+
+.work__tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+}
+
+.work__tag {
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+}
+
+.work__links {
+    display: flex;
+    gap: 20px;
+    margin-top: 22px;
+}
+
+.work__link {
+    color: var(--signal);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color 0.3s var(--ease);
+
+    &:hover,
+    &:focus-visible {
+        border-bottom-color: var(--line-signal);
+    }
+}
+
+// ── 03 Experience readout ──────────────────────────────────────
+.exp__role {
+    font-size: var(--t-lead);
+    color: var(--ink);
+}
+
+.exp__team {
+    color: var(--ink-faint);
+}
+
+.exp__projects {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-top: 22px;
+}
+
+.exp__project {
+    display: grid;
+    grid-template-columns: 3.2ch minmax(0, 1fr);
+    gap: 14px;
+}
+
+.exp__project-no {
+    color: var(--ink-faint);
+    padding-top: 4px;
+}
+
+.exp__project-name {
+    font-size: 1rem;
+    font-weight: 600;
+    font-variation-settings: 'wdth' var(--wd-mid);
+    color: var(--ink);
+}
+
+.exp__project-summary {
+    margin-top: 5px;
+    font-size: var(--t-body);
+    line-height: 1.55;
+    color: var(--ink-dim);
+}
+
+// ── 04 Skills readout ──────────────────────────────────────────
+.skills__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+}
+
+.skills__item {
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    font-size: var(--t-body);
+    color: var(--ink-dim);
+    transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+
+    &:hover {
+        border-color: var(--line-lit);
+        color: var(--ink);
+    }
+}
+
+@media (max-width: 900px) {
+    .work {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+    }
+
+    .work__readout {
+        padding-left: 0;
+        padding-top: 20px;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+    }
+}

@@ -1,0 +1,112 @@
+// ── 01 Identity ────────────────────────────────────────────────
+
+.identity__name {
+    margin-bottom: clamp(24px, 4vh, 48px);
+}
+
+.identity__line {
+    --n: 0;
+    // 0 → outline only, 1 → solid. The +0.34 bias leaves the first line filled
+    // at rest, so the page is legible before any scrolling happens.
+    --fill-n: clamp(0, calc((var(--chapter) + 0.34 - var(--n) * 0.3) / 0.34), 1);
+
+    display: block;
+    position: relative;
+}
+
+.identity__line:nth-child(1) { font-variation-settings: 'wdth' 108; }
+.identity__line:nth-child(2) { font-variation-settings: 'wdth' 118; }
+.identity__line:nth-child(3) { font-variation-settings: 'wdth' 125; }
+
+.identity__ghost {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: clamp(0.7px, 0.08vw, 1.4px) var(--line-lit);
+}
+
+// Plain overflow on a sized box. Masks and clip-path both push the line onto
+// its own compositing layer, where Chromium intermittently drops the clip and
+// repaints the whole line as a solid slab.
+.identity__cut {
+    position: absolute;
+    inset: 0;
+    width: calc(var(--fill-n) * 100%);
+    overflow: hidden;
+}
+
+.identity__fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+    color: var(--ink);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .identity__fill {
+        background-image: linear-gradient(178deg, #ffffff 0%, #dae3f0 34%, #9aa7bd 74%, #5f6b80 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+// The scan line rides the leading edge — the only signal colour in the chapter.
+.identity__cut::after {
+    content: '';
+    position: absolute;
+    top: 0.12em;
+    bottom: 0.1em;
+    right: 0;
+    width: 1px;
+    background: var(--line-signal);
+    opacity: clamp(0, calc((1 - var(--fill-n)) * 3), 1);
+}
+
+html:not(.js) .identity__line {
+    --fill-n: 1;
+}
+
+.identity__lead {
+    max-width: 46ch;
+    font-size: var(--t-lead);
+    line-height: 1.6;
+    color: var(--ink-dim);
+    animation: rise 700ms var(--ease-type) 500ms backwards;
+}
+
+.identity__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(20px, 4vw, 56px);
+    margin-top: clamp(28px, 5vh, 56px);
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    animation: rise 700ms var(--ease-type) 640ms backwards;
+}
+
+.identity__fact {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    dd {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--ink);
+    }
+}
+
+.identity__fact--live dd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.identity__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: var(--glow);
+}

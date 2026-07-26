@@ -14,7 +14,7 @@ export interface Strings {
     status: { available: string }
     roleEyebrow: string
     aside: { localTime: string; basedIn: string; available: string; city: string }
-    work: { loading: string; view: string }
+    work: { loading: string; view: string; entries: string; live: string; source: string }
     modal: {
         live: string
         source: string
@@ -42,19 +42,11 @@ export interface Strings {
     contact: { lead: string }
     places: { title: string; lead: string; hint: string; noPhoto: string }
     boot: { label: string }
+    tele: { chapter: string; section: string; focus: string; item: string; time: string }
+    skip: string
+    identity: { lead: string; stack: string; status: string }
+    skillsMeta: { entries: string }
     footer: { motion: string; backToTop: string }
-    dino: { auto: string; play: string; gameOver: string; hint: string }
-    mario: {
-        method: string
-        ending: string
-        auto: string
-        stomp: string
-        gun: string
-        ninja: string
-        car: string
-        pipe: string
-        flag: string
-    }
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -63,7 +55,7 @@ export const STRINGS: Record<Lang, Strings> = {
         status: { available: 'Available' },
         roleEyebrow: 'frontend developer',
         aside: { localTime: 'Local time', basedIn: 'Based in', available: 'Available for work', city: 'Ho Chi Minh City' },
-        work: { loading: 'Loading work', view: 'View' },
+        work: { loading: 'Loading work', view: 'View', entries: 'projects', live: 'Live', source: 'Source' },
         modal: {
             live: 'Live demo',
             source: 'Source',
@@ -96,16 +88,22 @@ export const STRINGS: Record<Lang, Strings> = {
             noPhoto: 'Photo coming soon',
         },
         boot: { label: 'Cold start' },
+        tele: { chapter: 'Chapter', section: 'Section', focus: 'Focus', item: 'Item', time: 'Local time' },
+        skip: 'Skip to content',
+        identity: {
+            lead: 'Frontend developer in Ho Chi Minh City. I build interfaces that stay fast and legible once the real data arrives.',
+            stack: 'Stack',
+            status: 'Status',
+        },
+        skillsMeta: { entries: 'entries' },
         footer: { motion: 'Motion', backToTop: 'Back to top' },
-        dino: { auto: 'Auto', play: 'Play', gameOver: 'Game Over', hint: 'Space / tap to jump' },
-        mario: { method: 'Move', ending: 'End', auto: 'Auto', stomp: 'Stomp', gun: 'Gun', ninja: 'Ninja', car: 'Car', pipe: 'Pipe', flag: 'Flag' },
     },
     vi: {
         sections: { identity: 'Hồ sơ', work: 'Dự án', experience: 'Kinh nghiệm', skills: 'Kỹ năng', contact: 'Liên hệ' },
         status: { available: 'Sẵn sàng' },
         roleEyebrow: 'lập trình viên frontend',
         aside: { localTime: 'Giờ địa phương', basedIn: 'Tại', available: 'Sẵn sàng nhận việc', city: 'TP. Hồ Chí Minh' },
-        work: { loading: 'Đang tải dự án', view: 'Xem' },
+        work: { loading: 'Đang tải dự án', view: 'Xem', entries: 'dự án', live: 'Xem thử', source: 'Mã nguồn' },
         modal: {
             live: 'Bản chạy thử',
             source: 'Mã nguồn',
@@ -138,16 +136,22 @@ export const STRINGS: Record<Lang, Strings> = {
             noPhoto: 'Ảnh sẽ cập nhật',
         },
         boot: { label: 'Khởi động' },
+        tele: { chapter: 'Chương', section: 'Mục', focus: 'Đang xem', item: 'Mục số', time: 'Giờ địa phương' },
+        skip: 'Tới nội dung',
+        identity: {
+            lead: 'Lập trình viên frontend tại TP. Hồ Chí Minh. Tôi dựng giao diện giữ được tốc độ và sự rõ ràng khi dữ liệu thật đổ vào.',
+            stack: 'Công nghệ',
+            status: 'Trạng thái',
+        },
+        skillsMeta: { entries: 'mục' },
         footer: { motion: 'Hiệu ứng', backToTop: 'Lên đầu trang' },
-        dino: { auto: 'Tự động', play: 'Tự chơi', gameOver: 'Thua rồi', hint: 'Space / chạm để nhảy' },
-        mario: { method: 'Chiêu', ending: 'Kết', auto: 'Tự động', stomp: 'Giẫm', gun: 'Súng', ninja: 'Ninja', car: 'Xe', pipe: 'Cống', flag: 'Cờ' },
     },
     ko: {
         sections: { identity: '소개', work: '프로젝트', experience: '경력', skills: '기술', contact: '연락처' },
         status: { available: '가능' },
         roleEyebrow: '프론트엔드 개발자',
         aside: { localTime: '현지 시각', basedIn: '거주지', available: '구직 중', city: '호치민시' },
-        work: { loading: '작업 불러오는 중', view: '보기' },
+        work: { loading: '작업 불러오는 중', view: '보기', entries: '프로젝트', live: '데모', source: '소스' },
         modal: {
             live: '라이브 데모',
             source: '소스 코드',
@@ -180,8 +184,14 @@ export const STRINGS: Record<Lang, Strings> = {
             noPhoto: '사진 준비 중',
         },
         boot: { label: '시작 중' },
+        tele: { chapter: '챕터', section: '섹션', focus: '초점', item: '항목', time: '현지 시간' },
+        skip: '본문으로 건너뛰기',
+        identity: {
+            lead: '호치민시의 프론트엔드 개발자. 실제 데이터가 들어와도 빠르고 읽기 쉬운 인터페이스를 만듭니다.',
+            stack: '기술',
+            status: '상태',
+        },
+        skillsMeta: { entries: '개' },
         footer: { motion: '모션', backToTop: '맨 위로' },
-        dino: { auto: '자동', play: '플레이', gameOver: '게임 오버', hint: 'Space / 탭 점프' },
-        mario: { method: '기술', ending: '엔딩', auto: '자동', stomp: '밟기', gun: '총', ninja: '닌자', car: '자동차', pipe: '파이프', flag: '깃발' },
     },
 }

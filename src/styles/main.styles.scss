@@ -1,7 +1,9 @@
-// COLD START — deep-field instrument portfolio
+// ══ SINGLE INSTRUMENT ══════════════════════════════════════════
 @use "./tokens";
 @use "./base";
-//component
-@use "./componentsScss/component";
-// layout
-@use "../styles/layoutsScss/layout";
+@use "./components/frame";
+@use "./components/instrument";
+@use "./components/chapter";
+@use "./components/identity";
+@use "./components/index-readout";
+@use "./components/contact";

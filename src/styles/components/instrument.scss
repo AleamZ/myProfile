@@ -1,0 +1,64 @@
+// ── The instrument ─────────────────────────────────────────────
+// A fixed canvas, and a real grid cell that tells it where to sit. The cell is
+// what makes the scene share the layout's coordinate system rather than
+// floating in one of its own.
+
+.instrument__anchor {
+    position: fixed;
+    // Columns 6 → 10: right of the reading measure, and clear of the telemetry
+    // column so the readout is never drawn over.
+    right: calc(var(--frame) + var(--tele-span) + var(--gutter));
+    top: 50%;
+    transform: translateY(-50%);
+    width: calc(var(--col) * 5 + var(--gutter) * 4);
+    height: min(56svh, calc(var(--col) * 5 + var(--gutter) * 4));
+    pointer-events: none;
+    visibility: hidden; // measured, never painted
+}
+
+.instrument__canvas {
+    position: fixed !important;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    // The resting opacity has to live here, not in the keyframe: `fade` ends at
+    // whatever the element's own opacity is, so declaring 0 here would animate
+    // from nothing to nothing. `backwards` holds the transparent start through
+    // the delay. The cap is deliberate — the scene is atmosphere, and the
+    // reading column always wins the contrast.
+    opacity: 0.62;
+    animation: fade 1.6s var(--ease) 400ms backwards;
+}
+
+// Keep the reading column clear of the scene: a wash weighted to the left, so
+// type never has to compete with whatever the instrument is doing.
+.page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(100deg, rgba(5, 7, 13, 0.95) 0%, rgba(5, 7, 13, 0.9) 58%, rgba(5, 7, 13, 0.6) 78%, transparent 96%),
+        radial-gradient(125% 105% at 60% 45%, transparent 42%, rgba(2, 3, 7, 0.7) 100%);
+}
+
+main {
+    position: relative;
+    z-index: 2;
+}
+
+@media (max-width: 900px) {
+    .instrument__anchor {
+        left: 50%;
+        right: auto;
+        top: 46%;
+        transform: translate(-50%, -50%);
+        width: min(74vw, 420px);
+        height: min(74vw, 420px);
+    }
+
+    .page::before {
+        background: linear-gradient(0deg, rgba(5, 7, 13, 0.86) 0%, rgba(5, 7, 13, 0.4) 34%, transparent 70%);
+    }
+}
