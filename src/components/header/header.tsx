@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import LogoMark from '../logo/logoMark'
 import LangSwitcher from '../langSwitcher/langSwitcher'
-import ThemeSwitcher from '../themeSwitcher/themeSwitcher'
 
 const MHeader = () => {
     const [scrolled, setScrolled] = useState(false)
@@ -20,7 +19,6 @@ const MHeader = () => {
             </a>
 
             <div className="site-header__right">
-                <ThemeSwitcher />
                 <LangSwitcher />
             </div>
         </header>

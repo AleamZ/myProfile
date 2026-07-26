@@ -24,15 +24,20 @@ const HomepageBanner = () => {
                 <span className="index index--id">01&nbsp;/&nbsp;{t.sections.identity}</span>
             </div>
 
+            {/*
+              Each line is drawn twice: a hairline outline that is always there,
+              and a solid copy inside a clipping window whose width is driven by
+              scroll. The name resolves as the visitor descends — the type is
+              the chapter's progress indicator, so nothing else has to announce
+              it. The clip lives on the wrapper's overflow rather than on a mask
+              or background-clip, both of which Chromium drops on repaint.
+            */}
             <h1 className="name" aria-label="Nguyen Tien Dat">
-                {NAME_LINES.map((line) => (
-                    <span className="name__line" key={line}>
-                        <span className="name__inner" aria-hidden="true">
-                            {line.split('').map((char, i) => (
-                                <span className="name__glyph" key={`${line}-${i}`}>
-                                    {char}
-                                </span>
-                            ))}
+                {NAME_LINES.map((line, index) => (
+                    <span className="name__line" key={line} style={{ '--n': index } as CSSProperties}>
+                        <span className="name__ghost" aria-hidden="true">{line}</span>
+                        <span className="name__reveal" aria-hidden="true">
+                            <span className="name__fill">{line}</span>
                         </span>
                     </span>
                 ))}

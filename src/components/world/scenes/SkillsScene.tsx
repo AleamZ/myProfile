@@ -10,17 +10,22 @@ import {
   InstancedMesh,
   LineBasicMaterial,
   MathUtils,
-  MeshStandardMaterial,
+  MeshBasicMaterial,
   Object3D,
-  PointLight,
   SphereGeometry,
   Vector3,
 } from 'three'
 import { SKILLS } from '../../../data/skills'
-import { useTheme } from '../../../theme/ThemeProvider'
 import type { SceneQuality } from '../world.types'
 
 type RenderQuality = Exclude<SceneQuality, 'fallback'>
+
+// Stars, not beads. Additive blending does the work a point light used to,
+// and the focused cluster is the only thing allowed to burn cyan.
+const STAR_ACTIVE = '#a8e8f6'
+const STAR_IDLE = '#7d8ca3'
+const STAR_DIMMED = '#232e3d'
+const CONNECTOR_INK = '#8496ad'
 
 const NODE_LIMIT: Readonly<Record<RenderQuality, number>> = {
   high: Number.POSITIVE_INFINITY,
@@ -100,46 +105,31 @@ export interface SkillsSceneProps {
 }
 
 export function SkillsScene({ progress, activeSkillGroup, quality }: SkillsSceneProps) {
-  const { theme } = useTheme()
   const constellation = useRef<Group>(null)
   const points = useRef<InstancedMesh>(null)
-  const focusLight = useRef<PointLight>(null)
   const layout = useMemo(() => createConstellationLayout(quality), [quality])
   const dummy = useMemo(() => new Object3D(), [])
-  const activeColor = useMemo(() => new Color(), [])
-  const idleColor = useMemo(() => new Color(), [])
-  const mutedColor = useMemo(() => new Color(), [])
+  const activeColor = useMemo(() => new Color(STAR_ACTIVE), [])
+  const idleColor = useMemo(() => new Color(STAR_IDLE), [])
+  const mutedColor = useMemo(() => new Color(STAR_DIMMED), [])
   const pointGeometry = useMemo(
-    () => new SphereGeometry(0.07, quality === 'high' ? 12 : quality === 'balanced' ? 8 : 6, 6),
+    () => new SphereGeometry(0.055, quality === 'high' ? 12 : quality === 'balanced' ? 8 : 6, 6),
     [quality],
   )
   const connectorMaterial = useMemo(() => new LineBasicMaterial({
-    color: '#9e94d8',
+    color: CONNECTOR_INK,
     transparent: true,
     opacity: 0,
     blending: AdditiveBlending,
     depthWrite: false,
   }), [])
-  const pointMaterial = useMemo(() => new MeshStandardMaterial({
-    color: '#ffffff',
-    emissive: '#7062b3',
-    emissiveIntensity: 0.82,
-    roughness: 0.4,
-    metalness: 0.08,
+  const pointMaterial = useMemo(() => new MeshBasicMaterial({
     transparent: true,
     opacity: 0,
     vertexColors: true,
+    blending: AdditiveBlending,
     depthWrite: false,
   }), [])
-
-  useEffect(() => {
-    const lightTheme = theme === 'light'
-    activeColor.set(lightTheme ? '#332b50' : '#f8f5ff')
-    idleColor.set(lightTheme ? '#776ba8' : '#887eb8')
-    mutedColor.set(lightTheme ? '#aba3c4' : '#4c4763')
-    connectorMaterial.color.set(lightTheme ? '#6859a2' : '#9e94d8')
-    pointMaterial.emissive.set(lightTheme ? '#7465ac' : '#7062b3')
-  }, [activeColor, connectorMaterial, idleColor, mutedColor, pointMaterial, theme])
 
   useEffect(() => {
     points.current?.instanceMatrix.setUsage(DynamicDrawUsage)
@@ -158,8 +148,7 @@ export function SkillsScene({ progress, activeSkillGroup, quality }: SkillsScene
   useFrame((_, delta) => {
     const group = constellation.current
     const pointInstances = points.current
-    const light = focusLight.current
-    if (!group || !pointInstances || !light) return
+    if (!group || !pointInstances) return
 
     const chapterProgress = MathUtils.clamp(progress, 0, 1)
     const visibility = smoothstep(0, 0.14, chapterProgress) * (1 - smoothstep(0.84, 1, chapterProgress))
@@ -177,22 +166,15 @@ export function SkillsScene({ progress, activeSkillGroup, quality }: SkillsScene
       pointInstances.setColorAt(index, focused ? activeColor : dimmed ? mutedColor : idleColor)
     })
 
-    if (selected !== null) light.position.copy(layout.anchors[selected])
     pointInstances.instanceMatrix.needsUpdate = true
     if (pointInstances.instanceColor) pointInstances.instanceColor.needsUpdate = true
     connectorMaterial.opacity = MathUtils.damp(
       connectorMaterial.opacity,
-      visibility * (selected === null ? 0.34 : 0.48),
+      visibility * (selected === null ? 0.26 : 0.36),
       5,
       delta,
     )
-    pointMaterial.opacity = MathUtils.damp(pointMaterial.opacity, visibility * 0.88, 5, delta)
-    light.intensity = MathUtils.damp(
-      light.intensity,
-      selected === null ? 0 : visibility * (theme === 'light' ? 1 : 2.15),
-      5.4,
-      delta,
-    )
+    pointMaterial.opacity = MathUtils.damp(pointMaterial.opacity, visibility * 0.72, 5, delta)
     group.position.z = MathUtils.damp(group.position.z, -0.25 + (1 - chapterProgress) * 0.55, 4.3, delta)
     group.rotation.y = MathUtils.damp(group.rotation.y, 0.16 - chapterProgress * 0.3, 4.3, delta)
   })
@@ -201,13 +183,6 @@ export function SkillsScene({ progress, activeSkillGroup, quality }: SkillsScene
     <group ref={constellation} position={[0, 0, -0.25]}>
       <lineSegments geometry={layout.connectorGeometry} material={connectorMaterial} />
       <instancedMesh ref={points} args={[pointGeometry, pointMaterial, layout.nodes.length]} frustumCulled={false} />
-      <pointLight
-        ref={focusLight}
-        color={theme === 'light' ? '#7060ad' : '#aaa0ee'}
-        distance={2.1}
-        decay={2}
-        intensity={0}
-      />
     </group>
   )
 }

@@ -4,7 +4,9 @@
     z-index: 0;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 1.1s var(--ease-rule);
+    // The scene is atmosphere, not subject. It fades in slowly and never
+    // reaches full strength — the content column always wins the contrast.
+    transition: opacity 1.4s var(--ease-rule);
     contain: strict;
 
     canvas {
@@ -15,25 +17,28 @@
     }
 }
 
-.homepage[data-world='active'] {
-    .world-canvas {
-        opacity: 1;
-    }
+.homepage[data-world='active'] .world-canvas {
+    opacity: 0.62;
 }
 
-[data-theme='dark'] .homepage.world-ambience-dimmed {
-    [data-world-ambience] {
-        opacity: 0.14;
-        visibility: visible;
-        transition:
-            opacity 1.1s var(--ease-rule),
-            visibility 0s;
+// Once the core is drawing, the CSS spotlight behind it is a second, competing
+// light source. Drop it back so the two layers read as one sky.
+.homepage.world-ambience-dimmed .fx-spotlight {
+    opacity: 0.35;
+    transition: opacity 1.4s var(--ease-rule);
+}
+
+@media (max-width: 960px) {
+    // Less scene on small screens: the type occupies most of the frame there,
+    // and a busy canvas behind it costs legibility for no gain.
+    .homepage[data-world='active'] .world-canvas {
+        opacity: 0.46;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .world-canvas,
-    [data-theme='dark'] .homepage.world-ambience-dimmed [data-world-ambience] {
+    .homepage.world-ambience-dimmed .fx-spotlight {
         transition: none;
     }
 }

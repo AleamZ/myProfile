@@ -66,7 +66,9 @@
     align-self: flex-start;
     margin-top: clamp(24px, 4vh, 44px);
     overflow: hidden; // entrance mask; the ::after underline sits inside, unclipped
-    font-size: clamp(1.5rem, 5.5vw, 4.5rem);
+    // Sized to sit on one line beside the socials column. At 5.5vw the address
+    // split after the "@", which is the one place it must never break.
+    font-size: clamp(1.3rem, 3.9vw, 3.2rem);
     font-weight: 300;
     line-height: 1.05;
     letter-spacing: -0.02em;

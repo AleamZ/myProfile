@@ -1,8 +1,10 @@
-// ── PLATINE PROOF · hero right-aside ───────────────────────────
+// ── COLD START · hero right-aside ──────────────────────────────
 // Right-anchored counterweight to the giant name: a live local clock,
 // location/status, and a vertical hairline with a slowly travelling dot.
+// Three columns, not two — at two, "Ho Chi Minh City" and the coordinates
+// both wrapped, which made the telemetry look like body copy.
 .hero__aside {
-    grid-column: 11 / -1;
+    grid-column: 10 / -1;
     grid-row: 2;
     position: relative;
     display: flex;

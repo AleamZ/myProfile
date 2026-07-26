@@ -1,5 +1,3 @@
-import type { Theme } from '../../theme/ThemeProvider'
-
 export type WorldReadiness = 'pending' | 'active'
 
 export type WorldReadinessEvent =
@@ -11,10 +9,14 @@ interface WorldPresentation {
   ambienceClass: 'world-ambience-dimmed' | undefined
 }
 
-export function getWorldPresentation(theme: Theme, readiness: WorldReadiness): WorldPresentation {
+// Once the WebGL core is drawing, the CSS ambience behind it is duplicate
+// depth — dim it so the two layers never read as two separate skies.
+export function getWorldPresentation(readiness: WorldReadiness): WorldPresentation {
+  const active = readiness === 'active'
+
   return {
-    worldAttribute: readiness === 'active' ? 'active' : undefined,
-    ambienceClass: theme === 'dark' && readiness === 'active' ? 'world-ambience-dimmed' : undefined,
+    worldAttribute: active ? 'active' : undefined,
+    ambienceClass: active ? 'world-ambience-dimmed' : undefined,
   }
 }
 

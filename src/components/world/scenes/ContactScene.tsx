@@ -7,14 +7,17 @@ import {
   MathUtils,
   Mesh,
   MeshBasicMaterial,
-  PointLight,
   SphereGeometry,
   TorusGeometry,
 } from 'three'
-import { useTheme } from '../../../theme/ThemeProvider'
 import type { SceneQuality } from '../world.types'
 
 type RenderQuality = Exclude<SceneQuality, 'fallback'>
+
+// The aperture is drawn in ice; only the point you are being invited to reach
+// burns cyan. That is the whole colour budget for this chapter.
+const APERTURE_INK = '#b6c6da'
+const BEACON = '#8fe9f8'
 
 export interface ContactSceneProps {
   progress: number
@@ -23,46 +26,38 @@ export interface ContactSceneProps {
 }
 
 export function ContactScene({ progress, contactEngaged, quality }: ContactSceneProps) {
-  const { theme } = useTheme()
   const portal = useRef<Group>(null)
   const outerRing = useRef<Mesh>(null)
   const middleRing = useRef<Mesh>(null)
   const innerRing = useRef<Mesh>(null)
   const core = useRef<Mesh>(null)
-  const coreLight = useRef<PointLight>(null)
   const torusGeometry = useMemo(
     () => new TorusGeometry(
       1.35,
-      quality === 'low' ? 0.025 : 0.018,
-      quality === 'high' ? 10 : 7,
-      quality === 'low' ? 72 : 128,
+      quality === 'low' ? 0.006 : 0.004,
+      3,
+      quality === 'low' ? 88 : 168,
     ),
     [quality],
   )
   const coreGeometry = useMemo(
-    () => new SphereGeometry(0.1, quality === 'high' ? 18 : 10, 8),
+    () => new SphereGeometry(0.075, quality === 'high' ? 18 : 10, 8),
     [quality],
   )
   const ringMaterial = useMemo(() => new MeshBasicMaterial({
-    color: new Color('#a49ae2'),
+    color: new Color(APERTURE_INK),
     transparent: true,
     opacity: 0,
     blending: AdditiveBlending,
     depthWrite: false,
   }), [])
   const coreMaterial = useMemo(() => new MeshBasicMaterial({
-    color: new Color('#f3f0ff'),
+    color: new Color(BEACON),
     transparent: true,
     opacity: 0,
     blending: AdditiveBlending,
     depthWrite: false,
   }), [])
-
-  useEffect(() => {
-    const lightTheme = theme === 'light'
-    ringMaterial.color.set(lightTheme ? '#6657a0' : '#a49ae2')
-    coreMaterial.color.set(lightTheme ? '#3a3158' : '#f3f0ff')
-  }, [coreMaterial, ringMaterial, theme])
 
   useEffect(() => () => {
     torusGeometry.dispose()
@@ -80,8 +75,7 @@ export function ContactScene({ progress, contactEngaged, quality }: ContactScene
     const middle = middleRing.current
     const inner = innerRing.current
     const coreMesh = core.current
-    const light = coreLight.current
-    if (!group || !outer || !middle || !inner || !coreMesh || !light) return
+    if (!group || !outer || !middle || !inner || !coreMesh) return
 
     const chapterProgress = MathUtils.clamp(progress, 0, 1)
     const visibility = MathUtils.smoothstep(chapterProgress, 0, 0.22)
@@ -106,16 +100,10 @@ export function ContactScene({ progress, contactEngaged, quality }: ContactScene
       MathUtils.damp(inner.rotation.z, 0.06 + settle * 0.5, 4.5, delta),
     )
 
-    ringMaterial.opacity = MathUtils.damp(ringMaterial.opacity, visibility * (contactEngaged ? 0.74 : 0.48), 5.2, delta)
-    coreMaterial.opacity = MathUtils.damp(coreMaterial.opacity, visibility * (contactEngaged ? 1 : 0.66), 5.2, delta)
+    ringMaterial.opacity = MathUtils.damp(ringMaterial.opacity, visibility * (contactEngaged ? 0.62 : 0.4), 5.2, delta)
+    coreMaterial.opacity = MathUtils.damp(coreMaterial.opacity, visibility * (contactEngaged ? 0.95 : 0.6), 5.2, delta)
     const coreScale = MathUtils.damp(coreMesh.scale.x, contactEngaged ? 1.55 : 1, 5.8, delta)
     coreMesh.scale.setScalar(coreScale)
-    light.intensity = MathUtils.damp(
-      light.intensity,
-      visibility * (contactEngaged ? (theme === 'light' ? 2.4 : 5.2) : (theme === 'light' ? 0.8 : 1.8)),
-      5.8,
-      delta,
-    )
   })
 
   return (
@@ -124,13 +112,6 @@ export function ContactScene({ progress, contactEngaged, quality }: ContactScene
       <mesh ref={middleRing} geometry={torusGeometry} material={ringMaterial} scale={0.72} />
       <mesh ref={innerRing} geometry={torusGeometry} material={ringMaterial} scale={0.43} />
       <mesh ref={core} geometry={coreGeometry} material={coreMaterial} />
-      <pointLight
-        ref={coreLight}
-        color={theme === 'light' ? '#695aa0' : '#b8afff'}
-        distance={4.2}
-        decay={2}
-        intensity={0}
-      />
     </group>
   )
 }

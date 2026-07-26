@@ -73,7 +73,7 @@
     align-items: center;
     justify-content: center;
     gap: 20px;
-    background: rgba(8, 8, 12, 0.78);
+    background: rgba(6, 9, 17, 0.8);
     border-block: 1px solid var(--line-faint);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -126,7 +126,7 @@
     color: var(--text);
     background:
         linear-gradient(150deg, rgba(255, 255, 255, 0.035), transparent 38%),
-        rgba(10, 10, 15, 0.76);
+        rgba(10, 14, 25, 0.78);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     overflow: hidden;
@@ -138,12 +138,16 @@
     will-change: transform, opacity;
     user-select: none;
 
+    // The selected card is the only lit thing in the chapter: a signal-coloured
+    // edge and a top rule, matching the plate the scene lights behind it.
     &.is-active {
         border-color: var(--line-strong);
         background:
-            linear-gradient(150deg, rgba(255, 255, 255, 0.055), transparent 42%),
-            rgba(11, 11, 16, 0.88);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 34px 90px rgba(0, 0, 0, 0.26);
+            linear-gradient(150deg, rgba(232, 238, 248, 0.055), transparent 42%),
+            rgba(12, 17, 30, 0.9);
+        box-shadow:
+            inset 0 1px 0 var(--line-signal),
+            0 34px 90px rgba(0, 0, 0, 0.4);
     }
 }
 
@@ -158,6 +162,18 @@
     background: var(--bg-elev);
     border-bottom: 1px solid var(--line);
 
+    // Screenshots arrive in whatever colour their product uses. This scrim
+    // sinks the bottom edge into the card so a bright thumbnail reads as a
+    // window in the panel rather than a swatch pasted on top of it.
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(0deg, rgba(10, 14, 25, 0.92) 0%, rgba(10, 14, 25, 0.18) 34%, transparent 68%);
+    }
+
     img {
         position: absolute;
         inset: 0;
@@ -171,9 +187,11 @@
     }
 }
 
+// Enough grade left on the active thumbnail to keep the work recognisable,
+// enough taken off it to stop a warm screenshot fighting the cold field.
 .cf__card.is-active .cf__thumb img {
-    opacity: 0.92;
-    filter: grayscale(0.12) contrast(1.03) brightness(0.92);
+    opacity: 0.88;
+    filter: grayscale(0.3) contrast(1.04) brightness(0.84) saturate(0.9);
 }
 
 // Faint index sits behind the preview as a loading / fallback state.
@@ -182,7 +200,7 @@
     font-weight: 300;
     font-size: clamp(4rem, 9vw, 8rem);
     line-height: 1;
-    color: rgba(237, 237, 237, 0.1);
+    color: rgba(232, 238, 248, 0.1);
 }
 
 // Transparent click/keyboard target (kept out of the image for valid HTML).
@@ -249,7 +267,7 @@
     text-transform: uppercase;
     color: var(--muted);
     border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius);
     padding: 4px 8px;
 }
 
@@ -263,7 +281,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent);
-    background: rgba(8, 8, 10, 0.55);
+    background: rgba(6, 9, 17, 0.58);
     border-radius: var(--radius-sm);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -281,7 +299,7 @@
     font-size: 26px;
     line-height: 1;
     color: var(--muted);
-    background: rgba(10, 10, 15, 0.64);
+    background: rgba(10, 14, 25, 0.66);
     border: 1px solid var(--line);
     border-radius: var(--radius-pill);
     backdrop-filter: blur(8px);
@@ -380,7 +398,7 @@
     align-items: center;
     justify-content: center;
     padding: clamp(16px, 4vw, 48px);
-    background: rgba(8, 8, 10, 0.82);
+    background: rgba(5, 8, 15, 0.84);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     animation: fade-in 0.3s var(--ease-rule);
@@ -471,7 +489,7 @@
         text-transform: uppercase;
         color: var(--muted);
         border: 1px solid var(--line);
-        border-radius: var(--radius-pill);
+        border-radius: var(--radius);
         padding: 4px 8px;
     }
 }
@@ -583,7 +601,7 @@
     transform: translateX(-50%);
     max-width: 90%;
     padding: 8px 14px;
-    background: rgba(14, 14, 17, 0.92);
+    background: rgba(12, 17, 30, 0.94);
     border: 1px solid var(--line);
     font-size: 12px;
     color: var(--muted);
@@ -682,13 +700,13 @@
 
     &:hover {
         color: var(--text);
-        background: rgba(237, 237, 237, 0.04);
+        background: rgba(232, 238, 248, 0.05);
     }
 }
 
 .repo__file.is-active {
     color: var(--text);
-    background: rgba(237, 237, 237, 0.08);
+    background: rgba(232, 238, 248, 0.09);
 }
 
 .repo__caret {
@@ -786,7 +804,7 @@
     flex: none;
     padding-inline: 16px;
     text-align: right;
-    color: rgba(237, 237, 237, 0.28);
+    color: rgba(232, 238, 248, 0.3);
     border-right: 1px solid var(--line);
     user-select: none;
 }
@@ -800,10 +818,10 @@
 
 // Grayscale-only token palette
 .tok--comment { color: var(--muted); font-style: italic; }
-.tok--string { color: #c6c6c6; }
+.tok--string { color: #aebbcd; }
 .tok--keyword { color: var(--accent); }
-.tok--number { color: #dadada; }
-.tok--fn { color: #ededed; }
+.tok--number { color: #cbd7e8; }
+.tok--fn { color: #e8eef8; }
 .tok--plain { color: var(--text); }
 
 @media (max-width: 720px) {

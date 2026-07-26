@@ -35,7 +35,7 @@
 .mario-pick__group {
     display: flex;
     border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius);
     overflow: hidden;
 }
 
@@ -53,9 +53,12 @@
     &:hover,
     &:focus-visible { color: var(--text); }
 
+    // A solid light chip made this easter egg the brightest thing on the page.
+    // Underline the selection instead and let it stay in the background.
     &.is-active {
-        color: var(--bg);
-        background: var(--text);
+        color: var(--text);
+        background: var(--surface-hover);
+        box-shadow: inset 0 -1px 0 var(--line-signal);
     }
 }
 

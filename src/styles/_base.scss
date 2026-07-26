@@ -1,4 +1,4 @@
-// ORBITAL DATA JOURNEY · base / reset / global
+// COLD START · base / reset / global
 
 *,
 *::before,
@@ -10,14 +10,6 @@ html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
     background: var(--bg);
-}
-
-// Smooth cross-fade only while the theme is being switched (toggled by JS).
-html.theme-transition,
-html.theme-transition * {
-    transition: background-color 0.45s var(--ease-rule), color 0.45s var(--ease-rule),
-        border-color 0.45s var(--ease-rule), fill 0.45s var(--ease-rule),
-        box-shadow 0.45s var(--ease-rule) !important;
 }
 
 body {
@@ -40,6 +32,14 @@ body {
 ::selection {
     background: var(--energy-primary);
     color: var(--void);
+}
+
+// Display type is set wide — Archivo's width axis is what makes the headings
+// read as silkscreen on a panel rather than as a default sans.
+h1,
+h2,
+h3 {
+    font-variation-settings: 'wdth' 118;
 }
 
 a {

@@ -10,17 +10,21 @@ import {
   InstancedMesh,
   LineBasicMaterial,
   MathUtils,
-  MeshStandardMaterial,
+  MeshBasicMaterial,
   Object3D,
-  PointLight,
-  SphereGeometry,
+  OctahedronGeometry,
   Vector3,
 } from 'three'
 import { EXPERIENCE } from '../../../data/experience'
-import { useTheme } from '../../../theme/ThemeProvider'
 import type { SceneQuality } from '../world.types'
 
 type RenderQuality = Exclude<SceneQuality, 'fallback'>
+
+// Cut markers, not lit beads: an octahedron catches the additive blend on its
+// facets and stays legible at 12px without a point light.
+const MARKER_ACTIVE = '#a8e8f6'
+const MARKER_IDLE = '#33445c'
+const ROUTE_INK = '#9fb2c9'
 
 const ROUTE_POINTS = EXPERIENCE.map((_, index) => {
   const progress = EXPERIENCE.length <= 1 ? 0.5 : index / (EXPERIENCE.length - 1)
@@ -59,17 +63,15 @@ export interface ExperienceSceneProps {
 }
 
 export function ExperienceScene({ progress, activeExperience, quality }: ExperienceSceneProps) {
-  const { theme } = useTheme()
   const routeGroup = useRef<Group>(null)
   const markers = useRef<InstancedMesh>(null)
-  const focusLight = useRef<PointLight>(null)
   const dummy = useMemo(() => new Object3D(), [])
-  const activeColor = useMemo(() => new Color(), [])
-  const idleColor = useMemo(() => new Color(), [])
-  const routeColor = useMemo(() => new Color(), [])
+  const activeColor = useMemo(() => new Color(MARKER_ACTIVE), [])
+  const idleColor = useMemo(() => new Color(MARKER_IDLE), [])
+  const routeColor = useMemo(() => new Color(ROUTE_INK), [])
   const routeGeometry = useMemo(() => createRouteGeometry(ROUTE_POINTS), [])
   const markerGeometry = useMemo(
-    () => new SphereGeometry(0.12, quality === 'high' ? 16 : quality === 'balanced' ? 12 : 8, 8),
+    () => new OctahedronGeometry(0.12, quality === 'high' ? 1 : 0),
     [quality],
   )
   const routeMaterial = useMemo(() => new LineBasicMaterial({
@@ -80,25 +82,13 @@ export function ExperienceScene({ progress, activeExperience, quality }: Experie
     blending: AdditiveBlending,
     depthWrite: false,
   }), [])
-  const markerMaterial = useMemo(() => new MeshStandardMaterial({
-    color: '#ffffff',
-    emissive: '#7568bd',
-    emissiveIntensity: 0.72,
-    metalness: 0.1,
-    roughness: 0.35,
+  const markerMaterial = useMemo(() => new MeshBasicMaterial({
     transparent: true,
     opacity: 0,
     vertexColors: true,
+    blending: AdditiveBlending,
     depthWrite: false,
   }), [])
-
-  useEffect(() => {
-    const lightTheme = theme === 'light'
-    activeColor.set(lightTheme ? '#3f365f' : '#f5f2ff')
-    idleColor.set(lightTheme ? '#8b80b7' : '#665e8e')
-    routeColor.set(lightTheme ? '#6657a4' : '#aea5e8')
-    markerMaterial.emissive.set(lightTheme ? '#7969b8' : '#7568bd')
-  }, [activeColor, idleColor, markerMaterial, routeColor, theme])
 
   useEffect(() => {
     markers.current?.instanceMatrix.setUsage(DynamicDrawUsage)
@@ -117,8 +107,7 @@ export function ExperienceScene({ progress, activeExperience, quality }: Experie
   useFrame((_, delta) => {
     const group = routeGroup.current
     const markerInstances = markers.current
-    const light = focusLight.current
-    if (!group || !markerInstances || !light) return
+    if (!group || !markerInstances) return
 
     const chapterProgress = MathUtils.clamp(progress, 0, 1)
     const visibility = smoothstep(0, 0.14, chapterProgress) * (1 - smoothstep(0.84, 1, chapterProgress))
@@ -126,9 +115,11 @@ export function ExperienceScene({ progress, activeExperience, quality }: Experie
     const routeColors = routeGeometry.getAttribute('color') as BufferAttribute
     const segmentCount = Math.max(ROUTE_POINTS.length - 1, 1)
 
+    // The route brightens behind the visitor: travelled segments read hot, the
+    // road ahead stays faint. That is the timeline doing its own signposting.
     for (let index = 0; index < ROUTE_POINTS.length - 1; index += 1) {
       const segmentProgress = smoothstep(index / segmentCount, (index + 1) / segmentCount, chapterProgress)
-      const intensity = visibility * (0.16 + segmentProgress * 0.84)
+      const intensity = visibility * (0.12 + segmentProgress * 0.62)
       routeColors.setXYZ(index * 2, routeColor.r * intensity, routeColor.g * intensity, routeColor.b * intensity)
       routeColors.setXYZ(index * 2 + 1, routeColor.r * intensity, routeColor.g * intensity, routeColor.b * intensity)
     }
@@ -137,19 +128,17 @@ export function ExperienceScene({ progress, activeExperience, quality }: Experie
     ROUTE_POINTS.forEach((point, index) => {
       const focused = index === selected
       dummy.position.copy(point)
-      dummy.scale.setScalar(focused ? 1.85 : 0.82 + visibility * 0.18)
+      dummy.rotation.set(0.4, index * 0.9 + chapterProgress * 0.6, 0)
+      dummy.scale.setScalar(focused ? 1.8 : 0.78 + visibility * 0.16)
       dummy.updateMatrix()
       markerInstances.setMatrixAt(index, dummy.matrix)
       markerInstances.setColorAt(index, focused ? activeColor : idleColor)
-
-      if (focused) light.position.copy(point)
     })
 
     markerInstances.instanceMatrix.needsUpdate = true
     if (markerInstances.instanceColor) markerInstances.instanceColor.needsUpdate = true
-    routeMaterial.opacity = MathUtils.damp(routeMaterial.opacity, visibility * 0.68, 5.2, delta)
-    markerMaterial.opacity = MathUtils.damp(markerMaterial.opacity, visibility * 0.92, 5.2, delta)
-    light.intensity = MathUtils.damp(light.intensity, visibility * (theme === 'light' ? 1.2 : 2.5), 5, delta)
+    routeMaterial.opacity = MathUtils.damp(routeMaterial.opacity, visibility * 0.6, 5.2, delta)
+    markerMaterial.opacity = MathUtils.damp(markerMaterial.opacity, visibility * 0.8, 5.2, delta)
     group.rotation.y = MathUtils.damp(group.rotation.y, -0.2 + chapterProgress * 0.4, 4.2, delta)
     group.rotation.z = MathUtils.damp(group.rotation.z, -0.06 + chapterProgress * 0.1, 4.2, delta)
   })
@@ -158,13 +147,6 @@ export function ExperienceScene({ progress, activeExperience, quality }: Experie
     <group ref={routeGroup} position={[0, 0.05, -0.35]}>
       <lineSegments geometry={routeGeometry} material={routeMaterial} />
       <instancedMesh ref={markers} args={[markerGeometry, markerMaterial, EXPERIENCE.length]} frustumCulled={false} />
-      <pointLight
-        ref={focusLight}
-        color={theme === 'light' ? '#7969ba' : '#b9b0ff'}
-        distance={2.2}
-        decay={2}
-        intensity={0}
-      />
     </group>
   )
 }

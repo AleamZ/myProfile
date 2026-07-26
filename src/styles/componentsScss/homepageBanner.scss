@@ -1,4 +1,12 @@
-// ── PLATINE PROOF · hero + stack ───────────────────────────────
+// ── COLD START · hero ──────────────────────────────────────────
+
+// Registering --fill makes it a real percentage, so scroll updates arriving as
+// discrete React renders still read as a continuous sweep.
+@property --fill {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 0%;
+}
 
 .hero {
     --identity-progress: 0;
@@ -28,9 +36,10 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    font-weight: 500;
-    font-size: clamp(0.66rem, 0.95vw, 0.8rem);
-    letter-spacing: 0.34em;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: clamp(0.62rem, 0.9vw, 0.74rem);
+    letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--muted);
 
@@ -58,11 +67,12 @@
 @keyframes eyebrow-in {
     from {
         opacity: 0;
-        letter-spacing: 0.55em;
+        letter-spacing: 0.5em;
     }
+
     to {
         opacity: 1;
-        letter-spacing: 0.34em;
+        letter-spacing: 0.3em;
     }
 }
 
@@ -70,7 +80,7 @@
     flex: none;
     font-weight: 500;
     font-size: 11px;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.26em;
     text-transform: uppercase;
     color: var(--muted);
     white-space: nowrap;
@@ -80,79 +90,75 @@
     }
 }
 
-// ── The display name — the lone couture serif event ────────────
+// ── The display name ───────────────────────────────────────────
+// Archivo's width axis is pushed wide and tapered down the stack, so three
+// lines of unequal length still square off as a block instead of a rag.
 .name {
-    grid-column: 1 / 11;
+    grid-column: 1 / 10;
     grid-row: 2;
     font-family: var(--font-display);
-    font-weight: 300;
-    font-optical-sizing: auto;
-    font-variation-settings: 'opsz' 144;
-    font-size: clamp(3.6rem, 13vw, 12.5rem);
-    line-height: 0.92;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    font-size: clamp(3.1rem, 11.4vw, 10.5rem);
+    line-height: 0.88;
+    letter-spacing: -0.012em;
     text-transform: uppercase;
 }
 
 .name__line {
+    --n: 0;
+    // 0 → fully outlined, 1 → fully solid. The +0.34 bias means the first line
+    // is already filled at rest, so the hero is legible before any scrolling
+    // happens (and with JS or motion off, see the overrides below).
+    --fill-n: clamp(0, calc((var(--identity-progress) + 0.34 - var(--n) * 0.3) / 0.34), 1);
+    --fill: calc(var(--fill-n) * 100%);
+
     display: block;
     position: relative;
+    // The platinum copy is absolutely positioned, so the ghost sets the metrics.
+    transition: --fill 0.32s linear;
+}
+
+.name__line:nth-child(1) { font-variation-settings: 'wdth' 108; }
+.name__line:nth-child(2) { font-variation-settings: 'wdth' 120; }
+.name__line:nth-child(3) { font-variation-settings: 'wdth' 125; }
+
+.name__ghost,
+.name__reveal {
+    display: block;
+    animation: name-rise 820ms var(--ease-type) backwards;
+}
+
+// The permanent hairline outline. It also sets the line's metrics.
+.name__ghost {
+    color: transparent;
+    -webkit-text-stroke: clamp(0.8px, 0.09vw, 1.5px) var(--line-strong);
+}
+
+// The clipping window. Plain overflow on a sized box — no mask, no clip-path,
+// no background-clip:text. Each of those pushes the line onto its own
+// compositing layer, where Chromium intermittently drops the clip and repaints
+// the whole line as a solid slab.
+.name__reveal {
+    position: absolute;
+    inset: 0;
+    width: var(--fill);
     overflow: hidden;
-
-    // One-shot diagonal sheen sweep — brushed metal catching light
-    &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: linear-gradient(105deg, transparent 38%, var(--sheen-core) 50%, transparent 62%);
-        mix-blend-mode: var(--sheen-blend);
-        transform: translateX(-130%);
-        animation: sheen 700ms var(--ease-rule) backwards;
-    }
-
-    &:nth-child(1)::after { animation-delay: 1000ms; }
-    &:nth-child(2)::after { animation-delay: 1120ms; }
-    &:nth-child(3)::after { animation-delay: 1240ms; }
-
-    // Re-fire on theme switch — armed only while the cross-fade class is held;
-    // the keyframe ends off-canvas right and the rest state parks off-canvas
-    // left, so class removal never snaps visibly.
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        pointer-events: none;
-        background: linear-gradient(105deg, transparent 38%, var(--sheen-core) 50%, transparent 62%);
-        mix-blend-mode: var(--sheen-blend);
-        transform: translateX(-130%); // resting: parked off-canvas
-    }
 }
 
-html.theme-transition .name__line::before {
-    animation: sheen 0.4s var(--ease-rule) backwards;
-}
-html.theme-transition .name__line:nth-child(2)::before { animation-delay: 60ms; }
-html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms; }
-
-.name__inner {
-    display: inline-block;
-    color: var(--text); // visible fallback if background-clip:text is unsupported
-    will-change: transform;
-    // animation-delay (below) is the single source of truth for both timings
-    animation:
-        name-rise 760ms var(--ease-type) backwards,
-        platinum-drift 12s ease-in-out infinite alternate;
+// Absolute inside the window, so clipping the window never reflows the text.
+.name__fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+    color: var(--text); // fallback if background-clip:text is unsupported
 }
 
-// Platinum text gradient (grayscale) — only where text clipping works,
-// so the name is never rendered invisible.
+// Cold platinum, so the resolved lines read as brushed metal catching the
+// scene light rather than as flat white.
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-    .name__inner {
-        background: var(--platinum);
-        background-size: 100% 200%;
-        background-position: center 0;
+    .name__fill {
+        background-image: var(--platinum);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -160,62 +166,44 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
     }
 }
 
-// [name-rise delay, platinum-drift delay]
-.name__line:nth-child(1) .name__inner { animation-delay: 320ms, 1600ms; }
-.name__line:nth-child(2) .name__inner { animation-delay: 410ms, 1600ms; }
-.name__line:nth-child(3) .name__inner { animation-delay: 500ms, 1600ms; }
-
-.name__glyph {
-    --glyph-shift-x: 0em;
-    --glyph-shift-y: 0em;
-
-    display: inline-block;
-    opacity: calc(1 - var(--identity-progress) * 0.14);
-    transform: translate3d(
-        calc(var(--identity-progress) * var(--glyph-shift-x)),
-        calc(var(--identity-progress) * var(--glyph-shift-y)),
-        0
-    );
-    transition:
-        transform 0.5s var(--ease-type),
-        opacity 0.35s var(--ease-rule);
+// A scan line riding the leading edge — the only cyan in the hero, and it is
+// there to show what the fill is doing rather than to decorate.
+.name__reveal::after {
+    content: '';
+    position: absolute;
+    top: 0.14em;
+    bottom: 0.1em;
+    right: 0;
+    width: 1px;
+    background: var(--line-signal);
+    // Fades out as the line completes; a finished line has nothing to scan.
+    opacity: clamp(0, calc((1 - var(--fill-n)) * 3), 1);
 }
 
-.name__line:nth-child(1) .name__glyph {
-    --glyph-shift-x: -0.12em;
-    --glyph-shift-y: -0.055em;
-}
+.name__line:nth-child(1) :is(.name__ghost, .name__reveal) { animation-delay: 320ms; }
+.name__line:nth-child(2) :is(.name__ghost, .name__reveal) { animation-delay: 420ms; }
+.name__line:nth-child(3) :is(.name__ghost, .name__reveal) { animation-delay: 520ms; }
 
-.name__line:nth-child(2) .name__glyph {
-    --glyph-shift-x: 0.06em;
-    --glyph-shift-y: 0.025em;
-}
-
-.name__line:nth-child(3) .name__glyph {
-    --glyph-shift-x: 0.15em;
-    --glyph-shift-y: 0.07em;
-}
-
-.name__glyph:nth-child(3n) {
-    --glyph-shift-x: 0.09em;
+// Before the scene director reports progress, and whenever motion is off,
+// the name must read as finished rather than as half-drawn.
+html:not(.js) .name__line,
+[data-bgfx='off'] .name__line {
+    --fill-n: 1;
 }
 
 @keyframes name-rise {
-    from { transform: translateY(102%); }
-    to { transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(0.14em);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-@keyframes sheen {
-    from { transform: translateX(-130%); }
-    to { transform: translateX(130%); }
-}
-
-@keyframes platinum-drift {
-    from { background-position: center 0; }
-    to { background-position: center 100%; }
-}
-
-// Full-bleed rule that "catches" the type once it has settled
+// Full-bleed rule that catches the type once it has settled
 .name__baseline {
     grid-column: 1 / -1;
     grid-row: 3;
@@ -226,13 +214,16 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
     animation: rule-in 820ms var(--ease-rule) 700ms backwards;
 }
 
+@media (max-width: 860px) {
+    .name {
+        grid-column: 1 / -1;
+        font-size: clamp(2.9rem, 15vw, 5.4rem);
+    }
+}
+
 @media (max-width: 720px) {
     .hero {
         gap: 0 16px;
-    }
-
-    .name {
-        grid-column: 1 / -1;
     }
 
     .hero__head {
@@ -242,8 +233,7 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
     }
 }
 
-// ── Hero exit: name and baseline part as planes (scroll-driven whisper;
-// non-supporting engines keep the rigid exit) ───────────────────────────
+// ── Hero exit: the block sinks and dims as the visitor leaves ──
 @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
         .js .name {
@@ -271,9 +261,8 @@ html.theme-transition .name__line:nth-child(3)::before { animation-delay: 120ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .name__glyph {
-        opacity: 1;
-        transform: none;
+    .name__line {
+        --fill-n: 1;
         transition: none;
     }
 }

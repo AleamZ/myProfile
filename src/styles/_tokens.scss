@@ -1,49 +1,61 @@
-// ORBITAL DATA JOURNEY · shared mission tokens
+// COLD START · deep-field instrument tokens
+//
+// Colour law: cyan and violet are EMITTED LIGHT, never paint.
+//   · --plasma  is the signal. Active chapter, live dot, focus, one hairline.
+//     It is never a fill wider than 4px and never sits behind body text.
+//   · --spectral is the field. Radial gradients, halos and 3D depth only.
+//     It never touches type and never becomes a solid material.
+// Everything a visitor actually reads is neutral ice or graphite. That
+// restraint is what separates an instrument from a screensaver.
 
 :root {
-    // Approved source palette. Semantic tokens below are the only theme swaps.
-    --void: #05070D;
-    --carbon: #0B1020;
-    --plasma: #6EE7FF;
-    --spectral: #8B7CFF;
-    --ion: #ECF7FF;
-    --telemetry: #8391A7;
+    // ── Source palette ─────────────────────────────────────────
+    --void: #04060c; // the deep field
+    --carbon: #0a0e19; // instrument housing
+    --graphite: #141b2b; // machined edge
+    --ion: #e8eef8; // ice white
+    --telemetry: #7b8799; // cool graphite (AA on void)
+    --plasma: #67e8f9; // the signal
+    --spectral: #7c6bf2; // the field
 
-    // Deep Space theme
+    // ── Semantic ───────────────────────────────────────────────
     --bg: var(--void);
     --bg-elev: var(--carbon);
     --text: var(--ion);
-    --accent: var(--plasma);
+    --text-dim: #a7b3c6;
     --muted: var(--telemetry);
+    --accent: var(--plasma);
     --energy-primary: var(--plasma);
     --energy-secondary: var(--spectral);
 
-    // Surfaces
-    --surface-0: rgba(5, 7, 13, 0.82);
-    --surface-1: rgba(11, 16, 32, 0.72);
-    --surface-2: rgba(18, 25, 48, 0.86);
-    --surface-solid: #0B1020;
-    --surface-nav: rgba(5, 7, 13, 0.74);
-    --surface-nav-strong: rgba(5, 7, 13, 0.93);
-    --surface-hover: rgba(110, 231, 255, 0.08);
-    --surface-border: rgba(131, 145, 167, 0.24);
-    --surface-shadow: 0 18px 52px rgba(0, 0, 0, 0.34);
+    // ── Surfaces — cool neutrals, never tinted ─────────────────
+    --surface-0: rgba(4, 6, 12, 0.78);
+    --surface-1: rgba(10, 14, 25, 0.6);
+    --surface-2: rgba(16, 22, 38, 0.86);
+    --surface-solid: #0a0e19;
+    --surface-nav: rgba(4, 6, 12, 0.6);
+    --surface-nav-strong: rgba(6, 9, 17, 0.94);
+    --surface-hover: rgba(232, 238, 248, 0.045);
+    --surface-border: rgba(232, 238, 248, 0.1);
+    --surface-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
 
-    // Emitted light, keyboard focus, and calibration grid
-    --glow-plasma: 0 0 44px rgba(110, 231, 255, 0.24);
-    --glow-plasma-sm: 0 0 16px rgba(110, 231, 255, 0.34);
-    --glow-spectral: 0 0 36px rgba(139, 124, 255, 0.2);
+    // ── Hairlines — neutral by default, signal only when live ──
+    --line: rgba(232, 238, 248, 0.1);
+    --line-faint: rgba(232, 238, 248, 0.05);
+    --line-strong: rgba(232, 238, 248, 0.22);
+    --line-signal: rgba(103, 232, 249, 0.42);
+
+    // ── Emitted light — small and low, never a wash ────────────
+    --glow-plasma: 0 0 30px rgba(103, 232, 249, 0.14);
+    --glow-plasma-sm: 0 0 10px rgba(103, 232, 249, 0.3);
+    --glow-spectral: 0 0 64px rgba(124, 107, 242, 0.14);
     --focus-ring: var(--plasma);
-    --focus-halo: 0 0 0 4px rgba(110, 231, 255, 0.14);
-    --grid-line: rgba(131, 145, 167, 0.13);
-    --grid-line-strong: rgba(110, 231, 255, 0.22);
-    --grid-size: 72px;
+    --focus-halo: 0 0 0 3px rgba(103, 232, 249, 0.16);
+    --grid-line: rgba(232, 238, 248, 0.055);
+    --grid-line-strong: rgba(103, 232, 249, 0.16);
+    --grid-size: 80px;
 
-    --line: var(--surface-border);
-    --line-faint: rgba(131, 145, 167, 0.1);
-    --line-strong: rgba(110, 231, 255, 0.34);
-
-    // Rhythm & layout
+    // ── Rhythm & layout ────────────────────────────────────────
     --baseline: 8px;
     --margin: clamp(20px, 4vw, 56px);
     --maxw: 1440px;
@@ -58,85 +70,38 @@
     --ease-rule: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-type: cubic-bezier(0.16, 1, 0.3, 1);
 
-    // Static illumination; the persistent data core owns spatial motion.
+    // ── Atmosphere. The data core owns spatial motion; these only
+    // shape where the eye lands. ───────────────────────────────
     --mx: 58%;
     --my: 34%;
-    --spotlight: radial-gradient(680px circle at var(--mx) var(--my), rgba(110, 231, 255, 0.075), transparent 68%);
-    --vignette: radial-gradient(130% 120% at 50% 42%, transparent 54%, rgba(0, 0, 0, 0.54) 100%);
-    --grain-opacity: 0.022;
+    --spotlight: radial-gradient(900px circle at var(--mx) var(--my), rgba(124, 107, 242, 0.1), transparent 62%);
+    --vignette: radial-gradient(122% 106% at 50% 40%, transparent 40%, rgba(2, 3, 7, 0.74) 100%);
+    --grain-opacity: 0.026;
     --grain-blend: soft-light;
 
-    --platinum: linear-gradient(180deg, #ECF7FF 0%, #C9D9E7 46%, #8391A7 100%);
+    // Cold platinum for the display name — grayscale, no hue.
+    --platinum: linear-gradient(176deg, #ffffff 0%, #dce6f4 32%, #9dabc1 72%, #647287 100%);
 
-    // Type roles: compressed mission display, readable UI, compact telemetry.
-    --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    // ── Type roles ─────────────────────────────────────────────
+    // Archivo at expanded width reads like silkscreen on an instrument
+    // panel — wide, engineered, and nothing like a scoreboard condensed.
+    --font-display: 'Archivo', 'Inter', system-ui, sans-serif;
     --font-ui: 'Inter', system-ui, Arial, sans-serif;
     --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
 
-    // Compatibility aliases for existing components.
+    // ── Aliases kept for existing components ───────────────────
     --glass-bg: var(--surface-1);
     --glass-border: var(--surface-border);
     --glass-shadow: var(--surface-shadow);
-    --glass-hl: rgba(236, 247, 255, 0.08);
-    --glass-blur: 14px;
-    --watermark-ink: rgba(131, 145, 167, 0.08);
-    --lit-edge: rgba(110, 231, 255, 0.38);
-    --sheen-core: rgba(110, 231, 255, 0.2);
+    --glass-hl: rgba(232, 238, 248, 0.07);
+    --glass-blur: 16px;
+    --watermark-ink: rgba(232, 238, 248, 0.045);
+    --lit-edge: rgba(103, 232, 249, 0.34);
+    --sheen-core: rgba(232, 238, 248, 0.16);
     --sheen-blend: screen;
-    --sheen: rgba(110, 231, 255, 0.08);
-    --tag-hover-bg: rgba(110, 231, 255, 0.06);
-    --rule-glint: rgba(110, 231, 255, 0.34);
-}
-
-// Solar Flare keeps the same source palette but shifts semantic contrast and light.
-[data-theme='light'] {
-    --bg: #F3F7FA;
-    --bg-elev: #E8EFF5;
-    --text: #111827;
-    --accent: #006D82;
-    --muted: #56657A;
-    --energy-primary: #006D82;
-    --energy-secondary: #6655D6;
-
-    --surface-0: rgba(243, 247, 250, 0.82);
-    --surface-1: rgba(255, 255, 255, 0.68);
-    --surface-2: rgba(232, 239, 245, 0.9);
-    --surface-solid: #F7FAFC;
-    --surface-nav: rgba(243, 247, 250, 0.76);
-    --surface-nav-strong: rgba(247, 250, 252, 0.94);
-    --surface-hover: rgba(0, 109, 130, 0.08);
-    --surface-border: rgba(30, 45, 64, 0.18);
-    --surface-shadow: 0 20px 58px rgba(43, 61, 84, 0.15);
-
-    --glow-plasma: 0 0 42px rgba(110, 231, 255, 0.28);
-    --glow-plasma-sm: 0 0 14px rgba(0, 109, 130, 0.2);
-    --glow-spectral: 0 0 36px rgba(139, 124, 255, 0.18);
-    --focus-ring: #006D82;
-    --focus-halo: 0 0 0 4px rgba(0, 109, 130, 0.12);
-    --grid-line: rgba(30, 45, 64, 0.1);
-    --grid-line-strong: rgba(0, 109, 130, 0.18);
-
-    --line: var(--surface-border);
-    --line-faint: rgba(30, 45, 64, 0.08);
-    --line-strong: rgba(0, 109, 130, 0.3);
-    --platinum: linear-gradient(180deg, #182131 0%, #334155 50%, #006D82 100%);
-    --spotlight: radial-gradient(720px circle at 62% 30%, rgba(255, 180, 112, 0.2), transparent 66%);
-    --vignette: radial-gradient(130% 120% at 50% 38%, transparent 62%, rgba(64, 78, 96, 0.11) 100%);
-    --grain-opacity: 0.016;
-    --grain-blend: multiply;
-
-    --glass-bg: var(--surface-1);
-    --glass-border: var(--surface-border);
-    --glass-shadow: var(--surface-shadow);
-    --glass-hl: rgba(255, 255, 255, 0.72);
-    --glass-blur: 20px;
-    --watermark-ink: rgba(17, 24, 39, 0.06);
-    --lit-edge: rgba(255, 255, 255, 0.6);
-    --sheen-core: rgba(255, 255, 255, 0.48);
-    --sheen-blend: screen;
-    --sheen: rgba(255, 255, 255, 0.4);
-    --tag-hover-bg: rgba(0, 109, 130, 0.06);
-    --rule-glint: rgba(0, 109, 130, 0.28);
+    --sheen: rgba(232, 238, 248, 0.06);
+    --tag-hover-bg: rgba(232, 238, 248, 0.05);
+    --rule-glint: rgba(103, 232, 249, 0.3);
 }
 
 @media (max-width: 960px) {
@@ -151,6 +116,6 @@
         --header-h: 60px;
         --chapter-hold: max(680px, 94svh);
         --chapter-pad: clamp(64px, 9vh, 88px);
-        --grid-size: 48px;
+        --grid-size: 52px;
     }
 }

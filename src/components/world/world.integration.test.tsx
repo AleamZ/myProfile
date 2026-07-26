@@ -79,7 +79,6 @@ function expectCorePageContent() {
   expect(screen.getByRole('heading', { level: 2, name: 'Experience' })).toBeInTheDocument()
   expect(screen.getByRole('heading', { level: 2, name: 'Skills' })).toBeInTheDocument()
   expect(screen.getAllByRole('link', { name: /datnguyentien\.work@gmail\.com/i }).length).toBeGreaterThan(0)
-  expect(screen.getByRole('button', { name: 'Switch to light theme' })).toBeInTheDocument()
   expect(screen.getByRole('group', { name: 'Language' })).toBeInTheDocument()
 }
 

@@ -256,7 +256,7 @@
 .dino__switch {
     display: flex;
     border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius);
     overflow: hidden;
 }
 
@@ -274,9 +274,12 @@
         color: var(--text);
     }
 
+    // Underlined, not a solid light pill — a filled chip made this easter egg
+    // the brightest element on the page.
     &.is-active {
-        color: var(--bg);
-        background: var(--text);
+        color: var(--text);
+        background: var(--surface-hover);
+        box-shadow: inset 0 -1px 0 var(--line-signal);
     }
 }
 

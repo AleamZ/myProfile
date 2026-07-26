@@ -8,13 +8,13 @@ import Contact from '../components/contact/contact'
 import Background from '../components/background/background.hompage'
 import Footer from '../components/footer/footer'
 import MissionNavigator from '../components/missionNavigator/missionNavigator'
+import PixelSquadron from '../components/pixelSquadron/pixelSquadron'
 import { WorldBoundary } from '../components/world/WorldBoundary'
 import { getWorldPresentation, worldReadinessReducer } from '../components/world/worldReadiness'
 import { useSceneDirector } from '../hooks/useSceneDirector'
 import { useMotionCapability } from '../hooks/useMotionCapability'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { detectWebGL, selectSceneQuality } from '../scene/quality'
-import { useTheme } from '../theme/ThemeProvider'
 
 const WorldCanvas = lazy(() => import('../components/world/WorldCanvas'))
 
@@ -29,7 +29,6 @@ function readInitialSceneQuality() {
 }
 
 const Homepage = () => {
-    const { theme } = useTheme()
     const motionEnabled = useMotionCapability()
     useSceneDirector(motionEnabled)
     useScrollReveal()
@@ -37,7 +36,7 @@ const Homepage = () => {
     const [worldReadiness, dispatchWorldReadiness] = useReducer(worldReadinessReducer, 'pending')
     const onWorldFirstFrame = useCallback(() => dispatchWorldReadiness({ type: 'first-frame' }), [])
     const onWorldUnavailable = useCallback(() => dispatchWorldReadiness({ type: 'unavailable' }), [])
-    const worldPresentation = getWorldPresentation(theme, worldReadiness)
+    const worldPresentation = getWorldPresentation(worldReadiness)
 
     useEffect(() => {
         if (!motionEnabled) onWorldUnavailable()
@@ -63,6 +62,7 @@ const Homepage = () => {
             </WorldBoundary>
             <MHeader />
             <MissionNavigator />
+            <PixelSquadron />
             <main id="main" className="content">
                 <HomepageBanner />
                 <Projects />

@@ -81,6 +81,13 @@
     gap: 24px;
 }
 
+// Clear the fixed mission rail, which otherwise sits on top of the mail link.
+@media (min-width: 961px) {
+    .site-footer__inner {
+        padding-left: max(var(--margin), 88px);
+    }
+}
+
 .site-footer__meta {
     font-weight: 400;
     font-size: 11px;

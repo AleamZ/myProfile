@@ -7,15 +7,18 @@ import {
 } from './worldReadiness'
 
 describe('getWorldPresentation', () => {
-  it('keeps dark-only ambience hidden when a light-theme world becomes active', () => {
-    expect(getWorldPresentation('light', 'active')).toEqual({
-      worldAttribute: 'active',
+  it('leaves the CSS ambience at full strength while the world is still pending', () => {
+    expect(getWorldPresentation('pending')).toEqual({
+      worldAttribute: undefined,
       ambienceClass: undefined,
     })
   })
 
-  it('dims duplicate ambience for an active dark-theme world', () => {
-    expect(getWorldPresentation('dark', 'active').ambienceClass).toBe('world-ambience-dimmed')
+  it('dims the duplicate CSS ambience once the world is drawing', () => {
+    expect(getWorldPresentation('active')).toEqual({
+      worldAttribute: 'active',
+      ambienceClass: 'world-ambience-dimmed',
+    })
   })
 })
 
