@@ -5,6 +5,7 @@ import ProjectModal from './projectModal'
 import LogoMark from '../logo/logoMark'
 import DinoRunner from '../dinoRunner/dinoRunner'
 import { useLang } from '../../i18n/LanguageProvider'
+import { useChapterStage } from '../../hooks/useChapterStage'
 import { useSceneStore } from '../../scene/sceneHooks'
 
 const pad = (n: number) => String(n + 1).padStart(2, '0')
@@ -135,6 +136,8 @@ const Projects = () => {
         }
     }
 
+    const stageRef = useChapterStage<HTMLDivElement>('projects')
+
     return (
         <section
             className="projects"
@@ -144,122 +147,124 @@ const Projects = () => {
             aria-labelledby="work-heading"
             ref={sectionRef}
         >
-            <div className="projects__head reveal">
-                <h2 id="work-heading" className="sr-only">Work</h2>
-                <span className="index">02&nbsp;/&nbsp;{t.sections.work}</span>
-                <span className="projects__count" aria-hidden="true">
-                    <span className="projects__count-tick" key={active}>{pad(active)}</span>
-                    &nbsp;—&nbsp;{pad(count - 1)}
-                </span>
-            </div>
-
-            <div className="cf reveal">
-                {previewReady && (
-                    <div className={`cf__loader${ready ? ' is-done' : ''}`} aria-hidden="true">
-                        <LogoMark className="logo logo--loader" decorative />
-                        <span className="cf__loader-text">{t.work.loading}</span>
-                    </div>
-                )}
-
-                <button
-                    type="button"
-                    className="cf__nav cf__nav--prev"
-                    onClick={() => go(-1)}
-                    aria-label="Previous project"
-                    disabled={active === 0}
-                >
-                    <span aria-hidden="true">‹</span>
-                </button>
-
-                <div
-                    className="cf__stage"
-                    role="group"
-                    aria-roledescription="carousel"
-                    aria-label="Projects coverflow"
-                    tabIndex={0}
-                    onPointerDown={onPointerDown}
-                    onPointerMove={onPointerMove}
-                    onPointerUp={onPointerUp}
-                    onPointerCancel={() => (pressed.current = false)}
-                    onKeyDown={onKeyDown}
-                >
-                    {PROJECTS.map((p, i) => {
-                        const distance = Math.abs(i - active)
-                        const shot = screenshotUrl(p)
-                        return (
-                            <div key={p.id} className={`cf__card${i === active ? ' is-active' : ''}`} style={cardStyle(i)}>
-                                <span className="cf__thumb">
-                                    <span className="cf__thumb-ph" aria-hidden="true">{pad(i)}</span>
-                                    {previewReady && shot && !failed.has(p.id) && (
-                                        <img
-                                            className="cf__shot"
-                                            src={shot}
-                                            alt=""
-                                            loading="lazy"
-                                            referrerPolicy="no-referrer"
-                                            onLoad={() => setSettled((c) => c + 1)}
-                                            onError={() => {
-                                                markFailed(p.id)
-                                                setSettled((c) => c + 1)
-                                            }}
-                                        />
-                                    )}
-                                </span>
-
-                                <span className="cf__meta">
-                                    <span className="cf__row">
-                                        <span className="cf__name">{p.name}</span>
-                                        {p.year && <span className="cf__year">{p.year}</span>}
-                                    </span>
-                                    <span className="cf__blurb">{p.blurb[lang]}</span>
-                                    <span className="cf__tech">
-                                        {p.tech.slice(0, 4).map((tag) => (
-                                            <span className="cf__tag" key={tag}>{tag}</span>
-                                        ))}
-                                    </span>
-                                </span>
-
-                                {i === active && <span className="cf__open" aria-hidden="true">{t.work.view}&nbsp;↗</span>}
-
-                                <button
-                                    type="button"
-                                    className="cf__hit"
-                                    aria-label={`${p.name}${i === active ? ' — open details' : ''}`}
-                                    aria-current={i === active}
-                                    tabIndex={distance > 2 ? -1 : 0}
-                                    onClick={() => onCardClick(i)}
-                                />
-                            </div>
-                        )
-                    })}
+            <div className="chapter-stage" ref={stageRef}>
+                <div className="projects__head reveal">
+                    <h2 id="work-heading" className="sr-only">Work</h2>
+                    <span className="index">02&nbsp;/&nbsp;{t.sections.work}</span>
+                    <span className="projects__count" aria-hidden="true">
+                        <span className="projects__count-tick" key={active}>{pad(active)}</span>
+                        &nbsp;—&nbsp;{pad(count - 1)}
+                    </span>
                 </div>
 
-                <button
-                    type="button"
-                    className="cf__nav cf__nav--next"
-                    onClick={() => go(1)}
-                    aria-label="Next project"
-                    disabled={active === count - 1}
-                >
-                    <span aria-hidden="true">›</span>
-                </button>
-            </div>
+                <div className="cf reveal">
+                    {previewReady && (
+                        <div className={`cf__loader${ready ? ' is-done' : ''}`} aria-hidden="true">
+                            <LogoMark className="logo logo--loader" decorative />
+                            <span className="cf__loader-text">{t.work.loading}</span>
+                        </div>
+                    )}
 
-            <div className="cf__dots reveal" role="tablist" aria-label="Select project">
-                {PROJECTS.map((p, i) => (
                     <button
                         type="button"
-                        key={p.id}
-                        role="tab"
-                        className={`cf__dot${i === active ? ' is-active' : ''}`}
-                        aria-selected={i === active}
-                        aria-label={p.name}
-                        onClick={() => setActive(i)}
-                    />
-                ))}
-            </div>
+                        className="cf__nav cf__nav--prev"
+                        onClick={() => go(-1)}
+                        aria-label="Previous project"
+                        disabled={active === 0}
+                    >
+                        <span aria-hidden="true">‹</span>
+                    </button>
 
-            <DinoRunner />
+                    <div
+                        className="cf__stage"
+                        role="group"
+                        aria-roledescription="carousel"
+                        aria-label="Projects coverflow"
+                        tabIndex={0}
+                        onPointerDown={onPointerDown}
+                        onPointerMove={onPointerMove}
+                        onPointerUp={onPointerUp}
+                        onPointerCancel={() => (pressed.current = false)}
+                        onKeyDown={onKeyDown}
+                    >
+                        {PROJECTS.map((p, i) => {
+                            const distance = Math.abs(i - active)
+                            const shot = screenshotUrl(p)
+                            return (
+                                <div key={p.id} className={`cf__card${i === active ? ' is-active' : ''}`} style={cardStyle(i)}>
+                                    <span className="cf__thumb">
+                                        <span className="cf__thumb-ph" aria-hidden="true">{pad(i)}</span>
+                                        {previewReady && shot && !failed.has(p.id) && (
+                                            <img
+                                                className="cf__shot"
+                                                src={shot}
+                                                alt=""
+                                                loading="lazy"
+                                                referrerPolicy="no-referrer"
+                                                onLoad={() => setSettled((c) => c + 1)}
+                                                onError={() => {
+                                                    markFailed(p.id)
+                                                    setSettled((c) => c + 1)
+                                                }}
+                                            />
+                                        )}
+                                    </span>
+
+                                    <span className="cf__meta">
+                                        <span className="cf__row">
+                                            <span className="cf__name">{p.name}</span>
+                                            {p.year && <span className="cf__year">{p.year}</span>}
+                                        </span>
+                                        <span className="cf__blurb">{p.blurb[lang]}</span>
+                                        <span className="cf__tech">
+                                            {p.tech.slice(0, 4).map((tag) => (
+                                                <span className="cf__tag" key={tag}>{tag}</span>
+                                            ))}
+                                        </span>
+                                    </span>
+
+                                    {i === active && <span className="cf__open" aria-hidden="true">{t.work.view}&nbsp;↗</span>}
+
+                                    <button
+                                        type="button"
+                                        className="cf__hit"
+                                        aria-label={`${p.name}${i === active ? ' — open details' : ''}`}
+                                        aria-current={i === active}
+                                        tabIndex={distance > 2 ? -1 : 0}
+                                        onClick={() => onCardClick(i)}
+                                    />
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                    <button
+                        type="button"
+                        className="cf__nav cf__nav--next"
+                        onClick={() => go(1)}
+                        aria-label="Next project"
+                        disabled={active === count - 1}
+                    >
+                        <span aria-hidden="true">›</span>
+                    </button>
+                </div>
+
+                <div className="cf__dots reveal" role="tablist" aria-label="Select project">
+                    {PROJECTS.map((p, i) => (
+                        <button
+                            type="button"
+                            key={p.id}
+                            role="tab"
+                            className={`cf__dot${i === active ? ' is-active' : ''}`}
+                            aria-selected={i === active}
+                            aria-label={p.name}
+                            onClick={() => setActive(i)}
+                        />
+                    ))}
+                </div>
+
+                <DinoRunner />
+            </div>
 
             {openProject && <ProjectModal project={openProject} onClose={() => setOpenId(null)} />}
         </section>

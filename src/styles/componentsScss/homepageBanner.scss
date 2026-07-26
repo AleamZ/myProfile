@@ -8,17 +8,17 @@
     initial-value: 0%;
 }
 
+// The section supplies the scroll runway; the stage inside it holds one
+// screen while the name resolves.
 .hero {
-    --identity-progress: 0;
-
     position: relative;
-    min-height: 100vh;
-    min-height: 100svh;
+}
+
+.hero__grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 0 24px;
     align-content: center;
-    padding-block: calc(var(--header-h) + clamp(24px, 6vh, 64px)) clamp(24px, 5vh, 56px);
 }
 
 // Eyebrow + section index — first asymmetric tension
@@ -109,7 +109,7 @@
     // 0 → fully outlined, 1 → fully solid. The +0.34 bias means the first line
     // is already filled at rest, so the hero is legible before any scrolling
     // happens (and with JS or motion off, see the overrides below).
-    --fill-n: clamp(0, calc((var(--identity-progress) + 0.34 - var(--n) * 0.3) / 0.34), 1);
+    --fill-n: clamp(0, calc((var(--chapter-progress) + 0.34 - var(--n) * 0.3) / 0.34), 1);
     --fill: calc(var(--fill-n) * 100%);
 
     display: block;
@@ -222,7 +222,7 @@ html:not(.js) .name__line,
 }
 
 @media (max-width: 720px) {
-    .hero {
+    .hero__grid {
         gap: 0 16px;
     }
 
@@ -233,32 +233,9 @@ html:not(.js) .name__line,
     }
 }
 
-// ── Hero exit: the block sinks and dims as the visitor leaves ──
-@supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-        .js .name {
-            animation: hero-exit-name linear both;
-            animation-timeline: view(block);
-            animation-range: exit 0% exit 100%;
-        }
-
-        .js .name__baseline {
-            animation:
-                rule-in 820ms var(--ease-rule) 700ms backwards,
-                hero-exit-fade linear both;
-            animation-timeline: auto, view(block);
-            animation-range: normal, exit 0% exit 100%;
-        }
-    }
-}
-
-@keyframes hero-exit-name {
-    to { transform: translateY(-4vh); }
-}
-
-@keyframes hero-exit-fade {
-    to { opacity: 0.4; }
-}
+// The old view()-timeline exit was removed with the stage: .chapter-stage now
+// owns arrival and departure for every chapter, and running both produced two
+// competing sinks on the same element.
 
 @media (prefers-reduced-motion: reduce) {
     .name__line {

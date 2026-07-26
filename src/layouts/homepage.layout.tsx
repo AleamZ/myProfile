@@ -16,6 +16,7 @@ import { useMotionCapability } from '../hooks/useMotionCapability'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { detectWebGL, selectSceneQuality } from '../scene/quality'
 import { useSceneSnapshot } from '../scene/sceneHooks'
+import { trackScrollVelocity } from '../scene/scrollVelocity'
 
 const WorldCanvas = lazy(() => import('../components/world/WorldCanvas'))
 
@@ -43,6 +44,11 @@ const Homepage = () => {
     useEffect(() => {
         if (!motionEnabled) onWorldUnavailable()
     }, [motionEnabled, onWorldUnavailable])
+
+    useEffect(() => {
+        if (!motionEnabled) return
+        return trackScrollVelocity()
+    }, [motionEnabled])
 
     return (
         <div

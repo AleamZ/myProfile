@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
 import { useLang } from '../../i18n/LanguageProvider'
+import { useChapterStage } from '../../hooks/useChapterStage'
 import { useSceneStore } from '../../scene/sceneHooks'
 import PlacesGlobe from '../globe/placesGlobe'
 
@@ -24,48 +25,53 @@ const Contact = () => {
         if (!event.currentTarget.matches(':focus')) store.setContactEngaged(false)
     }
 
+    const stageRef = useChapterStage<HTMLDivElement>('contact')
+
     return (
         <section className="contact" id="contact" data-scene="contact" aria-labelledby="contact-heading">
-            <div className="contact__head reveal">
-                <h2 id="contact-heading" className="sr-only">{t.sections.contact}</h2>
-                <span className="index">05&nbsp;/&nbsp;{t.sections.contact}</span>
-                <span className="contact__loc">{t.aside.city} · {t.aside.available}</span>
-            </div>
+            <div className="chapter-stage chapter-stage--closing" ref={stageRef}>
+                <div className="contact__head reveal">
+                    <h2 id="contact-heading" className="sr-only">{t.sections.contact}</h2>
+                    <span className="index">05&nbsp;/&nbsp;{t.sections.contact}</span>
+                    <span className="contact__loc">{t.aside.city} · {t.aside.available}</span>
+                </div>
 
-            <PlacesGlobe />
+                <PlacesGlobe />
 
-            <div className="contact__main">
-                <p className="contact__lead reveal">
-                    {t.contact.lead}
-                </p>
+                <div className="contact__main">
+                    <p className="contact__lead reveal">
+                        {t.contact.lead}
+                    </p>
 
-                <div className="contact__beacon reveal">
-                <a
-                    className="contact__email reveal"
-                    href={`mailto:${EMAIL}`}
-                    onPointerEnter={() => store.setContactEngaged(true)}
-                    onPointerLeave={disengageEmail}
-                    onFocus={() => store.setContactEngaged(true)}
-                    onBlur={() => store.setContactEngaged(false)}
-                >
-                    <span className="contact__email-inner">{EMAIL}</span>
-                </a>
+                    <div className="contact__beacon reveal">
+                    <a
+                        className="contact__email reveal"
+                        href={`mailto:${EMAIL}`}
+                        onPointerEnter={() => store.setContactEngaged(true)}
+                        onPointerLeave={disengageEmail}
+                        onFocus={() => store.setContactEngaged(true)}
+                        onBlur={() => store.setContactEngaged(false)}
+                    >
+                        <span className="contact__email-inner">{EMAIL}</span>
+                    </a>
 
-                <ul className="contact__socials reveal">
-                    {SOCIALS.map((s, i) => (
-                        <li className="contact__social" key={s.label} style={{ '--i': i } as CSSProperties}>
-                            <a
-                                href={s.href}
-                                {...(s.external ? { target: '_blank', rel: 'noreferrer' } : {})}
-                            >
-                                <span className="contact__social-label">{s.label}</span>
-                                <span className="contact__social-arrow" aria-hidden="true">↗</span>
-                            </a>
-                        </li>
-                    ))}
-                </ul>
+                    <ul className="contact__socials reveal">
+                        {SOCIALS.map((s, i) => (
+                            <li className="contact__social" key={s.label} style={{ '--i': i } as CSSProperties}>
+                                <a
+                                    href={s.href}
+                                    {...(s.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                                >
+                                    <span className="contact__social-label">{s.label}</span>
+                                    <span className="contact__social-arrow" aria-hidden="true">↗</span>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                    </div>
                 </div>
             </div>
+
         </section>
     )
 }

@@ -2,7 +2,7 @@
 .projects {
     position: relative;
     z-index: 3;
-    min-height: max(1100px, 145svh);
+    min-height: var(--chapter-hold);
     display: flex;
     flex-direction: column;
     isolation: isolate;

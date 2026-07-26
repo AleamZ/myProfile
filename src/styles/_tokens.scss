@@ -60,7 +60,7 @@
     --margin: clamp(20px, 4vw, 56px);
     --maxw: 1440px;
     --header-h: 64px;
-    --chapter-hold: max(900px, 118svh);
+    --chapter-hold: max(1180px, 190svh);
     --chapter-pad: clamp(88px, 14vh, 168px);
 
     --radius: 2px;
@@ -106,7 +106,7 @@
 
 @media (max-width: 960px) {
     :root {
-        --chapter-hold: max(760px, 102svh);
+        --chapter-hold: max(980px, 168svh);
         --chapter-pad: clamp(72px, 10vh, 112px);
     }
 }
@@ -114,7 +114,7 @@
 @media (max-width: 600px) {
     :root {
         --header-h: 60px;
-        --chapter-hold: max(680px, 94svh);
+        --chapter-hold: max(880px, 152svh);
         --chapter-pad: clamp(64px, 9vh, 88px);
         --grid-size: 52px;
     }

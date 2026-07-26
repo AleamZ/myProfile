@@ -25,7 +25,10 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
+    // `clip`, not `hidden`: hidden makes the body a scroll container, and the
+    // chapter stages below rely on position: sticky resolving against the
+    // document scrollport.
+    overflow-x: clip;
 }
 
 // Selection echoes the data core without reducing legibility.
@@ -196,6 +199,72 @@ h3 {
     }
 }
 
+// ── Chapter stages ─────────────────────────────────────────────
+// Each chapter holds a full screen while its own 0→1 progress plays out, then
+// hands over. Sticky rather than pinned: pinning injects a spacer and freezes
+// the section's document position, which is exactly what the scene director
+// measures to work out where the visitor is.
+//
+// `--chapter-progress` is written by useChapterStage; `--scroll-v` by
+// trackScrollVelocity. Registering both lets them interpolate instead of
+// jumping between style writes.
+@property --chapter-progress {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+}
+
+@property --scroll-v {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+}
+
+.chapter-stage {
+    --ramp: 0.15;
+    --enter: clamp(0, calc(var(--chapter-progress) / var(--ramp)), 1);
+    --exit: clamp(0, calc((var(--chapter-progress) - (1 - var(--ramp))) / var(--ramp)), 1);
+    --presence: clamp(0, calc(var(--enter) - var(--exit)), 1);
+
+    position: relative;
+}
+
+// The first chapter is already on screen when the page loads — there is no
+// approach to animate, and ramping it in means landing on a dimmed hero.
+// Likewise the last chapter has nowhere to depart to; fading it out would
+// leave the visitor reading the page through a veil at the bottom.
+.chapter-stage--opening {
+    --enter: 1;
+}
+
+.chapter-stage--closing {
+    --exit: 0;
+}
+
+// `--hold` sticks the stage for the length of its chapter. Only for content
+// that fits one screen: a sticky box taller than the viewport pins at the top
+// and its own overflow becomes unreachable — the visitor can never scroll to
+// the bottom of it. The coverflow, the timeline and the globe are all taller
+// than a screen, so they take the envelope without the pin.
+.chapter-stage--hold {
+    position: sticky;
+    top: var(--header-h);
+    min-height: calc(100svh - var(--header-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(20px, 4vh, 48px);
+}
+
+// Arrive, hold, depart — plus a lean into the direction of travel, so fast
+// scrolling reads as momentum rather than teleporting.
+.js .chapter-stage {
+    opacity: calc(0.34 + 0.66 * var(--presence));
+    transform:
+        translate3d(0, calc(((1 - var(--enter)) * 3.4vh) - (var(--exit) * 3.4vh)), 0)
+        skewY(calc(var(--scroll-v) * -0.4deg));
+}
+
 // ── Shared keyframes ───────────────────────────────────────────
 @keyframes fade-in {
     from { opacity: 0; }
@@ -259,6 +328,13 @@ body.modal-open {
 
     .js .reveal:is(.projects__head, .exp__head, .skills__head, .contact__head)::after {
         transform: scaleX(1) !important;
+    }
+
+    // Stages still hold their screen — that is layout, not motion — but they
+    // neither fade nor lean.
+    .js .chapter-stage {
+        opacity: 1;
+        transform: none;
     }
 
 }

@@ -35,7 +35,7 @@
     }
 
     .content > .projects {
-        min-height: max(900px, 112svh);
+        min-height: var(--chapter-hold);
     }
 }
 
@@ -45,6 +45,6 @@
     }
 
     .content > .projects {
-        min-height: max(780px, 105svh);
+        min-height: var(--chapter-hold);
     }
 }
